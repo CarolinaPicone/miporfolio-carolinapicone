@@ -1,0 +1,2870 @@
+<!DOCTYPE html>
+<html lang="es" class="loading">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carolina Picone — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --white:#ffffff;
+    --ink:#15140f;
+    --stone:#8c8578;
+    --line:#e7e4dd;
+    --dark-block:#1c1b17;
+    --light-block:#f2f0ea;
+    --font-body: 'Instrument Sans', sans-serif;
+    --nav-h: 76px;
+    --sig-h: clamp(58px, 7vw, 100px);
+    --sig-h-v1: clamp(46px, 5.2vw, 76px);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html.loading, html.loading body{ overflow:hidden; height:100%; }
+  body{ background:var(--white); color:var(--ink); font-family:var(--font-body); -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+  a, button, .scatter-item, .lang-toggle{ cursor:pointer; }
+  ::selection{ background:var(--ink); color:var(--white); }
+  a{ color:inherit; text-decoration:none; }
+  button{ font-family:var(--font-body); }
+
+  /* =============== LOADER =============== */
+  #loader{ position:fixed; inset:0; z-index:1000; background:var(--white); display:flex; align-items:center; justify-content:center; }
+  #loader.fade-out{ transition: opacity .8s ease; opacity:0; pointer-events:none; }
+  .loader-inner{ position:relative; display:inline-block; text-align:center; }
+  .reveal-cover{
+    position:absolute; top:0; left:-13%; width:113%; height:100%;
+    background: linear-gradient(90deg, transparent 0%, var(--white) 13.3%, var(--white) 100%);
+    transform: translateX(0%);
+    transition: transform 2.3s linear;
+    pointer-events:none;
+  }
+  .loader-inner.show .reveal-cover{ transform: translateX(100%); }
+  .loader-signature{ width: clamp(260px, 30vw, 420px); height:auto; display:block; margin:0 auto; }
+  .loader-url{ margin-top:24px; font-size:12px; letter-spacing:.08em; color:var(--stone); }
+
+
+  /* Entradas del home: distintas por tipo de elemento */
+  .rv{ opacity:0; }
+  html.revealed .rv-fade, .panel.open .rv-fade{ animation: fadeIn .6s ease forwards; }
+  html.revealed .rv-down, .panel.open .rv-down{ animation: fromDown .65s cubic-bezier(.22,1,.36,1) forwards; }
+  html.revealed .rv-up, .panel.open .rv-up{ animation: fromUp .65s cubic-bezier(.22,1,.36,1) forwards; }
+  html.revealed .rv-left, .panel.open .rv-left{ animation: fromLeft .65s cubic-bezier(.22,1,.36,1) forwards; }
+  html.revealed .rv-right, .panel.open .rv-right{ animation: fromRight .65s cubic-bezier(.22,1,.36,1) forwards; }
+  html.revealed .rv-scale, .panel.open .rv-scale{ animation: fromScale .7s cubic-bezier(.22,1,.36,1) forwards; }
+  @keyframes fadeIn{ to{opacity:1;} }
+  @keyframes fromDown{ from{opacity:0; transform:translateY(-10px);} to{opacity:1; transform:translateY(0);} }
+  @keyframes fromUp{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+  @keyframes fromLeft{ from{opacity:0; transform:translateX(-14px);} to{opacity:1; transform:translateX(0);} }
+  @keyframes fromRight{ from{opacity:0; transform:translateX(14px);} to{opacity:1; transform:translateX(0);} }
+  @keyframes fromScale{ from{opacity:0; transform:scale(.96) translateY(6px);} to{opacity:1; transform:scale(1) translateY(0);} }
+
+  header{ position:fixed; top:0; left:0; right:0; z-index:300; height:var(--nav-h); display:grid; grid-template-columns:1fr auto 1fr; align-items:center; padding:0 clamp(20px,4vw,56px); }
+  nav.links{ grid-column:2; display:flex; gap:clamp(20px,3vw,44px); align-items:center; }
+  nav.links a, nav.links button{ font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; position:relative; padding-bottom:3px; background:none; border:none; cursor:pointer; color:var(--ink); font-family:var(--font-body); transition:color .5s ease; }
+  nav.links a::after, nav.links button::after{ content:''; position:absolute; left:0; bottom:0; width:0; height:1px; background:currentColor; transition:width .35s ease; }
+  nav.links a:hover::after, nav.links button:hover::after{ width:100%; }
+  html.contact-nav-white nav.links #navAbout, html.contact-nav-white nav.links #navAbout2{ color:#fff; }
+  .lang-toggle{ grid-column:3; justify-self:end; font-size:11.5px; letter-spacing:.08em; display:flex; gap:6px; cursor:pointer; background:none; border:none; color:var(--stone); }
+  .lang-toggle span{ opacity:.55; }
+  .lang-toggle span.active{ opacity:1; font-weight:600; color:var(--ink); }
+  @media (max-width:760px){ nav.links{ display:none; } }
+
+  #home{ position:relative; }
+  .home-sticky{ position:sticky; top:0; height:100vh; overflow:hidden; background:var(--white); }
+
+  .home-copy{ position:absolute; left:clamp(20px,4vw,56px); top:var(--nav-h); z-index:20; max-width:560px; }
+  .name-variants{ position:relative; }
+  .variant{ display:none; }
+  .variant.v-active{ display:block; }
+  .variant[data-variant="1"]{ margin-top: calc(var(--sig-h-v1) * 2); }
+  .variant[data-variant="2"]{ margin-top: calc(20vh - var(--nav-h)); }
+  .sig-h{ width:auto; display:block; }
+  .variant[data-variant="1"] .sig-h{ height: var(--sig-h-v1); }
+  .variant[data-variant="2"] .sig-h:first-child{ height: calc(var(--sig-h) * 0.78); }
+  .variant[data-variant="2"] .sig-h:last-child{ height: var(--sig-h); margin-top:4px; }
+
+  .home-role-label{ margin-top:14px; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink); }
+  .home-copy.v1-active .home-role-label{ margin-top:6px; }
+  .home-role{ margin-top:4px; font-size:clamp(13px,1.3vw,15px); }
+  .home-role .roles{ position:relative; height:1.4em; overflow:hidden; }
+  .home-role .roles span{ position:absolute; left:0; top:0; opacity:0; transform:translateY(10px); transition:opacity .6s ease, transform .6s ease; color:var(--stone); }
+  .home-role .roles span.active{ opacity:1; transform:translateY(0); }
+  .home-url{ margin-top:4px; font-size:11.5px; letter-spacing:.04em; color:var(--stone); }
+
+  .home-info{ position:absolute; right:clamp(20px,4vw,56px); bottom:44px; z-index:20; text-align:right; font-size:12px; letter-spacing:.04em; color:var(--stone); line-height:1.9; }
+  .home-info .scroll-tag{ letter-spacing:.14em; color:var(--ink); font-size:11px; margin-bottom:14px; }
+  .home-info b{ color:var(--ink); font-weight:600; }
+
+  .scatter-viewport{ position:absolute; inset:0; overflow:hidden; }
+  .scatter-item{ position:absolute; top:0; left:0; width:380px; height:304px; overflow:visible; cursor:pointer; display:block; border:none; padding:0; background:none; will-change:transform; }
+  .item-inner{ width:100%; height:100%; display:block; overflow:hidden; border-radius:6px; transition: transform .2s ease; }
+  .scatter-item:hover .item-inner{ transform: scale(1.1); }
+  .item-inner .ph{ width:100%; height:100%; display:block; }
+  .scatter-item.dark .ph{ background:var(--dark-block); }
+  .scatter-item.light .ph{ background: repeating-linear-gradient(135deg, #e9e6de 0px, #e9e6de 1px, transparent 1px, transparent 13px), var(--light-block); }
+
+  @media (max-width:760px){
+    .home-copy{ max-width:80vw; }
+    .home-info{ display:none; }
+  }
+
+  .panel{ position:fixed; inset:0; background:var(--white); z-index:150; opacity:0; pointer-events:none; overflow-y:auto; overscroll-behavior:contain; }
+  .panel.open{ opacity:1; pointer-events:auto; }
+  .panel-hint{ position:fixed; left:clamp(20px,4vw,56px); bottom:28px; z-index:310; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--stone); pointer-events:none; }
+  .panel-inner{ }
+  .panel-spacer{ height:60vh; }
+  .panel-content{ min-height:100vh; display:flex; align-items:center; justify-content:center; }
+  .panel-msg{ font-size:clamp(28px,4vw,44px); }
+
+  .panel-page{ display:none; max-width:720px; margin:0 auto; padding: 150px clamp(20px,4vw,56px) 40px; }
+  .panel.show-about .panel-page[data-page="about"]{ display:block; }
+  .panel.show-contact .panel-page[data-page="contact"]{ display:block; }
+  .panel.show-work .panel-page[data-page="work"]{ display:block; }
+
+  .panel-page[data-page="about"]{ max-width:none; padding:0; margin:0; }
+
+
+  /* =============== TRABAJOS: contenedor multi-proyecto =============== */
+  .panel-page[data-page="work"]{ max-width:none; padding:0; margin:0; }
+  .work-project{ display:none; }
+  .panel.show-work .work-project.is-active{ display:block; }
+
+  html.work-dark .panel{ background:#000; }
+  html.work-dark nav.links a, html.work-dark nav.links button{ color:#fff; }
+  html.work-dark .lang-toggle{ color:#6b665d; }
+  html.work-dark .lang-toggle span.active{ color:#fff; }
+  html.work-open .panel{ overflow:hidden; }
+  html.work-open .panel-hint{ display:none; }          /* sin "[ Scroll ]" dentro de un trabajo */
+  html.about-open .panel-hint{ display:none; }          /* tampoco dentro de "Sobre mí" */
+  html.work-open header{ transition:opacity .7s ease; }
+  html.work-nav-hidden header{ opacity:0; pointer-events:none; }
+  html.work-open, html.work-open .panel{ cursor:default; }
+
+  /* clase genérica: cualquier trabajo con scroll propio (peso/inercia) usa esto,
+     independientemente de su diseño particular */
+  .work-track{ will-change:transform; }
+
+  /* =============== LA SOMBRERERA =============== */
+  .smb{ --smb-ink:#ffffff; --smb-stone:#9a9488; --smb-gap:50vh; }
+  .smb-track{ will-change:transform; }
+  .smb-part{ width:100vw; position:relative; }
+  .smb-gap{ width:100vw; height:var(--smb-gap); }
+
+  /* degradés fijos a la pantalla: el de abajo llega antes que "proceso",
+     el de arriba recién cuando proceso se va. Curva estirada, sin borde. */
+  .smb-vig{ position:fixed; left:0; right:0; height:26vh; z-index:5; pointer-events:none; opacity:0; transition:opacity 1.1s ease; }
+  .smb-vig-t{ top:0;    background:linear-gradient(to bottom, #000 0%, rgba(0,0,0,.7) 30%, rgba(0,0,0,.32) 60%, rgba(0,0,0,.08) 84%, transparent 100%); }
+  .smb-vig-b{ bottom:0; background:linear-gradient(to top,    #000 0%, rgba(0,0,0,.7) 30%, rgba(0,0,0,.32) 60%, rgba(0,0,0,.08) 84%, transparent 100%); }
+  html.smb-vig-top    .smb-vig-t{ opacity:1; }
+  html.smb-vig-bottom .smb-vig-b{ opacity:1; }
+
+  /* ---- 1. INICIAL ---- */
+  /* la parte mide una pantalla, pero no recorta: la foto sigue de largo hacia abajo.
+     z-index por encima del velo de "concepto": si la cola llega a cruzarse con esa
+     franja, la foto se ve completa igual, nunca oscurecida por el velo. */
+  .smb-inicial{ height:100vh; overflow:visible; display:grid; grid-template-columns:1.05fr 1fr; align-items:center; }
+  .smb-hero{ position:relative; z-index:8; align-self:start; padding-top:var(--nav-h); display:flex; justify-content:center; }
+  .smb-hero img{
+    width:100%; height:auto; display:block;
+    -webkit-mask-image: radial-gradient(ellipse 74% 70% at 52% 42%, #000 28%, rgba(0,0,0,.78) 56%, rgba(0,0,0,.26) 80%, transparent 96%);
+    mask-image: radial-gradient(ellipse 74% 70% at 52% 42%, #000 28%, rgba(0,0,0,.78) 56%, rgba(0,0,0,.26) 80%, transparent 96%);
+  }
+  .smb-info{ position:relative; align-self:start; height:100vh; color:var(--smb-ink); }
+  .smb-title{ position:absolute; left:0; top:34%; font-size:clamp(34px,4.6vw,64px); font-weight:500; line-height:1.02; letter-spacing:-.015em; }
+  .smb-sub{ position:absolute; left:2px; top:calc(34% + clamp(46px,5.6vw,78px)); font-size:clamp(13px,1.25vw,15px); color:var(--smb-stone); }
+  .smb-sub em{ font-style:normal; color:var(--smb-ink); }
+  .smb-credit{ position:absolute; left:clamp(40px,7vw,120px); top:64%; font-size:clamp(12.5px,1.15vw,14px); line-height:1.7; color:var(--smb-ink); max-width:26ch; }
+  .smb-roles{ position:absolute; right:clamp(28px,5vw,84px); bottom:12%; text-align:right; font-size:11.5px; letter-spacing:.06em; line-height:2.05; color:var(--smb-stone); }
+
+  /* ---- 2. CONCEPTUAL ---- */
+  /* altura fija (no depende del contenido) para poder ubicar el texto a una
+     distancia predecible: entre el final de "inicial" y el arranque de "proceso"
+     hay 130vh (esta parte) + 50vh (el gap) = 180vh; el texto arranca a 60vh de
+     ese recorrido, bastante antes de la mitad. */
+  .smb-conceptual{ height:130vh; position:relative; display:flex; align-items:flex-start; justify-content:center; padding-top:60vh; }
+  .smb-concept-veil-wrap{ position:relative; width:100%; padding:18vh 0; }
+  .smb-quote{ position:relative; z-index:1; max-width:640px; margin-left:auto; margin-right:clamp(24px,7vw,120px); text-align:right; color:var(--smb-ink); }
+  .smb-quote p{ font-size:clamp(15px,1.55vw,22px); line-height:1.65; font-style:italic; letter-spacing:-.005em; }
+  .smb-veil{
+    position:absolute; inset:0; z-index:2; pointer-events:none; background:#000; opacity:.62;
+    -webkit-mask-image: radial-gradient(circle 190px at var(--smb-mx,-500px) var(--smb-my,-500px), transparent 0%, rgba(0,0,0,.45) 55%, #000 100%);
+    mask-image: radial-gradient(circle 190px at var(--smb-mx,-500px) var(--smb-my,-500px), transparent 0%, rgba(0,0,0,.45) 55%, #000 100%);
+  }
+
+  /* ---- 3. PROCESO ---- */
+  /* texto y pieza van juntos, como un solo bloque centrado en la pantalla;
+     el texto conserva su alineación a la derecha, pegado al costado de la pieza */
+  .smb-proceso{ height:100vh; display:flex; align-items:center; justify-content:center; gap:clamp(22px,3vw,42px); }
+  .smb-proceso-text{ color:#d9d5cc; max-width:480px; }
+  .smb-proceso-text p{ font-size:clamp(12.5px,1.05vw,14px); line-height:1.78; margin-bottom:1.1em; text-align:right; }
+  .smb-proceso-text p:last-child{ margin-bottom:0; }
+
+  /* una sola pieza, sin movimiento propio más que el del video: se arma con el
+     mismo alto que el bloque de texto. Ancho vía JS según la proporción real
+     de cada video/foto. El paso de una pieza a otra es un crossfade breve. */
+  .smb-media-col{ display:flex; flex-direction:column; align-items:flex-end; justify-content:center; }
+  .smb-media-caption{ margin-top:10px; font-size:11px; letter-spacing:.04em; color:var(--smb-stone); text-align:right; }
+  .smb-media-slot{ position:relative; overflow:hidden; background:#0a0a0a; transition:width .4s ease, height .4s ease; }
+  .smb-media-slot video, .smb-media-slot img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity .55s ease; }
+  .smb-media-slot .is-current{ opacity:1; }
+  .smb-media-arrow{
+    position:absolute; top:50%; transform:translateY(-50%); z-index:2;
+    background:none; border:none; padding:10px 14px; cursor:pointer;
+    font-size:26px; line-height:1; color:var(--stone);
+    text-shadow:0 1px 4px rgba(0,0,0,.85);
+    opacity:0; transition:opacity .35s ease;
+  }
+  .smb-media-slot:hover .smb-media-arrow{ opacity:1; }
+  .smb-media-prev{ left:0; }
+  .smb-media-next{ right:0; }
+
+  /* ---- 4. FINAL ---- */
+  .smb-final{ width:100vw; height:auto; cursor:pointer; opacity:0; }
+  .smb-final img{ width:100%; height:auto; display:block; }
+
+  /* etiqueta "click" pegada al cursor, solo en las fotos finales */
+  .smb-cursor{
+    position:fixed; z-index:340; pointer-events:none; opacity:0;
+    transform:translate(16px,-50%); transition:opacity .4s ease;
+    font-size:10.5px; letter-spacing:.1em; color:var(--stone);
+  }
+  html.smb-click-on .smb-cursor{ opacity:1; }
+
+  /* la foto abierta: todo entra y sale de a poco. Sin trucos de "visibility":
+     opacity + pointer-events alcanza y no deja estados intermedios raros. */
+  .smb-track{ transition:filter 1s ease; }
+  html.smb-lb-open .smb-track{ filter:blur(15px); }
+  .smb-lightbox{
+    position:fixed; inset:0; z-index:360; display:flex; align-items:center; justify-content:center;
+    background:rgba(0,0,0,.5); cursor:pointer;
+    opacity:0; pointer-events:none; transition:opacity 1s ease;
+  }
+  .smb-lightbox.on{ opacity:1; pointer-events:auto; }
+  .smb-lightbox img{ display:block; max-width:none; border-radius:6px; transform:scale(.96); transition:transform 1.1s cubic-bezier(.22,1,.36,1); }
+  .smb-lightbox.on img{ transform:scale(1); }
+
+  @media (max-width:900px){
+    .smb-inicial{ grid-template-columns:1fr; height:auto; }
+    .smb-info{ height:auto; padding:clamp(24px,6vh,48px) clamp(20px,5vw,40px) clamp(30px,7vh,60px); }
+    .smb-title, .smb-sub, .smb-credit, .smb-roles{ position:static; text-align:left; max-width:none; margin-top:14px; }
+    .smb-title{ margin-top:0; }
+    .smb-proceso{ flex-direction:column; height:auto; gap:clamp(24px,5vh,48px); padding:clamp(30px,7vh,60px) clamp(20px,5vw,40px); }
+    .smb-proceso-text{ max-width:none; }
+    .smb-quote{ max-width:none; }
+  }
+
+  /* =============== 7600 (álbum de jazz) =============== */
+  .alb{ --alb-ink:#ffffff; --alb-stone:#9a9488; }
+
+  /* ---- 1. INICIAL ---- */
+  /* la portada ocupa el ancho completo; el alto sigue su proporción real (hay que
+     scrollear para verla entera). Cuando su pie toca el pie de la pantalla queda
+     congelada y la cortina negra sube desde abajo, con el borde superior apenas
+     difuminado. El bloque de datos viaja en el recorrido normal —sube al mismo
+     ritmo que la cortina— así que queda siempre apoyado sobre ese borde negro. */
+  .alb-inicial-cover{ width:100vw; position:relative; }
+  .alb-inicial-cover img.alb-cover-main{
+    width:100%; height:auto; display:block;
+    filter: saturate(1.06);
+  }
+
+  /* al "estirar" hacia arriba desde el tope aparece esta franja: es la propia
+     portada, ampliada y desenfocada, para que el corte no sea una línea dura */
+  .alb-cover-overscroll{
+    position:absolute; left:0; top:0; width:100%; height:300px;
+    transform:translateY(-100%); overflow:hidden; pointer-events:none;
+  }
+  .alb-cover-overscroll img{
+    width:100%; height:auto; display:block;
+    transform:scale(1.25); transform-origin:center top;
+    filter: blur(26px) saturate(1.06);
+  }
+
+  /* pista de scroll sobre la portada, mismo tono que el del home */
+  .alb-scroll-tag{
+    position:fixed; left:50%; bottom:30px; transform:translateX(-50%);
+    z-index:4; pointer-events:none; opacity:0;
+    font-size:11px; letter-spacing:.14em; color:#e7e4dd;
+    text-shadow:0 1px 10px rgba(0,0,0,.7);
+    transition:opacity .5s ease;
+  }
+
+  .alb-cover-pin{
+    position:fixed; top:0; left:0; width:100vw; z-index:1;
+    opacity:0; pointer-events:none;
+  }
+  .alb-cover-pin img{ width:100%; height:auto; display:block; filter: saturate(1.06); }
+  .alb-curtain{
+    position:fixed; left:0; bottom:0; width:100vw; height:0; z-index:2;
+    pointer-events:none;
+    /* degradé como fondo directo (no mask-image): el mask con paradas en rgba no se
+       está renderizando suave en este entorno —queda como un corte duro—, un
+       gradiente de fondo común es mucho más compatible y da el mismo resultado.
+       En px fijos, no en %: si fuera relativo al alto de la cortina, apenas empieza
+       a crecer (muy bajita) el degradé se comprime a casi nada y se ve como una
+       línea dura en vez de un difuminado. */
+    background: linear-gradient(to bottom,
+      transparent 0px, rgba(0,0,0,.08) 90px, rgba(0,0,0,.3) 180px,
+      rgba(0,0,0,.7) 260px, #000 340px, #000 100%);
+  }
+  .alb-curtain-caption{
+    /* la separación horizontal es la misma que ya tenía el margen de la página.
+       El difuminado mide 340px; recién ahí empieza el negro opaco. La separación
+       con ese borde (no con el tope de la cortina) es la mitad de esos 340px. */
+    position:absolute; top:350px; left:clamp(24px,6vw,90px);
+    font-size:11px; letter-spacing:.04em; color:var(--alb-stone);
+  }
+  /* el recorrido va por encima de la cortina: así el texto se lee sobre el negro */
+  .alb-track{ position:relative; z-index:3; }
+  .alb .smb-vig{ transition: opacity 2.4s ease; }
+
+  /* franja de datos: "Arte de tapa" pegado al margen izquierdo y el resto de la
+     información contra el margen derecho, con la misma separación del borde */
+  .alb-info-band{
+    width:100vw; box-sizing:border-box;
+    min-height:50vh; max-height:50vh;
+    padding: clamp(60px,8vh,96px) clamp(14px,3vw,50px) 0 clamp(24px,6vw,90px);
+    display:flex; justify-content:flex-end;
+    align-items:flex-start;
+    color:var(--alb-ink); overflow:hidden;
+  }
+  .alb-info-right{ flex:0 0 auto; width:min(38ch,46vw); text-align:right; }
+  .alb-title{ text-align:right; font-size:clamp(30px,4vw,54px); font-weight:500; line-height:1.02; letter-spacing:-.015em; margin-bottom:14px; }
+  .alb-sub{ text-align:right; font-size:clamp(13px,1.25vw,15px); color:var(--alb-stone); margin-bottom:26px; }
+  .alb-sub em{ font-style:normal; color:var(--alb-ink); }
+  .alb-credit{ text-align:right; font-size:clamp(12.5px,1.15vw,14px); line-height:1.7; color:var(--alb-ink); margin:0 0 16px auto; }
+  .alb-roles{ text-align:right; font-size:11.5px; letter-spacing:.06em; line-height:2.05; color:var(--alb-stone); }
+  /* mismo tratamiento para los dos: blanco translúcido al 62% */
+  .alb-year{ color:rgba(255,255,255,.62); }
+  .alb-roles{ color:rgba(255,255,255,.62); }
+
+  .alb-gap-half{ width:100vw; height:50vh; }
+
+  /* ---- 2. CONCEPTO ---- */
+  /* misma letra, tamaño y color que el proceso de La Sombrerera; los dos párrafos
+     van uno al lado del otro, bien anchos, ocupando gran parte del ancho de pantalla
+     (así quedan visualmente más cortos), como una isla de texto centrada */
+  .alb-conceptual{ display:flex; align-items:center; justify-content:center; }
+  .alb-concept-cols{ display:flex; gap:clamp(50px,7vw,130px); width:88vw; max-width:1400px; padding:0 clamp(20px,4vw,60px); }
+  .alb-concept-cols p{ flex:1; font-size:clamp(12.5px,1.05vw,14px); line-height:1.78; color:#d9d5cc; }
+
+  .alb-gap{ width:100vw; height:50vh; }
+
+  /* ---- 3. PROCESO ---- */
+  /* misma posición que en La Sombrerera: texto a un costado, columna de medios al
+     otro, ambos centrados como un solo bloque en pantalla. Texto angosto para que
+     quede más alto (y, por lo tanto, la columna de medios también). */
+  .alb-proceso{ display:flex; align-items:center; justify-content:center; gap:clamp(22px,3vw,42px); }
+  .alb-proceso-text{ color:#d9d5cc; max-width:460px; }
+  .alb-proceso-text p{ font-size:clamp(12.5px,1.05vw,14px); line-height:1.78; margin-bottom:1.1em; text-align:right; }
+  .alb-proceso-text p:last-child{ margin-bottom:0; }
+  .alb-media-col{ display:flex; align-items:center; justify-content:flex-start; }
+
+  /* ---- 4. FINAL: video a pantalla completa + referencia a YouTube ---- */
+  .alb-final{ width:100vw; height:100vh; position:relative; background:#000; display:flex; align-items:center; justify-content:center; }
+  .alb-final video{ width:100%; height:100%; object-fit:cover; display:block; transition:opacity 1.2s ease; }
+  .alb-final-placeholder{ color:var(--alb-stone); font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; text-align:center; }
+  .alb-yt-btn{
+    position:absolute; left:50%; top:50%; transform:translate(-50%,calc(-50% + 10px));
+    font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--alb-stone);
+    opacity:0; pointer-events:none;
+    transition:opacity .9s ease, transform .9s ease, color .3s ease;
+  }
+  .alb-yt-btn::after{ content:'\2192'; margin-left:8px; }
+  .alb-yt-btn.show{ opacity:1; pointer-events:auto; transform:translate(-50%,-50%); }
+  .alb-yt-btn.show:hover{ color:#fff; transform:translate(-50%,calc(-50% - 4px)); }
+
+  @media (max-width:900px){
+    .alb-info-band{ flex-direction:column; gap:18px; max-height:none; min-height:0; padding: clamp(50px,7vh,80px) clamp(20px,5vw,40px) 6vh; }
+    .alb-info-right{ width:100%; }
+    .alb-concept-cols{ flex-direction:column; gap:clamp(20px,5vh,40px); width:auto; }
+    .alb-proceso{ flex-direction:column; height:auto; gap:clamp(24px,5vh,48px); padding:clamp(30px,7vh,60px) clamp(20px,5vw,40px); }
+    .alb-proceso-text{ max-width:none; }
+  }
+
+  /* =============== UN MUNDO PARA EXPRIMIR (proyecto 03) =============== */
+  /* Tema claro: no define colores propios (usa --ink / --stone directo) y no
+     entra en DARK_WORKS, asi que el panel conserva el fondo blanco y el texto
+     negro de siempre. Mismo criterio de composicion que La Sombrerera y 7600:
+     texto posicionado a un costado, nunca centrado en la pantalla.
+     Las partes de texto NO miden un viewport entero: miden lo que mide su
+     contenido, y la separacion real entre una y otra la da el bloque .expr-gap
+     (medio viewport). Si midieran 100vh, la distancia visible entre dos textos
+     seria el gap MAS el aire sobrante de cada seccion. */
+  .expr{ --expr-m: clamp(20px,4vw,56px); }
+  .expr-track{ position:relative; }
+  .expr-part{ width:100vw; position:relative; }
+  .expr-gap{ width:100vw; height:50vh; }
+  .expr-gap-q{ width:100vw; height:25vh; }
+  /* utilidad para separaciones intermedias (se ajusta con style="height:...") */
+  .expr-gap-e{ width:100vw; height:12.5vh; }
+
+  .expr-text p{ font-size:clamp(12.5px,1.05vw,14px); line-height:1.85; color:var(--ink); margin-bottom:1.25em; text-align:left; }
+  .expr-text p:last-child{ margin-bottom:0; }
+
+  /* texto que entra progresivamente, linea por linea (ficha del geometral al
+     click, tercer parrafo de las frutas al scrollear): cada linea real del
+     parrafo (agrupada igual que en "Sobre mi") queda dentro de un recuadro que
+     la recorta, y se desliza hacia arriba para entrar en vez de solo aparecer */
+  .expr-rl-line{ display:block; overflow:hidden; }
+  .expr-rl-line .expr-rl-inner{
+    display:inline-block; opacity:0; transform:translateY(70%);
+    transition:opacity .25s ease, transform .25s cubic-bezier(.22,1,.36,1);
+  }
+  .expr-rl-line .expr-rl-inner.show{ opacity:1; transform:translateY(0); }
+
+  /* ---- 1. INICIAL: datos a la izquierda (al doble del margen), panel de figurines abajo a la derecha ---- */
+  .expr-inicial{ min-height:100vh; }
+  .expr-inicial-text{ position:absolute; left:calc(var(--expr-m) * 3); top:30%; text-align:left; max-width:min(44ch,50vw); }
+  .expr-title{ font-size:clamp(34px,4.6vw,64px); font-weight:500; line-height:1.02; letter-spacing:-.015em; color:var(--ink); }
+  .expr-sub{ margin-top:14px; font-size:clamp(13px,1.25vw,15px); color:var(--stone); }
+  .expr-sub em{ font-style:normal; color:var(--ink); }
+  .expr-roles{ margin-top:30px; font-size:11.5px; letter-spacing:.06em; line-height:2.05; color:var(--stone); }
+  .expr-panel{ position:absolute; right:var(--expr-m); bottom:7vh; width:min(60vw,860px); height:auto; aspect-ratio:2400/950; display:block; }
+
+  /* ---- 2. CONCEPTO: bloque de texto sobre el margen izquierdo ---- */
+  .expr-conceptual .expr-text{ margin-left:var(--expr-m); max-width:min(52ch,46vw); }
+
+  /* ---- 3. PROCESO (1): coleccion completa a la izquierda, texto centrado en lo que sobra a su derecha ---- */
+  .expr-proceso-a{ display:flex; align-items:center; padding:0 var(--expr-m); }
+  .expr-coleccion{ flex:0 0 auto; width:min(55vw,805px); height:auto; aspect-ratio:2200/1556; display:block; }
+  /* la columna ocupa todo el espacio libre y centra el texto dentro de el */
+  .expr-proceso-col{ flex:1 1 auto; min-width:0; display:flex; justify-content:center; }
+  .expr-proceso-col .expr-text{ width:min(40ch,100%); }
+
+  /* ---- 4. PROCESO (2): tercer parrafo centrado en la mitad izquierda + frutas rodando ----
+     La franja mide algo mas de medio viewport, para que lo que sigue (la hoja
+     de bocetos) ya asome por abajo. El movimiento de las frutas (recorrido,
+     direccion, click para invertir, formacion en grupo) lo maneja enteramente
+     el JS cuadro a cuadro -- por eso ninguna de ellas tiene animation ni
+     keyframes: solo su tamano y su punto de partida en pantalla. */
+  .expr-fruits-part{ position:relative; width:100vw; height:58vh; min-height:400px; display:flex; align-items:center; overflow:hidden; }
+  .expr-fruits-part .expr-text{ position:relative; z-index:2; width:50vw; }
+  .expr-fruits-part .expr-text p{ max-width:36ch; margin-left:auto; margin-right:auto; }
+  .expr-fruits{ position:absolute; inset:0; z-index:1; pointer-events:none; }
+  .expr-fruit{
+    position:absolute; left:0; top:50%;
+    height:clamp(87px,8.7vw,126px); width:auto; display:block;
+    will-change:transform; cursor:pointer; pointer-events:auto;
+    transform:translate(120vw,-50%);   /* posicion de arranque antes de que el JS tome el control */
+  }
+
+  /* ---- 5. BOCETOS: ancho completo, sin margenes, alto real (mas de un viewport) ---- */
+  .expr-bocetos{ position:relative; width:100vw; }
+  .expr-bocetos > img{ width:100vw; height:auto; aspect-ratio:1440/1800; display:block; }
+  .expr-bocetos .expr-text{
+    position:absolute; top:calc(27% + 80px); right:calc(var(--expr-m) * 2); transform:translateY(-100%);
+    width:min(38ch,32vw); z-index:2;
+  }
+
+  /* flecha del boceto del prototipo al geometral: la dibuja el JS, midiendo las
+     dos imagenes, porque el trayecto cruza dos secciones y un gap */
+  .expr-arrow{ position:absolute; left:0; top:0; z-index:3; pointer-events:none; overflow:visible; }
+  .expr-arrow path{ fill:none; stroke:#15140f; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+
+  /* ---- 6. GEOMETRAL DEL PROTOTIPO: se levanta al pasar el mouse, el texto se abre con un click ---- */
+  .expr-geometral{
+    --expr-geo-gap: clamp(20px,3vw,48px);
+    --expr-geo-card-w: 380px;
+    position:relative; height:78vh;
+  }
+  /* corrida a la izquierda del centro, pero sin llegar al punto en el que el
+     conjunto imagen + texto (el texto se abre a la derecha) quedaria centrado
+     como bloque: ese punto exigiria correr (texto + separacion)/2; aca se
+     corre la mitad de eso, o sea un cuarto, para no llegar */
+  .expr-geo-wrap{
+    position:absolute; top:50%;
+    left:calc(50% - (var(--expr-geo-card-w) + var(--expr-geo-gap)) / 4);
+    transform:translate(-50%,-50%);
+    cursor:pointer;
+  }
+  .expr-geo-wrap > img{ height:78vh; width:auto; display:block; }
+  .expr-geo-text{
+    position:absolute; top:50%; left:calc(100% + var(--expr-geo-gap)); transform:translateY(-50%);
+    width:var(--expr-geo-card-w); text-align:left;
+  }
+  /* medio punto mas chico que el resto de la pagina */
+  .expr-geo-text p{ font-size:clamp(12px,1vw,13.5px); line-height:1.62; color:var(--ink); text-align:left; margin-bottom:.95em; }
+  .expr-geo-text p:last-child{ margin-bottom:0; }
+  /* "click" pegado al cursor mientras se pasa por el geometral, antes de abrirlo */
+  .expr-geo-hint{
+    position:fixed; z-index:340; pointer-events:none; opacity:0;
+    transform:translate(16px,-50%); transition:opacity .3s ease;
+    font-size:10.5px; letter-spacing:.1em; color:var(--stone);
+  }
+  .expr-geo-hint.show{ opacity:1; }
+
+  /* ---- 7. FINALES: las tres fotos una al lado de la otra ---- */
+  .expr-finals{ width:100vw; display:flex; gap:10px; }
+  .expr-finals img{ flex:1 1 0; min-width:0; width:100%; height:auto; aspect-ratio:3/4; display:block; }
+
+  @media (max-width:900px){
+    .expr-inicial-text{ position:static; padding:calc(var(--nav-h) + 8vh) var(--expr-m) 0; max-width:none; top:auto; left:auto; }
+    .expr-panel{ position:static; width:100%; margin-top:8vh; }
+    .expr-inicial{ min-height:0; }
+    .expr-conceptual .expr-text, .expr-proceso-col .expr-text{ max-width:none; width:auto; margin:0 var(--expr-m); }
+    .expr-proceso-a{ flex-direction:column; padding:0 var(--expr-m); gap:clamp(24px,5vh,48px); }
+    .expr-coleccion{ width:100%; }
+    .expr-fruits-part{ height:auto; min-height:0; padding:10vh 0; }
+    .expr-fruits-part .expr-text{ width:auto; margin:0 var(--expr-m); }
+    .expr-bocetos .expr-text{ position:static; transform:none; width:auto; margin:0 var(--expr-m); padding:8vh 0; }
+    .expr-geometral{ height:auto; }
+    .expr-geo-wrap{ position:static; left:auto; transform:none; }
+    .expr-geo-wrap > img{ height:auto; width:100%; }
+    .expr-geo-text{ position:static; transform:none; width:auto; margin:6vh var(--expr-m) 0; }
+    .expr-geo-hint{ display:none; }
+    .expr-arrow{ display:none; }
+    /* en mobile no hay hover ni scroll propio para disparar la entrada: se ve directo */
+    .expr-rl-line .expr-rl-inner{ opacity:1 !important; transform:none !important; }
+  }
+
+  #aboutLogoLayer{
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    display:none; z-index:190; pointer-events:none;
+    perspective:1100px;
+  }
+  html.about-open #aboutLogoLayer, html.contact-open #aboutLogoLayer{ display:block; }
+  html.about-open #aboutLogoLayer{ pointer-events:auto; cursor:pointer; }
+  html.contact-open #aboutLogoLayer{ pointer-events:none; }
+
+  .logo3d{
+    position:absolute; top:50%; left:50%;
+    width:clamp(70px,7.5vw,110px);
+    transform:translate(-50%,-50%) rotateY(0deg);
+    transform-style:preserve-3d;
+  }
+  .logo3d img{ display:block; width:100%; height:auto; }
+  .l3d-depth{ position:relative; transform-style:preserve-3d; }
+  .logo3d img.l3d-base{ position:relative; }
+  .logo3d img.l3d-layer{ position:absolute; top:0; left:0; }
+
+  @keyframes logoSpin3d{
+    from{ transform:translate(-50%,-50%) rotateY(0deg); }
+    to{ transform:translate(-50%,-50%) rotateY(360deg); }
+  }
+  .logo3d.spin{ animation: logoSpin3d 3s cubic-bezier(.35,0,.25,1) forwards; }
+
+  .about-track{
+    position:fixed; top:0; left:0; width:100%; z-index:10;
+    will-change:transform; text-align:center;
+  }
+  .about-block{ margin-bottom:26vh; }
+  /* jerarquía: el texto es el protagonista, los títulos ordenan, los servicios cierran */
+  .about-block .b-title{
+    font-size:clamp(13px,1.6vw,18px); letter-spacing:.09em; text-transform:uppercase;
+    color:#8c8578; margin-bottom:18px;
+  }
+  .about-block p{
+    font-size:clamp(13px,1.3vw,15px); line-height:2; color:#15140f; margin:0 auto;
+    max-width:52ch;
+  }
+
+  .aline{ display:block; white-space:nowrap; }
+  .aline .ah{ display:inline-block; will-change:transform; }
+
+  .about-copyright{ margin-top:14vh; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--stone); }
+  .about-copyright-caption{
+    position:fixed; top:50%; left:50%; transform:translateX(-50%);
+    margin-top: calc(clamp(70px,7.5vw,110px) / 2 + 42px);
+    font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--stone);
+    opacity:0; pointer-events:none; transition:opacity .25s ease;
+  }
+  .about-copyright-caption.show{ opacity:1; }
+  .about-copyright.caught{ visibility:hidden; }
+  .about-services{ margin-top:10vh; }
+  .about-services span{ display:inline-block; font-size:clamp(13px,1.3vw,15px); letter-spacing:.08em; text-transform:uppercase; color:#b3ada0; margin:0 14px 10px 14px; }
+  .about-services span[data-en]{ display:none; }
+  html[lang="en"] .about-services span[data-en]{ display:inline-block; }
+  html[lang="en"] .about-services span[data-es]{ display:none; }
+
+  @media (max-width:820px){
+    .about-logo{ width:17vw; }
+  }
+
+  .panel-page[data-page="contact"]{ max-width:none; padding:0; margin:0; }
+  .contact-layer{ position:fixed; inset:0; z-index:200; pointer-events:none; }
+  .contact-layer a{ pointer-events:auto; }
+
+  /* email + web — según captura: hueco bajo "Trabajos", entre los dos trazos del logo */
+  .ci-email{
+    position:absolute; left:32.5%; top:64.2vh; transform:translate(-50%,-50%); text-align:left;
+  }
+  .ci-email a, .ci-email span{
+    display:block; font-size:clamp(13px,1.3vw,15px); line-height:1.8; color:#15140f;
+  }
+  .ci-email a{ border:none; }
+
+  /* instagram/linkedin — según captura: debajo del bloque de email, mismo corredor */
+  .ci-social{
+    position:absolute; left:42%; top:81.3vh; transform:translate(-50%,-50%);
+  }
+  .ci-social a{
+    display:block; font-size:clamp(13px,1.3vw,15px); line-height:1.8; color:#15140f; border:none; text-align:left;
+  }
+
+  /* ubicación/disponibilidad — según captura: arriba a la derecha, tipografía del home */
+  .ci-location{
+    position:absolute; left:69.5%; top:46.1vh; transform:translate(-50%,-50%); text-align:left;
+    font-size:12px; letter-spacing:.04em; color:var(--stone); line-height:1.9;
+  }
+  .ci-location b{ color:#15140f; font-weight:600; }
+
+  /* el contenido no aparece hasta que termina el zoom */
+  .panel.show-contact:not(.contact-ready) .contact-layer .ci-anim{ animation:none !important; opacity:0; }
+
+  /* entradas sutiles y distintas para cada párrafo de contacto */
+  .ci-anim{ opacity:0; }
+  @keyframes ciFade{ to{ opacity:1; } }
+  @keyframes ciRise{ from{ opacity:0; transform:translate(-50%,-46%); } to{ opacity:1; transform:translate(-50%,-50%); } }
+  @keyframes ciSlide{ from{ opacity:0; transform:translate(-54%,-50%); } to{ opacity:1; transform:translate(-50%,-50%); } }
+  .panel.open .ci-fade{ animation: ciFade 1.1s ease forwards; }
+  .panel.open .ci-rise{ animation: ciRise 1.1s cubic-bezier(.22,1,.36,1) forwards; }
+  .panel.open .ci-slide{ animation: ciSlide 1.1s cubic-bezier(.22,1,.36,1) forwards; }
+
+  /* zoom del logo en contacto */
+  .logo3d.zoom{ transition: transform 4200ms cubic-bezier(.165,.84,.44,1); }
+
+
+  #clickReveal{
+    position:fixed; inset:0; z-index:250; background:var(--white);
+    pointer-events:none;
+    display:none; opacity:0;   /* arranca oculto: sectionTransition() lo prende cuando hace falta */
+  }
+
+  [data-en]{ display:none; }
+  html[lang="en"] [data-es]{ display:none; }
+  html[lang="en"] [data-en]{ display:inline; }
+</style>
+</head>
+<body class="loading">
+
+<div id="loader">
+  <div class="loader-inner" id="loaderInner">
+    <img class="loader-signature" src="assets/firma-loader.png" alt="Carolina Picone">
+    <div class="loader-url">carolinapicone.com</div>
+    <div class="reveal-cover"></div>
+  </div>
+</div>
+
+<div class="site">
+
+
+<header>
+  <nav class="links rv rv-down" style="animation-delay:0ms">
+    <button id="navWorks" data-es>T<span id="letraB">r</span>abajos</button><button id="navWorks2" data-en>Works</button>
+    <button id="navAbout" data-es>Sobre mí</button><button id="navAbout2" data-en>About me</button>
+    <button id="navContact" data-es>Contacto</button><button id="navContact2" data-en>Contact</button>
+  </nav>
+  <button class="lang-toggle rv rv-fade" style="animation-delay:120ms" id="langToggle">
+    <span class="active" data-lang-es>ES</span>/<span data-lang-en>EN</span>
+  </button>
+</header>
+
+<section id="home">
+  <div class="home-sticky">
+
+    <div class="home-copy">
+      <div class="name-variants rv rv-scale" id="nameVariants" style="animation-delay:250ms">
+        <div class="variant v-active" data-variant="1"><img class="sig-h" id="sigVariant1" src="assets/firma-variante1.png" alt="Carolina Picone"></div>
+        <div class="variant" data-variant="2">
+          <img class="sig-h" src="assets/firma-carolina.png" alt="Carolina">
+          <img class="sig-h" src="assets/firma-picone.png" alt="Picone">
+        </div>
+      </div>
+
+      <div class="home-role-label rv rv-left" style="animation-delay:450ms" data-es>Diseñadora de Indumentaria</div>
+      <div class="home-role-label rv rv-left" style="animation-delay:450ms" data-en>Fashion Designer</div>
+      <div class="home-role rv rv-fade" style="animation-delay:600ms">
+        <div class="roles" id="roles">
+          <span class="active" data-es>Dirección creativa</span><span data-en>Creative direction</span>
+          <span data-es>Desarrollo conceptual</span><span data-en>Concept development</span>
+          <span data-es>Dirección de arte</span><span data-en>Art direction</span>
+          <span data-es>Identidad visual</span><span data-en>Visual identity</span>
+        </div>
+      </div>
+      <div class="home-url rv rv-up" style="animation-delay:750ms">www.carolinapicone.com</div>
+    </div>
+
+    <div class="home-info rv rv-right" style="animation-delay:300ms">
+      <div class="scroll-tag">[ Scroll ]</div>
+      <div>Based in <b>Mar del Plata, Argentina</b></div>
+      <div>Available <b>Worldwide</b></div>
+    </div>
+
+    <div class="scatter-viewport">
+      <button class="scatter-item dark"  data-project="1" id="p1"><span class="item-inner"><span class="ph"></span></span></button>
+      <button class="scatter-item light" data-project="2" id="p2"><span class="item-inner"><span class="ph"></span></span></button>
+      <button class="scatter-item dark"  data-project="3" id="p3"><span class="item-inner"><span class="ph" style="background-image:url(&quot;assets/exprimir-thumb-bocetos.jpg&quot;); background-size:cover; background-position:center;"></span></span></button>
+      <button class="scatter-item light" data-project="4" id="p4"><span class="item-inner"><span class="ph" style="background-image:url(&quot;assets/trabajo-04-thumb.jpg&quot;); background-size:cover; background-position:center;"></span></span></button>
+      <button class="scatter-item dark"  data-project="5" id="p5"><span class="item-inner"><span class="ph" style="background-image:url(&quot;assets/7600-thumb-sax.jpg&quot;); background-size:cover; background-position:30% center;"></span></span></button>
+      <button class="scatter-item light" data-project="6" id="p6"><span class="item-inner"><span class="ph"></span></span></button>
+    </div>
+
+  </div>
+</section>
+
+</div>
+
+<div class="panel" id="panel">
+  <div class="panel-hint">[ Scroll ]</div>
+  <div class="panel-inner" id="panelInner">
+
+    <div class="panel-page" data-page="about">
+      <div class="about-track" id="aboutTrack">
+        <div class="about-block">
+          <div class="b-title behind"><span data-es>01 — Universo</span><span data-en>01 — Universe</span></div>
+          <p data-split
+             data-es-text="Soy Diseñadora de Indumentaria, pero mi forma de entender el diseño va más allá de la prenda. Cada proyecto puede convertirse en un universo propio, donde las ideas toman distintas formas y cada elemento encuentra su lugar dentro de una misma narrativa."
+             data-en-text="I'm a Fashion Designer, but my way of understanding design goes beyond the garment. Each project can become its own universe, where ideas take on different forms and every element finds its place within a single narrative."
+          >Soy Diseñadora de Indumentaria, pero mi forma de entender el diseño va más allá de la prenda. Cada proyecto puede convertirse en un universo propio, donde las ideas toman distintas formas y cada elemento encuentra su lugar dentro de una misma narrativa.</p>
+        </div>
+        <div class="about-block">
+          <div class="b-title behind"><span data-es>02 — Curiosidad</span><span data-en>02 — Curiosity</span></div>
+          <p data-split
+             data-es-text="Mi proceso parte de la curiosidad y de la necesidad de entender antes de crear. Observar, investigar, hacer preguntas y recorrer distintas referencias me permite profundizar en una búsqueda y descubrir posibilidades que quizás no aparecen en una primera mirada. La investigación funciona como un espacio abierto: amplía, pone en perspectiva y permite que el concepto se construya y encuentre su dirección a medida que avanza el proyecto."
+             data-en-text="My process starts with curiosity and the need to understand before creating. Observing, researching, asking questions, and moving through different references let me dig deeper into the search and discover possibilities that might not appear at first glance. Research works like an open space: it expands, puts things in perspective, and lets the concept build itself and find its direction as the project moves forward."
+          >Mi proceso parte de la curiosidad y de la necesidad de entender antes de crear. Observar, investigar, hacer preguntas y recorrer distintas referencias me permite profundizar en una búsqueda y descubrir posibilidades que quizás no aparecen en una primera mirada. La investigación funciona como un espacio abierto: amplía, pone en perspectiva y permite que el concepto se construya y encuentre su dirección a medida que avanza el proyecto.</p>
+        </div>
+        <div class="about-block">
+          <div class="b-title behind"><span data-es>03 — Intención</span><span data-en>03 — Intention</span></div>
+          <p data-split
+             data-es-text="A partir de ahí, busco ordenar, cuestionar y tomar decisiones con intención. Traducir una idea implica entender qué quiere comunicar y encontrar la forma en que cada elemento puede contribuir a ello. Trabajo para que las decisiones visuales, materiales y narrativas no sean independientes, sino que respondan a una misma lógica y construyan un conjunto coherente."
+             data-en-text="From there, I look to organize, question, and make decisions with intention. Translating an idea means understanding what it wants to communicate and finding how each element can contribute to that message. I work to make sure visual, material, and narrative decisions aren't independent from one another, but respond to the same logic and build a coherent whole."
+          >A partir de ahí, busco ordenar, cuestionar y tomar decisiones con intención. Traducir una idea implica entender qué quiere comunicar y encontrar la forma en que cada elemento puede contribuir a ello. Trabajo para que las decisiones visuales, materiales y narrativas no sean independientes, sino que respondan a una misma lógica y construyan un conjunto coherente.</p>
+        </div>
+        <div class="about-block">
+          <div class="b-title behind"><span data-es>04 — Forma</span><span data-en>04 — Form</span></div>
+          <p data-split
+             data-es-text="Cada proyecto puede requerir un lenguaje diferente. Una imagen, una sensación, una investigación o una necesidad concreta pueden ser el punto de partida; lo importante es encontrar la manera de traducir aquello que se quiere decir en una forma que tenga sentido."
+             data-en-text="Each project can call for a different language. An image, a feeling, a piece of research, or a concrete need can all be a starting point; what matters is finding a way to translate what you want to say into a form that makes sense."
+          >Cada proyecto puede requerir un lenguaje diferente. Una imagen, una sensación, una investigación o una necesidad concreta pueden ser el punto de partida; lo importante es encontrar la manera de traducir aquello que se quiere decir en una forma que tenga sentido.</p>
+        </div>
+        <div class="about-block about-services">
+          <span data-es>Dirección creativa</span><span data-en>Creative direction</span><span data-es>Desarrollo conceptual</span><span data-en>Concept development</span><span data-es>Dirección de arte</span><span data-en>Art direction</span><span data-es>Identidad visual</span><span data-en>Visual identity</span><span data-es>Desarrollo de colección</span><span data-en>Collection development</span>
+        </div>
+        <div class="about-copyright">© 2026 Carolina Picone</div>
+      </div>
+
+    </div>
+
+    <div class="panel-page" data-page="contact">
+      <div class="contact-layer">
+        <div class="ci-email ci-anim ci-fade" style="animation-delay:150ms">
+          <a href="mailto:carolinapicone.t@gmail.com">carolinapicone.t@gmail.com</a>
+          <span>www.carolinapicone.com</span>
+        </div>
+
+        <div class="ci-social ci-anim ci-slide" style="animation-delay:340ms">
+          <a href="https://www.instagram.com/caropicone/" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://www.linkedin.com/in/carolina-picone-680a20331/" target="_blank" rel="noopener">LinkedIn</a>
+        </div>
+
+        <div class="ci-location ci-anim ci-rise" style="animation-delay:520ms">
+          <div>Based in <b>Mar del Plata, Argentina</b></div>
+          <div>Available <b>Worldwide</b></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-page" data-page="work">
+
+      <!-- ===== 03 - Un Mundo para Exprimir ===== -->
+      <div class="work-project expr" data-project="3">
+        <div class="expr-track work-track" id="exprTrack">
+          <svg class="expr-arrow" id="exprArrow" aria-hidden="true"><path id="exprArrowLine"></path><path id="exprArrowHead"></path></svg>
+
+          <!-- 1. INICIAL -->
+          <section class="expr-part expr-inicial">
+            <div class="expr-inicial-text">
+              <h1 class="expr-title">Un Mundo para Exprimir</h1>
+              <div class="expr-sub"><span data-es><em>Colecci&oacute;n de Indumentaria</em> &nbsp;2025</span><span data-en><em>Apparel Collection</em> &nbsp;2025</span></div>
+              <div class="expr-roles">
+                <span data-es>Desarrollo Conceptual<br>Desarrollo de Colecci&oacute;n</span>
+                <span data-en>Concept Development<br>Collection Development</span>
+              </div>
+            </div>
+            <img class="expr-panel" src="assets/exprimir-panel-ninos.jpg" alt="Un Mundo para Exprimir">
+          </section>
+
+          <div class="expr-gap-e" style="height:15vh"></div>
+
+          <!-- 2. CONCEPTO -->
+          <section class="expr-part expr-conceptual" id="exprConceptPart">
+            <div class="expr-text" id="exprConceptText">
+              <p data-es-text="Un Mundo para Exprimir fue desarrollado en el marco de un proyecto académico que planteaba el diseño de una colección para una marca ficticia orientada a la primera infancia, con una identidad vinculada al consumo consciente, el respeto por el entorno natural y social y una concepción slow de la indumentaria. El ejercicio partía de un segmento de usuario específico, niños de 2 años, y proponía desarrollar una colección a partir de sus necesidades y características particulares." data-en-text="Un Mundo para Exprimir was developed as part of an academic project that called for designing a collection for a fictional brand aimed at early childhood, with an identity rooted in conscious consumption, respect for the natural and social environment, and a slow approach to fashion. The exercise focused on a specific user segment, two‑year‑old children, and proposed developing a collection based on their particular needs and characteristics.">Un Mundo para Exprimir fue desarrollado en el marco de un proyecto académico que planteaba el diseño de una colección para una marca ficticia orientada a la primera infancia, con una identidad vinculada al consumo consciente, el respeto por el entorno natural y social y una concepción slow de la indumentaria. El ejercicio partía de un segmento de usuario específico, niños de 2 años, y proponía desarrollar una colección a partir de sus necesidades y características particulares.</p>
+              <p data-es-text="Como punto de partida conceptual, tomé referencias provenientes del mundo natural. Sus colores, formas y texturas permitían construir una propuesta orgánica y cercana al universo de la infancia, al mismo tiempo que dialogaba con los valores de la marca. Para entender cómo traducir ese universo en prendas adecuadas para el usuario, el diseño partió primero de conocer las particularidades de esta etapa." data-en-text="As a conceptual starting point, I drew references from the natural world. Its colors, shapes, and textures allowed me to build a proposal that felt close to the world of childhood while also connecting with the brand’s values. To understand how to translate that universe into garments suited to the user, the design began by exploring the particularities of this stage.">Como punto de partida conceptual, tomé referencias provenientes del mundo natural. Sus colores, formas y texturas permitían construir una propuesta orgánica y cercana al universo de la infancia, al mismo tiempo que dialogaba con los valores de la marca. Para entender cómo traducir ese universo en prendas adecuadas para el usuario, el diseño partió primero de conocer las particularidades de esta etapa.</p>
+            </div>
+          </section>
+
+          <div class="expr-gap"></div>
+
+          <!-- 3. PROCESO (1): coleccion completa + primeros dos parrafos -->
+          <section class="expr-part expr-proceso-a">
+            <img class="expr-coleccion" src="assets/exprimir-coleccion-completa.jpg" alt="Colecci&oacute;n completa">
+            <div class="expr-proceso-col">
+            <div class="expr-text">
+              <p><span data-es>A los dos años, el desarrollo está fuertemente ligado a la exploración, el movimiento y la adquisición progresiva de autonomía. La motricidad fina continúa desarrollándose, al igual que la capacidad de percibir, reconocer y relacionar elementos del entorno, mientras el niño incorpora nuevas formas de interactuar con los objetos que lo rodean.</span><span data-en>At two years old, development is closely tied to exploration, movement, and the gradual development of autonomy. Fine motor skills are still developing, along with the ability to perceive, recognize, and relate elements in the environment, as the child develops new ways of interacting with the objects around them.</span></p>
+              <p><span data-es>Estas características plantean necesidades concretas para la indumentaria. La movilidad, la facilidad de manipulación y la seguridad pasan a ocupar un lugar central, tanto en la elección de materiales y avíos como en la resolución de las prendas. A su vez, las texturas y otros recursos perceptivos pueden formar parte de una experiencia de uso vinculada con la exploración y el aprendizaje.</span><span data-en>These characteristics create specific needs for clothing. Mobility, ease of handling, and safety become central, both in the choice of materials and trims and in the construction of the garments. At the same time, textures and other perceptual elements can become part of a wearing experience connected to exploration and learning.</span></p>
+            </div>
+            </div>
+          </section>
+
+          <div class="expr-gap-e" style="height:31.25vh"></div>
+
+          <!-- 4. PROCESO (2): tercer parrafo + frutas rodando en loop -->
+          <section class="expr-fruits-part" id="exprFruitsPart">
+            <div class="expr-text" id="exprFruitsText">
+              <p data-es-text="La percepción también fue un punto de partida para definir el lenguaje visual de la colección. A esta edad, formas y colores simples facilitan la identificación y asociación con elementos conocidos, por lo que las referencias vegetales fueron trabajadas desde una representación sintética, priorizando aquellos rasgos que permitieran reconocerlas con facilidad." data-en-text="Perception was also a starting point for defining the collection’s visual language. At this age, simple shapes and colors make it easier to identify and associate familiar elements, so the plant references were translated into a simplified representation, prioritizing the features that made them easy to recognize.">La percepción también fue un punto de partida para definir el lenguaje visual de la colección. A esta edad, formas y colores simples facilitan la identificación y asociación con elementos conocidos, por lo que las referencias vegetales fueron trabajadas desde una representación sintética, priorizando aquellos rasgos que permitieran reconocerlas con facilidad.</p>
+            </div>
+            <div class="expr-fruits" id="exprFruits">
+            <img class="expr-fruit" src="assets/exprimir-fruta-zanahoria.png" alt="zanahoria">
+            <img class="expr-fruit" src="assets/exprimir-fruta-manzana.png" alt="manzana">
+            <img class="expr-fruit" src="assets/exprimir-fruta-pera.png" alt="pera">
+            <img class="expr-fruit" src="assets/exprimir-fruta-frutilla.png" alt="frutilla">
+            <img class="expr-fruit" src="assets/exprimir-fruta-tomate.png" alt="tomate">
+            <img class="expr-fruit" src="assets/exprimir-fruta-naranja.png" alt="naranja">
+            <img class="expr-fruit" src="assets/exprimir-fruta-banana.png" alt="banana">
+            </div>
+          </section>
+
+          <!-- 5. BOCETOS a ancho completo, con el ultimo parrafo superpuesto -->
+          <section class="expr-bocetos">
+            <img id="exprBocetosImg" src="assets/exprimir-bocetos.jpg" alt="Bocetos">
+            <div class="expr-text">
+              <p><span data-es>Desde esta mirada, el color, la forma y la textura adquieren un doble sentido dentro de la propuesta: construyen su lenguaje visual y, al mismo tiempo, participan de una experiencia pensada para el niño.</span><span data-en>From this perspective, color, shape, and texture take on a double role within the proposal: they build its visual language while also becoming part of an experience designed for the child.</span></p>
+              <p><span data-es>Esta búsqueda se materializó a través de bordados sobre superficies amplias, un rapport desarrollado para estampación, relieves de frutas en los buzos y combinaciones de textiles, incorporando distintas posibilidades táctiles a través de las prendas.</span><span data-en>This exploration took shape through embroidery over broad surfaces, a repeat pattern developed for printing, fruit-shaped reliefs on the sweatshirts, and combinations of different textiles, introducing varied tactile experiences throughout the garments.</span></p>
+            </div>
+          </section>
+
+          <div class="expr-gap-e" style="height:4vh"></div>
+
+          <!-- 6. GEOMETRAL DEL PROTOTIPO: se levanta al pasar el mouse, el texto se abre con un click -->
+          <section class="expr-part expr-geometral">
+            <div class="expr-geo-wrap" id="exprGeoWrap">
+              <img id="exprGeoImg" src="assets/exprimir-geometral-prototipo.jpg" alt="Geometral del prototipo">
+              <div class="expr-geo-text" id="exprGeoText">
+                <p data-es-text="Jardinero de microfibra de poliéster gamuzada matelaseada combinada con gabardina naranja tipo bies en botamanga y recorrido completo superior de la prenda; gabardina verde musgo para las tiras de sujeción de la prenda y forro de botones snap tanto en el lateral de la prenda como en tiras; y corderoy bondeado para el interior." data-en-text="Quilted brushed polyester microfiber overalls combined with orange gabardine used as bias binding along the hem and the entire upper edge of the garment; moss green gabardine for the straps and fabric-covered snap buttons, both on the sides of the garment and on the straps; and bonded corduroy for the lining.">Jardinero de microfibra de poliéster gamuzada matelaseada combinada con gabardina naranja tipo bies en botamanga y recorrido completo superior de la prenda; gabardina verde musgo para las tiras de sujeción de la prenda y forro de botones snap tanto en el lateral de la prenda como en tiras; y corderoy bondeado para el interior.</p>
+                <p data-es-text="Bordado con lana colorida en frente y espalda siguiendo las líneas del matelaseado, entrecruzada con lana más fina cada aproximadamente 1/2 cm." data-en-text="Embroidered with colorful wool on the front and back following the quilting lines, crossed with finer wool at approximately 0.5 cm intervals.">Bordado con lana colorida en frente y espalda siguiendo las líneas del matelaseado, entrecruzada con lana más fina cada aproximadamente 1/2 cm.</p>
+                <p data-es-text="Aplique en gabardina naranja en forma de zanahoria que recorre desde el frente, lateral izquierdo y parcialmente espalda, acompañado con un segundo aplique en gabardina de color verde musgo en forma de hojas con construcción de bolsillo en la hoja central." data-en-text="An orange gabardine appliqué in the shape of a carrot extends from the front, down the left side, and partially onto the back, paired with a second moss green gabardine appliqué shaped like leaves, with a pocket incorporated into the central leaf.">Aplique en gabardina naranja en forma de zanahoria que recorre desde el frente, lateral izquierdo y parcialmente espalda, acompañado con un segundo aplique en gabardina de color verde musgo en forma de hojas con construcción de bolsillo en la hoja central.</p>
+              </div>
+            </div>
+          </section>
+
+          <div class="expr-gap"></div>
+
+          <!-- 7. FOTOS FINALES -->
+          <section class="expr-finals">
+            <img src="assets/exprimir-final-2.jpg" alt="Prototipo">
+            <img src="assets/exprimir-final-1.jpg" alt="Prototipo">
+            <img src="assets/exprimir-final-3.jpg" alt="Prototipo">
+          </section>
+
+        </div>
+        <div class="expr-geo-hint" id="exprGeoHint">click</div>
+      </div>
+
+      <!-- ===== 04 - La Sombrerera ===== -->
+      <div class="work-project smb" data-project="4">
+        <div class="smb-vig smb-vig-t"></div>
+        <div class="smb-vig smb-vig-b"></div>
+        <div class="smb-track work-track" id="smbTrack">
+
+          <!-- 1. INICIAL -->
+          <section class="smb-part smb-inicial">
+            <div class="smb-hero"><img src="assets/sombrerera-hero.jpg" alt="La Sombrerera"></div>
+            <div class="smb-info">
+              <h1 class="smb-title">La Sombrerera</h1>
+              <div class="smb-sub"><span data-es><em>Editorial de Moda</em> &nbsp;2025</span><span data-en><em>Fashion Editorial</em> &nbsp;2025</span></div>
+              <div class="smb-credit"><span data-es>Co-creado por Carolina Picone &amp; Valentina Bianucci</span><span data-en>Co-created by Carolina Picone &amp; Valentina Bianucci</span></div>
+              <div class="smb-roles">
+                <span data-es>Direcci&oacute;n Creativa<br>
+                Direcci&oacute;n de Arte<br>
+                Producci&oacute;n<br>
+                Styling</span>
+                <span data-en>Creative Direction<br>
+                Art Direction<br>
+                Production<br>
+                Styling</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- 2. CONCEPTUAL -->
+          <section class="smb-part smb-conceptual" id="smbConceptual">
+            <div class="smb-concept-veil-wrap">
+              <div class="smb-veil" id="smbVeil"></div>
+              <div class="smb-quote">
+                <p>
+                  <span data-es>Cuando ya no queda nadie en el after, entre cigarros y botellas, esto es lo que qued&oacute; de una sombrerera punk que no termina de entender la sociedad de hoy en d&iacute;a, y que de vez en cuando se replantea volver al Pa&iacute;s de las Maravillas&hellip;</span>
+                  <span data-en>When there&rsquo;s no one left at the afterparty, among cigarettes and bottles, this is what&rsquo;s left of a punk hatter who still can&rsquo;t quite make sense of today&rsquo;s society, and who, every so often, considers going back to Wonderland&hellip;</span>
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <div class="smb-gap"></div>
+
+          <!-- 3. PROCESO -->
+          <section class="smb-part smb-proceso" id="smbProceso">
+            <div class="smb-proceso-text">
+              <p>
+                <span data-es>La Sombrerera naci&oacute; a partir de una consigna de reinterpretar un personaje de Alicia en el Pa&iacute;s de las Maravillas desde una perspectiva contempor&aacute;nea. Junto con Valentina, elegimos trabajar sobre el Sombrerero, transform&aacute;ndolo en una versi&oacute;n femenina y llev&aacute;ndolo a un universo m&aacute;s cercano a la cultura punk y nocturna.</span>
+                <span data-en>La Sombrerera was born from a brief to reinterpret a character from Alice in Wonderland through a contemporary lens. Together with Valentina, we chose to work with the Mad Hatter, turning him into a female version and bringing her into a world closer to punk and nightlife culture.</span>
+              </p>
+              <p>
+                <span data-es>A partir de esta narrativa construimos su identidad visual, investigando las caracter&iacute;sticas est&eacute;ticas y de personalidad del personaje en sus distintas representaciones para luego reinterpretarlas desde una mirada contempor&aacute;nea. La elecci&oacute;n de la modelo, el vestuario, el styling, el maquillaje, el pelo y la ambientaci&oacute;n fueron pensados como partes de una misma construcci&oacute;n, incorporando tambi&eacute;n prendas y elementos realizados espec&iacute;ficamente para completar el personaje.</span>
+                <span data-en>From this narrative we built her visual identity, researching the Mad Hatter's aesthetic and personality traits across his different portrayals in order to reinterpret them through a contemporary eye. The choice of model, wardrobe, styling, makeup, hair, and set design were all thought through as parts of the same construction, also incorporating garments and pieces made specifically to complete the character.</span>
+              </p>
+            </div>
+            <div class="smb-media-col">
+              <div class="smb-media-slot" id="smbMediaSlot">
+                <video id="smbMediaVideo" class="is-current" muted playsinline preload="auto"></video>
+                <img id="smbMediaImage" alt="La Sombrerera">
+                <img id="smbMediaPoster" alt="La Sombrerera">
+                <button type="button" class="smb-media-arrow smb-media-prev" id="smbMediaPrev" aria-label="Anterior">&#8249;</button>
+                <button type="button" class="smb-media-arrow smb-media-next" id="smbMediaNext" aria-label="Siguiente">&#8250;</button>
+              </div>
+              <div class="smb-media-caption"><span data-es>modelo @wandita.s.r_</span><span data-en>model @wandita.s.r_</span></div>
+            </div>
+          </section>
+
+          <div class="smb-gap"></div>
+
+          <!-- 4. FINAL -->
+          <section class="smb-part smb-final" id="smbFinal">
+            <img src="assets/sombrerera-final-1.jpg" alt="La Sombrerera">
+          </section>
+          <section class="smb-part smb-final">
+            <img src="assets/sombrerera-final-2.jpg" alt="La Sombrerera">
+          </section>
+
+        </div>
+
+        <div class="smb-cursor" id="smbCursor">click</div>
+        <div class="smb-lightbox" id="smbLightbox"><img id="smbLightboxImg" alt="La Sombrerera"></div>
+      </div>
+
+      <!-- ===== 05 - 7600 ===== -->
+      <div class="work-project alb" data-project="5">
+        <div class="smb-vig smb-vig-t"></div>
+        <div class="smb-vig smb-vig-b"></div>
+
+        <!-- copia congelada de la portada + cortina negra. Van por debajo del
+             recorrido (.alb-track) para que el texto de presentación, que viaja
+             en el recorrido normal, se lea por encima de la cortina. -->
+        <div class="alb-cover-pin" id="albCoverPin"><img src="assets/7600-portada-v2.jpg" alt=""></div>
+        <div class="alb-curtain" id="albCurtain">
+          <div class="alb-curtain-caption" id="albCurtainCaption"><span data-es>Arte de tapa @facu.roch</span><span data-en>Cover art by @facu.roch</span></div>
+        </div>
+        <div class="alb-scroll-tag" id="albScrollTag">[ Scroll ]</div>
+
+        <div class="alb-track work-track" id="albTrack">
+
+          <!-- 1. INICIAL -->
+          <!-- la portada ocupa el ancho completo; su alto sigue su proporción real,
+               así que hay que scrollear para verla entera. Cuando su borde inferior
+               toca el pie de la pantalla, queda congelada (la copia de arriba) y la
+               cortina negra empieza a subir. El bloque de datos viaja en el recorrido
+               normal y, como sube al mismo ritmo que la cortina, queda siempre
+               apoyado sobre el borde negro que va creciendo. Cuando la cortina llena
+               la pantalla, el recorrido sigue de largo con normalidad. -->
+          <section class="alb-inicial-cover" id="albCoverFull">
+            <div class="alb-cover-overscroll"><img src="assets/7600-portada-v2.jpg" alt=""></div>
+            <img class="alb-cover-main" src="assets/7600-portada-v2.jpg" alt="7600">
+          </section>
+
+          <section class="alb-info-band" id="albInfoBand">
+            <div class="alb-info-right">
+              <h1 class="alb-title">7600</h1>
+              <div class="alb-sub"><span data-es><em>Álbum de Jazz</em></span><span data-en><em>Jazz Album</em></span> &nbsp;<span class="alb-year">2026</span></div>
+              <div class="alb-credit"><span data-es>Co-creado por Carolina Picone &amp; Valentina Bianucci</span><span data-en>Co-created by Carolina Picone &amp; Valentina Bianucci</span></div>
+              <div class="alb-roles"><span data-es>Dirección de Arte</span><span data-en>Art Direction</span></div>
+            </div>
+          </section>
+
+          <div class="alb-gap-half"></div>
+
+          <!-- 2. CONCEPTO -->
+          <section class="alb-conceptual work-concept">
+            <div class="alb-concept-cols">
+              <p>
+                <span data-es>7600 parte de una idea simple: compartir música y reunir a músicos de Mar del Plata que han formado parte de la historia de Caleb, convirtiendo ese encuentro en un proyecto común. Al mismo tiempo, el álbum funciona como una forma de despedirse de la ciudad antes de comenzar una nueva etapa lejos de ella.</span>
+                <span data-en>7600 comes from a simple idea: sharing music and bringing together musicians from Mar del Plata who've been part of Caleb's history, turning that gathering into a shared project. At the same time, the album works as a way of saying goodbye to the city before starting a new chapter away from it.</span>
+              </p>
+              <p>
+                <span data-es>Desde la dirección de arte buscamos llevar esas ideas al espacio, construyendo un set que se sintiera cercano, cálido y propio, como estar en casa. La puesta tomó elementos de su historia personal, del jazz y de la ciudad para construir un universo que acompañara la intimidad de la sesión, mientras algunos recursos vinculados a la partida reforzaban la idea de despedida.</span>
+                <span data-en>From the art direction, we looked to bring those ideas into the space, building a set that felt close, warm, and personal &mdash; like being at home. The set design drew on elements of his personal history, jazz, and the city to build a world that matched the intimacy of the session, while a few details tied to leaving reinforced the idea of a farewell.</span>
+              </p>
+            </div>
+          </section>
+
+          <div class="alb-gap"></div>
+
+          <!-- 3. PROCESO -->
+          <section class="alb-proceso work-proceso">
+            <div class="alb-proceso-text">
+              <p>
+                <span data-es>La grabación se desarrolló en dos jornadas, con músicos diferentes en cada una, lo que implicó pensar la puesta de manera estratégica para mantener una identidad visual coherente y, al mismo tiempo, adaptarla a las particularidades de cada grupo. También tuvimos en cuenta las necesidades de los músicos, los requerimientos de sus instrumentos y las condiciones técnicas de la grabación, buscando que todo conviviera con naturalidad dentro de la propuesta. El vestuario siguió la misma lógica, con algunos lineamientos generales pero priorizando que cada músico pudiera conservar su personalidad y comodidad.</span>
+                <span data-en>The recording took place over two days, with different musicians on each one, which meant thinking through the set strategically to keep a coherent visual identity while still adapting it to each group's specific needs. We also took into account the musicians' needs, their instruments' requirements, and the technical conditions of the recording, aiming for everything to sit together naturally within the concept. Wardrobe followed the same logic &mdash; a few general guidelines, but always prioritizing each musician's ability to keep their own personality and comfort.</span>
+              </p>
+              <p>
+                <span data-es>Si bien cada integrante asumió un rol principal según su área de conocimiento, las distintas instancias del rodaje se fueron construyendo y resolviendo en conjunto, de manera muy natural, como parte de esa dinámica de trabajo que también atraviesa la escena local.</span>
+                <span data-en>While each person took on a main role based on their area of expertise, the different moments of the shoot were built and worked out together, very naturally, as part of that same collaborative dynamic that runs through the local scene.</span>
+              </p>
+            </div>
+            <div class="alb-media-col">
+              <div class="alb-media-slot smb-media-slot" id="albMediaSlot">
+                <video id="albMediaVideo" class="is-current" muted playsinline preload="auto"></video>
+                <img id="albMediaImage" alt="7600 — proceso">
+                <img id="albMediaPoster" alt="7600 — proceso">
+                <button type="button" class="smb-media-arrow smb-media-prev" id="albMediaPrev" aria-label="Anterior">&#8249;</button>
+                <button type="button" class="smb-media-arrow smb-media-next" id="albMediaNext" aria-label="Siguiente">&#8250;</button>
+              </div>
+            </div>
+          </section>
+
+          <div class="alb-gap"></div>
+
+          <!-- 4. FINAL -->
+          <section class="alb-final" id="albFinal">
+            <video id="albVideo" playsinline></video>
+            <div class="alb-final-placeholder" id="albFinalPlaceholder">[ Espacio reservado para el recorte del video ]</div>
+            <a href="https://www.youtube.com/watch?v=tu6I3sPsosc" target="_blank" rel="noopener" class="alb-yt-btn" id="albYtBtn"><span data-es>Ver el video completo en YouTube</span><span data-en>Watch the full video on YouTube</span></a>
+          </section>
+
+        </div>
+      </div>
+
+      <!-- ===== resto de los trabajos: todavia sin disenar ===== -->
+      <div class="work-project" data-project="placeholder">
+        <div class="panel-content"><div class="panel-msg">Funcion&oacute;</div></div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<div id="aboutLogoLayer">
+  <div class="logo3d" id="logo3d">
+    <div class="l3d-depth" id="logo3dDepth">
+      <img src="assets/logo.png" alt="Carolina Picone" class="l3d-base">
+    </div>
+  </div>
+  <div class="about-copyright-caption" id="aboutCopyrightCaption">© 2026 Carolina Picone</div>
+</div>
+
+<div id="clickReveal"></div>
+
+<script>
+  // ---- Trabajos: setup (definido antes para poder animar la entrada apenas termina la intro) ----
+  const homeSection = document.getElementById('home');
+  const items = [1,2,3,4,5,6].map(n => document.getElementById('p'+n));
+  const N = items.length;
+  const D = 0.45;
+  const step = (1 - D) / (N - 1);
+  const starts = items.map((_, i) => i * step);
+  const laneOffset = [20, 60, 20, -20, 100, -60];
+  const laneExtraY = [0, 0, 0, 0, 0, 40];
+  const offsetG = starts[0] + D/2 + 0.04; // trabajo 1 un poco más avanzado; asoma la esquina del 3er trabajo
+
+  function layoutHome(){
+    const EXTRA = window.innerHeight * 3.2;
+    homeSection.style.height = (window.innerHeight + EXTRA) + 'px';
+  }
+  layoutHome();
+  window.addEventListener('resize', layoutHome);
+
+  let currentG = offsetG;
+  function renderItems(g){
+    const vw = window.innerWidth, vh = window.innerHeight;
+    items.forEach((item, i) => {
+      const p = Math.min(Math.max((g - starts[i]) / D, 0), 1);
+      const w = item.offsetWidth, h = item.offsetHeight;
+      const x = -w + p * (vw + w) + laneOffset[i];
+      const y = vh - p * (vh + h) + laneOffset[i] + laneExtraY[i];
+      item.style.transform = `translate(${x}px, ${y}px)`;
+    });
+  }
+
+  function scrollTargetG(){
+    const total = homeSection.offsetHeight - window.innerHeight;
+    const rect = homeSection.getBoundingClientRect();
+    const scrolled = -rect.top;
+    const raw = total <= 0 ? 0 : Math.min(Math.max(scrolled / total, 0), 1);
+    return offsetG + raw * (1 - offsetG);
+  }
+  function loop(){
+    const targetG = scrollTargetG();
+    currentG += (targetG - currentG) * 0.022;
+    renderItems(currentG);
+    requestAnimationFrame(loop);
+  }
+
+  // Antes de la intro: todos los trabajos arrancan totalmente afuera (esquina superior derecha)
+  renderItems(1.05);
+
+  function easeOutCubic(x){ return 1 - Math.pow(1 - x, 3); }
+  function startIntroReverse(){
+    const INTRO_START_G = 1.05;
+    const INTRO_T = 1450; // misma duración aprox. que la aparición escalonada del home
+    const t0 = performance.now();
+    function step(now){
+      const t = Math.min((now - t0) / INTRO_T, 1);
+      currentG = INTRO_START_G + (offsetG - INTRO_START_G) * easeOutCubic(t);
+      renderItems(currentG);
+      if(t < 1){ requestAnimationFrame(step); }
+      else { requestAnimationFrame(loop); }
+    }
+    requestAnimationFrame(step);
+  }
+
+  // ---- Firma en una línea: se ajusta para terminar a la altura de la "b" de Trabajos ----
+  function sizeVariant1(){
+    const letra = document.getElementById('letraB');
+    const homeCopy = document.querySelector('.home-copy');
+    const img = document.getElementById('sigVariant1');
+    const v1 = document.querySelector('.variant[data-variant="1"]');
+    if(!letra || !homeCopy || !img || !v1 || !img.naturalWidth) return;
+    const letraRect = letra.getBoundingClientRect();
+    const copyRect = homeCopy.getBoundingClientRect();
+    const targetWidth = letraRect.right - copyRect.left;
+    if(targetWidth <= 0) return;
+    const ratio = img.naturalHeight / img.naturalWidth;
+    const targetHeight = targetWidth * ratio;
+    img.style.width = targetWidth + 'px';
+    img.style.height = targetHeight + 'px';
+    v1.style.marginTop = (targetHeight * 0.5) + 'px';
+  }
+  sizeVariant1();
+  window.addEventListener('resize', sizeVariant1);
+  window.addEventListener('load', sizeVariant1);
+
+  // ---- Transición circular difuminada al hacer click (solo sale, no vuelve a entrar) ----
+  const clickReveal = document.getElementById('clickReveal');
+  const REVEAL_MS = 1150;
+  function sectionTransition(midCallback, dark){
+    clickReveal.style.background = dark ? '#000' : '';
+    clickReveal.style.display = 'block';
+    clickReveal.style.transition = 'none';
+    clickReveal.style.opacity = '0';
+    clickReveal.offsetHeight; // forzar reflow
+
+    // aparece (como el barrido de la intro), se cambia el contenido, y desaparece revelando lo nuevo
+    clickReveal.style.transition = `opacity ${REVEAL_MS}ms ease`;
+    requestAnimationFrame(() => { clickReveal.style.opacity = '1'; });
+
+    setTimeout(() => {
+      midCallback();
+      clickReveal.style.transition = `opacity ${REVEAL_MS}ms ease`;
+      clickReveal.style.opacity = '0';
+      setTimeout(() => { clickReveal.style.display = 'none'; }, REVEAL_MS + 60);
+    }, REVEAL_MS - 200);
+  }
+
+  // ---- Sobre mí: texto centrado que se abre alrededor del logo ----
+  const aboutTrack = document.getElementById('aboutTrack');
+  const logo3d = document.getElementById('logo3d');
+
+  // Grosor del logo: capas apiladas en profundidad para que no se vea plano al girar
+  (function buildLogoThickness(){
+    if(!logo3d) return;
+    const depth = logo3d.querySelector('.l3d-depth');
+    const base = logo3d.querySelector('.l3d-base');
+    const LAYERS = 16;
+    const DEPTH = 9; // px de grosor total
+    for(let i = 1; i <= LAYERS; i++){
+      const z = -DEPTH/2 + (DEPTH * i / LAYERS);
+      const img = base.cloneNode();
+      img.classList.remove('l3d-base');
+      img.classList.add('l3d-layer');
+      img.style.transform = `translateZ(${z}px)`;
+      img.dataset.z = z;
+      depth.appendChild(img);
+    }
+    base.style.transform = `translateZ(${-DEPTH/2}px)`;
+    base.dataset.z = -DEPTH/2;
+  })();
+
+  // aplana el grosor de forma gradual: las mismas capas convergen a Z=0, sin superponer otra imagen
+  function flattenLogoDepth(duration){
+    if(!logo3d) return;
+    const layers = logo3d.querySelectorAll('.l3d-layer, .l3d-base');
+    layers.forEach(l => {
+      l.style.transition = `transform ${duration}ms ease`;
+      l.style.transform = 'translateZ(0px)';
+    });
+    // una vez que terminaron de converger, se esconden las capas de más
+    // (si no, 17 copias superpuestas se ven ligeramente borrosas/con menos nitidez)
+    clearTimeout(logo3d._flattenCleanup);
+    logo3d._flattenCleanup = setTimeout(() => {
+      logo3d.querySelectorAll('.l3d-layer').forEach(l => { l.style.display = 'none'; });
+    }, duration + 40);
+  }
+
+  // vuelve las capas a su grosor original, de forma instantánea (para arrancar cada giro en 3D puro)
+  function resetLogoDepth(){
+    if(!logo3d) return;
+    clearTimeout(logo3d._flattenCleanup);
+    const layers = logo3d.querySelectorAll('.l3d-layer, .l3d-base');
+    layers.forEach(l => {
+      l.style.transition = 'none';
+      l.style.display = '';
+      l.style.transform = `translateZ(${l.dataset.z}px)`;
+    });
+    void logo3d.offsetWidth;
+    layers.forEach(l => { l.style.transition = ''; });
+  }
+  let aboutLines = [];
+
+  // Parte cada elemento en líneas reales, y cada línea en dos mitades
+  function splitIntoLines(){
+    if(!aboutTrack) return;
+    const targets = aboutTrack.querySelectorAll('[data-split]');
+    targets.forEach(el => {
+      const original = el.dataset.text || el.textContent;
+      el.dataset.text = original;
+      const words = original.split(' ');
+      el.innerHTML = words.map(w => '<span class="aw">' + w + '</span>').join(' ');
+
+      // agrupar palabras por línea según su posición vertical
+      const spans = Array.from(el.querySelectorAll('.aw'));
+      const rows = [];
+      let currentTop = null, currentRow = null;
+      spans.forEach(s => {
+        const top = Math.round(s.offsetTop);
+        if(currentTop === null || Math.abs(top - currentTop) > 3){
+          currentTop = top;
+          currentRow = [];
+          rows.push(currentRow);
+        }
+        currentRow.push(s.textContent);
+      });
+
+      // reconstruir: cada línea con dos mitades independientes
+      el.innerHTML = rows.map(row => {
+        const mid = Math.ceil(row.length / 2);
+        const left = row.slice(0, mid).join(' ');
+        const right = row.slice(mid).join(' ');
+        // el espacio del corte va como espacio duro: si no, el navegador lo colapsa
+        // y las dos mitades quedan pegadas ("curiosidady" en vez de "curiosidad y")
+        return '<span class="aline">' +
+                 '<span class="ah ah-l">' + left + (right ? '\u00A0' : '') + '</span>' +
+                 '<span class="ah ah-r">' + right + '</span>' +
+               '</span>';
+      }).join('');
+    });
+    aboutLines = Array.from(aboutTrack.querySelectorAll('.aline')).map(line => ({
+      el: line,
+      l: line.querySelector('.ah-l'),
+      r: line.querySelector('.ah-r'),
+      top: line.offsetTop,          // posición dentro del track (no cambia al scrollear)
+      h: line.offsetHeight
+    }));
+    linePush = [];
+
+    const copyEl = aboutTrack.querySelector('.about-copyright');
+    aboutCopyrightTop = copyEl ? copyEl.offsetTop : 0;
+  }
+
+
+  function computeAboutMax(){
+    const last = aboutTrack.lastElementChild;
+    if(!last){ aboutMax = window.innerHeight; return; }
+    aboutMax = aboutRest + last.offsetTop + last.offsetHeight + 30;
+  }
+
+  function setupAbout(){
+    splitIntoLines();
+    measureLogo();
+    aboutRestY();
+    computeAboutMax();
+  }
+
+  // ---- Sobre mí: cambio de idioma ----
+  // el texto se guarda en data-es-text / data-en-text porque splitIntoLines()
+  // trabaja sobre dataset.text; acá lo actualizamos antes de volver a partirlo.
+  function setAboutLanguageText(){
+    if(!aboutTrack) return;
+    const isEn = document.documentElement.lang === 'en';
+    aboutTrack.querySelectorAll('[data-split]').forEach(el => {
+      const text = isEn ? el.getAttribute('data-en-text') : el.getAttribute('data-es-text');
+      if(text) el.dataset.text = text;
+    });
+  }
+  function applyAboutLanguageIfOpen(){
+    // si "Sobre mí" no está abierta ahora, alcanza con dejar el texto listo: la
+    // próxima vez que se abra ya va a leer el idioma correcto solo
+    if(!(panel.classList.contains('open') && panel.classList.contains('show-about'))){
+      setAboutLanguageText();
+      return;
+    }
+    // con "Sobre mí" abierta: primero el texto sube de vuelta al reposo (el mismo
+    // recorrido de la entrada, pero al revés) y recién cuando llega ahí —mostrando
+    // solo el título "01"— se traduce, para que al volver a scrollear ya esté listo
+    if(aboutIntroActive) return; // ya hay una animación de esta sección en curso
+    aboutIntroActive = true;
+    aboutLeaving = false;
+    const startCurrent = aboutCurrent;
+    const T = 2000; // misma velocidad que al ir a "Contacto": lineal, sin desacelerar
+    const t0 = performance.now();
+    function step(now){
+      const t = Math.min((now - t0) / T, 1);
+      aboutCurrent = startCurrent * (1 - t);
+      const trackY = aboutRest - aboutCurrent;
+      aboutTrack.style.transform = `translateY(${trackY}px)`;
+      updateEllipsePush(trackY);
+      if(t < 1){ requestAnimationFrame(step); }
+      else {
+        aboutCurrent = 0;
+        aboutTarget = 0;
+        setAboutLanguageText();
+        setupAbout();
+        aboutIntroActive = false;
+        const restY = aboutRest;
+        aboutTrack.style.transform = `translateY(${restY}px)`;
+        updateEllipsePush(restY);
+      }
+    }
+    requestAnimationFrame(step);
+  }
+
+  // rueda propia: control total del peso, sin depender del scroll nativo
+  window.addEventListener('wheel', (e) => {
+    if(!panel.classList.contains('open') || !panel.classList.contains('show-about')) return;
+    if(aboutIntroActive || aboutLeaving) return;
+    e.preventDefault();
+    aboutTarget += e.deltaY;
+    if(aboutTarget < -90){
+      aboutLeaving = true;
+      sectionTransition(goHome);
+      return;
+    }
+    if(aboutTarget < 0) aboutTarget = Math.max(aboutTarget, -90);
+    if(aboutTarget > aboutMax) aboutTarget = aboutMax;
+  }, { passive:false });
+  window.addEventListener('resize', () => { if(panel.classList.contains('show-about')) setupAbout(); });
+  window.addEventListener('load', setupAbout);
+
+  let aboutRest = 0;
+  function aboutRestY(){
+    const firstTitle = aboutTrack ? aboutTrack.querySelector('.b-title') : null;
+    const th = firstTitle ? firstTitle.getBoundingClientRect().height : 24;
+    aboutRest = window.innerHeight - th - 26;   // solo el título 01 queda a la vista
+    return aboutRest;
+  }
+  let aboutCurrent = 0;
+  let aboutTarget = 0;
+  let aboutMax = 0;
+  let aboutIntroActive = false;
+  let aboutLeaving = false;
+  let linePush = []; // suavizado propio de cada línea al abrirse/cerrarse
+  let aboutCopyrightTop = 0;
+
+  let logoA = 140, logoB = 160;
+  function measureLogo(){
+    const lw = logo3d ? logo3d.offsetWidth : 100;
+    const lh = logo3d ? logo3d.offsetHeight : 140;
+    logoA = lw / 2 + 60;   // semiejes de la elipse invisible
+    logoB = lh / 2 + 60;
+  }
+  window.addEventListener('resize', measureLogo);
+
+  // trackY = desplazamiento actual del track; se calcula sin leer el DOM (evita traqueteo)
+  function updateEllipsePush(trackY){
+    const cy = window.innerHeight / 2;
+
+    for(let i = 0; i < aboutLines.length; i++){
+      const ln = aboutLines[i];
+      const lineY = trackY + ln.top + ln.h / 2;
+      const dy = (lineY - cy) / logoB;
+      let target = 0;
+      if(Math.abs(dy) < 1){
+        target = logoA * Math.sqrt(1 - dy * dy);
+      }
+      if(linePush[i] === undefined) linePush[i] = target;
+
+      // abrir es inmediato (la línea nunca puede invadir la elipse);
+      // cerrar es suave, para que se sienta pesado
+      if(target > linePush[i]) linePush[i] = target;
+      else linePush[i] += (target - linePush[i]) * 0.06;
+
+      if(ln.l) ln.l.style.transform = `translateX(${-linePush[i]}px)`;
+      if(ln.r) ln.r.style.transform = `translateX(${linePush[i]}px)`;
+    }
+  }
+
+  function aboutLoop(){
+    if(aboutTrack && panel.classList.contains('show-about') && panel.classList.contains('open')){
+      if(!aboutIntroActive){
+        aboutCurrent += (aboutTarget - aboutCurrent) * 0.075;   // pesado, pero continuo
+        const trackY = aboutRest - aboutCurrent;
+        aboutTrack.style.transform = `translateY(${trackY}px)`;
+        updateEllipsePush(trackY);
+
+        // el copyright se "engancha" debajo del logo apenas lo alcanza, como pie de foto
+        const copyEl = aboutTrack.querySelector('.about-copyright');
+        const caption = document.getElementById('aboutCopyrightCaption');
+        if(copyEl && caption && logo3d){
+          const capY = trackY + aboutCopyrightTop;
+          const logoBottom = window.innerHeight / 2 + logo3d.offsetHeight / 2;
+          const caught = capY <= logoBottom + 42;
+          copyEl.classList.toggle('caught', caught);
+          caption.classList.toggle('show', caught);
+        }
+      }
+
+      // al pasar de largo el final (pantalla en blanco), vuelve solo a Trabajos
+      if(!aboutIntroActive && !aboutLeaving && aboutCurrent > aboutMax - 4){
+        aboutLeaving = true;
+        sectionTransition(goHome);
+      }
+    }
+    requestAnimationFrame(aboutLoop);
+  }
+  requestAnimationFrame(aboutLoop);
+
+  function easeOutQuartAbout(x){ return 1 - Math.pow(1 - x, 4); }
+  let aboutSpinStart = 0;
+  const ABOUT_SPIN_MS = 3000;
+
+  function startAboutSpin(){
+    aboutSpinStart = performance.now();
+    if(logo3d){
+      resetLogoDepth(); // vuelve el grosor a su estado original, sin transición
+      logo3d.classList.remove('spin');
+      void logo3d.offsetWidth; // reflow para poder repetir la animación
+      logo3d.classList.add('spin');
+    }
+  }
+
+  function computeAboutMaxCurrent(){
+    // desplazamiento con el que TODO el texto queda por encima de la ventana:
+    // así, mientras gira el logo, no se ve nada de texto
+    const paras = aboutTrack.querySelectorAll('.about-block p[data-split]');
+    if(!paras.length) return window.innerHeight * 2;
+    const lastPara = paras[paras.length - 1];
+    const bottomInTrack = lastPara.offsetTop + lastPara.offsetHeight;
+    return aboutRest + bottomInTrack + 40;
+  }
+
+  function playAboutIntro(){
+    aboutIntroActive = true;
+    linePush = [];
+    measureLogo();
+    aboutRestY();
+
+    const services = aboutTrack.querySelector('.about-services');
+    const aboutCopy = aboutTrack.querySelector('.about-copyright');
+    if(services) services.style.visibility = 'hidden';
+    if(aboutCopy) aboutCopy.style.visibility = 'hidden';
+
+    computeAboutMax();
+    const maxCurrent = computeAboutMaxCurrent();
+    aboutCurrent = maxCurrent;
+    aboutTarget = 0;
+    const y0 = aboutRest - aboutCurrent;
+    aboutTrack.style.transform = `translateY(${y0}px)`;
+    updateEllipsePush(y0);
+
+    const elapsed = performance.now() - aboutSpinStart;
+    const FLATTEN_MS = 450; // corto y sutil
+    const wait = Math.max(ABOUT_SPIN_MS - elapsed, 0);
+
+    // arranca antes, para que termine justo (con mínima superposición) al empezar la caída
+    setTimeout(() => { if(logo3d) flattenLogoDepth(FLATTEN_MS); }, Math.max(wait - FLATTEN_MS + 40, 0));
+
+    setTimeout(() => {
+      const T = 4200; // lento y pesado
+      const t0 = performance.now();
+      function step(now){
+        const t = Math.min((now - t0) / T, 1);
+        aboutCurrent = maxCurrent * (1 - easeOutQuartAbout(t));
+        const trackY = aboutRest - aboutCurrent;
+        aboutTrack.style.transform = `translateY(${trackY}px)`;
+        updateEllipsePush(trackY);
+        if(t < 1){ requestAnimationFrame(step); }
+        else {
+          aboutCurrent = 0;
+          aboutTarget = 0;
+          aboutIntroActive = false;
+          if(services) services.style.visibility = '';
+          if(aboutCopy) aboutCopy.style.visibility = '';
+        }
+      }
+      requestAnimationFrame(step);
+    }, wait);
+  }
+
+  // ---- Contacto: zoom al logo ----
+  // banda vertical del logo que tiene que llenar la pantalla (según las líneas rojas de referencia)
+  const ZOOM_F1 = 0.09, ZOOM_F2 = 0.425;
+
+  function applyContactZoom(){
+    if(!logo3d) return;
+    const h0 = logo3d.offsetHeight || 140;
+    const vh = window.innerHeight;
+    const bandH = (ZOOM_F2 - ZOOM_F1) * h0;
+    const s = vh / bandH;
+    const fc = (ZOOM_F1 + ZOOM_F2) / 2;
+    const dy = (0.5 - fc) * h0 * s;   // recentra la banda marcada en la pantalla
+
+    // el aplanado termina casi enseguida (el logo todavía se ve chico): para cuando
+    // el zoom lo agranda ya está en 2D, así el cambio no se nota
+    logo3d.style.transition = '';   // por si quedó pegada la transición corta del rebote
+    logo3d.classList.remove('spin');
+    flattenLogoDepth(350);
+    logo3d.classList.add('zoom');
+    logo3d.style.transform = 'translate(-50%, -50%) scale(1)';
+    void logo3d.offsetWidth;
+    requestAnimationFrame(() => {
+      logo3d.style.transform = `translate(-50%, calc(-50% + ${dy}px)) scale(${s})`;
+    });
+    setTimeout(() => { document.documentElement.classList.add('contact-nav-white'); }, 2600);
+    setTimeout(() => { panel.classList.add('contact-ready'); }, 3300);
+  }
+
+  function resetLogoTransform(){
+    if(!logo3d) return;
+    logo3d.classList.remove('zoom');
+    logo3d.style.transform = '';
+  }
+
+  // salida de "sobre mí": el texto termina de caer y desaparece hacia abajo
+  function dropAboutTextAway(cb){
+    aboutIntroActive = true;
+    const startCurrent = aboutCurrent;
+    const endCurrent = -(aboutRest + 200); // se va del todo por abajo
+    const T = 2000;                        // más lento, sigue sin desacelerar
+    const t0 = performance.now();
+    function step(now){
+      const t = Math.min((now - t0) / T, 1);
+      aboutCurrent = startCurrent + (endCurrent - startCurrent) * t;   // lineal: no desacelera
+      const trackY = aboutRest - aboutCurrent;
+      aboutTrack.style.transform = `translateY(${trackY}px)`;
+      updateEllipsePush(trackY);
+      if(t < 1){ requestAnimationFrame(step); }
+      else { if(cb) cb(); }
+    }
+    requestAnimationFrame(step);
+  }
+
+  function openContactFromHome(x, y){
+    const delay = Math.max(REVEAL_MS - 200, 0);
+    setTimeout(() => {
+      document.documentElement.classList.add('contact-open');
+      resetLogoTransform();
+      startAboutSpin();
+      setTimeout(applyContactZoom, ABOUT_SPIN_MS + 100);
+    }, delay);
+    sectionTransition(() => openPanel('contact'));
+  }
+
+  function openContactFromAbout(){
+    dropAboutTextAway(() => {
+      openPanel('contact');
+      document.documentElement.classList.remove('about-open');
+      document.documentElement.classList.add('contact-open');
+      applyContactZoom();
+    });
+  }
+
+  // ---- Loader ----
+  const loader = document.getElementById('loader');
+  const loaderInner = document.getElementById('loaderInner');
+  window.addEventListener('load', () => {
+    requestAnimationFrame(() => loaderInner.classList.add('show'));
+    setTimeout(() => { loader.classList.add('fade-out'); }, 3100);   // 2.3s barrido + .8s sostenido
+    setTimeout(() => {
+      loader.style.display = 'none';
+      document.documentElement.classList.remove('loading');
+      document.documentElement.classList.add('revealed');
+      startIntroReverse();
+    }, 3900); // + .8s desvanecido
+  });
+
+  // ---- Idioma ----
+  const langToggle = document.getElementById('langToggle');
+  langToggle.addEventListener('click', () => {
+    const html = document.documentElement;
+    html.lang = html.lang === 'en' ? 'es' : 'en';
+    const isEn = html.lang === 'en';
+    langToggle.querySelector('[data-lang-es]').classList.toggle('active', !isEn);
+    langToggle.querySelector('[data-lang-en]').classList.toggle('active', isEn);
+    refreshVisibleRoles();
+    applyAboutLanguageIfOpen();
+    exprRefreshLanguage();
+  });
+
+  const roleSpans = document.querySelectorAll('#roles span');
+  let visibleRoles = [], roleIndex = 0;
+  function refreshVisibleRoles(){
+    const currentLang = document.documentElement.lang;
+    visibleRoles = Array.from(roleSpans).filter(s => currentLang === 'en' ? s.hasAttribute('data-en') : s.hasAttribute('data-es'));
+    roleSpans.forEach(s => s.classList.remove('active'));
+    if(visibleRoles[0]) visibleRoles[0].classList.add('active');
+    roleIndex = 0;
+  }
+  refreshVisibleRoles();
+  setInterval(() => {
+    if(visibleRoles.length < 2) return;
+    visibleRoles[roleIndex].classList.remove('active');
+    roleIndex = (roleIndex + 1) % visibleRoles.length;
+    visibleRoles[roleIndex].classList.add('active');
+  }, 2600);
+
+  // ---- Variantes del nombre ----
+  const variants = document.querySelectorAll('.variant');
+  let vIndex = 0;
+  document.querySelector('.home-copy').classList.add('v1-active');
+  setInterval(() => {
+    variants[vIndex].classList.remove('v-active');
+    vIndex = (vIndex + 1) % variants.length;
+    variants[vIndex].classList.add('v-active');
+    document.querySelector('.home-copy').classList.toggle('v1-active', vIndex === 0);
+  }, 15000);
+
+  // ---- Panel + gesto de estirar y sostener para cerrar ----
+  const panel = document.getElementById('panel');
+  const panelInner = document.getElementById('panelInner');
+  function openPanel(type, projectId){
+    panel.classList.remove('show-about','show-contact','show-work','contact-ready');
+    panel.classList.add('show-' + type);
+    setupWorkProject(type === 'work' ? projectId : null);
+    panel.scrollTop = 0;
+    panel.style.transition = 'none';
+    panel.classList.add('open');
+    panel.offsetHeight;
+    panel.style.transition = '';
+    document.body.style.overflow = 'hidden';
+    document.documentElement.classList.toggle('about-open', type === 'about');
+    document.documentElement.classList.toggle('contact-open', type === 'contact');
+    if(type !== 'contact') document.documentElement.classList.remove('contact-nav-white');
+    if(type === 'about'){
+      aboutLeaving = false;
+      setupAbout();
+      playAboutIntro();
+    }
+  }
+  function closePanel(){
+    panel.classList.remove('open','contact-ready');
+    document.documentElement.classList.remove('about-open','contact-open','contact-nav-white');
+    teardownWorkProject();
+    resetLogoTransform();
+    const caption = document.getElementById('aboutCopyrightCaption');
+    if(caption) caption.classList.remove('show');
+    document.body.style.overflow = '';
+    resetPull();
+  }
+
+  const HOLD_MS = 550;
+  const STRETCH_MAX = 46;
+  let pullStart = null;
+  let panelLeaving = false;
+  let inactivityTimer = null;
+
+  function resetPull(){
+    pullStart = null;
+    panelInner.style.transition = 'transform .3s ease';
+    // 'none' y no 'translateY(0px)': un transform, aunque sea cero, convierte a este
+    // contenedor en la referencia de los position:fixed de adentro (la portada
+    // congelada y la cortina de 7600 dejaban de pegarse a la pantalla)
+    panelInner.style.transform = 'none';
+  }
+
+  panel.addEventListener('wheel', (e) => {
+    if(!panel.classList.contains('open')) return;
+    const atTop = panel.scrollTop <= 0;
+    const atBottom = panel.scrollTop + panel.clientHeight >= panel.scrollHeight - 1;
+    const overTop = atTop && e.deltaY < 0;
+    const overBottom = atBottom && e.deltaY > 0;
+
+    if(panel.classList.contains('show-about')) return; // "sobre mí" usa su propio scroll
+    // solo los trabajos ya diseñados tienen scroll propio; los que siguen siendo
+    // placeholder conservan el gesto de estirar y sostener (si no, no habría cómo salir)
+    if(panel.classList.contains('show-work') && workTrack) return;
+
+    const isContact = panel.classList.contains('show-contact');
+    const stretch = isContact ? 10 : STRETCH_MAX; // en contacto, casi no se mueve
+
+    if(overTop || overBottom){
+      e.preventDefault();
+      if(!pullStart) pullStart = Date.now();
+      const t = Math.min((Date.now() - pullStart) / HOLD_MS, 1);
+      const dir = overTop ? 1 : -1;
+      panelInner.style.transition = 'none';
+      panelInner.style.transform = `translateY(${stretch * t * dir}px)`;
+
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(resetPull, 480);
+
+      if(t >= 1 && !panelLeaving){
+        panelLeaving = true;
+        panelInner.style.transform = 'translateY(0px)';
+        sectionTransition(() => { panelLeaving = false; goHome(); });
+      }
+    } else {
+      resetPull();
+    }
+  }, { passive:false });
+
+  function goHome(){
+    closePanel();
+    document.documentElement.classList.remove('revealed');
+    void document.documentElement.offsetHeight; // forzar reflow para poder re-disparar las animaciones
+    document.documentElement.classList.add('revealed');
+    startIntroReverse();
+  }
+
+  function bind(id, fn){
+    const el = document.getElementById(id);
+    if(el) el.addEventListener('click', (e) => {
+      e.preventDefault();
+      sectionTransition(fn, document.documentElement.classList.contains('work-dark'));
+    });
+  }
+  function bindAbout(id){
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.documentElement.classList.remove('contact-nav-white');
+      const x = e.clientX, y = e.clientY;
+      const delay = Math.max(REVEAL_MS - 200, 0); // 0,2s antes de que la pantalla quede blanca
+      setTimeout(() => {
+        document.documentElement.classList.add('about-open');
+        aboutLeaving = false;
+        startAboutSpin();
+      }, delay);
+      sectionTransition(() => openPanel('about'));
+    });
+  }
+  bindAbout('navAbout'); bindAbout('navAbout2');
+  function bindContact(id){
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      if(panel.classList.contains('open') && panel.classList.contains('show-contact')){
+        bounceContactLogo();               // ya estás en contacto: solo un pequeño rebote
+      } else if(panel.classList.contains('open') && panel.classList.contains('show-about')){
+        openContactFromAbout();          // desde "sobre mí": cae el texto y después el zoom
+      } else {
+        openContactFromHome(e.clientX, e.clientY);  // desde el home: intro con giro y después zoom
+      }
+    });
+  }
+  bindContact('navContact'); bindContact('navContact2');
+
+  function bounceContactLogo(){
+    if(!logo3d) return;
+    const finalTransform = logo3d.style.transform;
+    const m = finalTransform.match(/scale\(([^)]+)\)/);
+    const s = m ? parseFloat(m[1]) : 1;
+    logo3d.style.transition = 'transform .28s cubic-bezier(.34,1.56,.64,1)';
+    logo3d.style.transform = finalTransform.replace(/scale\([^)]+\)/, `scale(${s * 0.985})`);
+    setTimeout(() => {
+      logo3d.style.transform = finalTransform;
+      setTimeout(() => { logo3d.style.transition = ''; }, 300);
+    }, 140);
+  }
+
+  // click en el logo (dentro de "sobre mí") también va a contacto
+  const logoLayer = document.getElementById('aboutLogoLayer');
+  if(logoLayer){
+    logoLayer.addEventListener('click', () => {
+      if(panel.classList.contains('open') && panel.classList.contains('show-about')){
+        openContactFromAbout();
+      }
+    });
+  }
+  bind('navWorks', goHome);
+  bind('navWorks2', goHome);
+
+  const SMB_V1_MP4 = "assets/sombrerera-video1.mp4";
+  const SMB_V1_WEBM = "assets/sombrerera-video1.webm";
+  const SMB_V2_MP4 = "assets/sombrerera-video2.mp4";
+  const SMB_V2_WEBM = "assets/sombrerera-video2.webm";
+  const SMB_P1 = "assets/sombrerera-foto-1.jpg";
+  const SMB_P2 = "assets/sombrerera-foto-2.jpg";
+  const SMB_V1_POSTER = "assets/sombrerera-video1-poster.jpg";
+  const SMB_V2_POSTER = "assets/sombrerera-video2-poster.jpg";
+
+
+  // =============== PLACAS DE TRABAJO ===============
+  const root        = document.documentElement;
+  const workPages   = document.querySelectorAll('.work-project');
+  const DARK_WORKS  = ['4','5'];
+  let workTrack     = null;
+  let workCurrent   = 0;
+  let workTarget    = 0;
+  let workMax       = 0;
+  let workLeaving   = false;
+  let procesoPart   = null;
+  let conceptPart   = null;
+  let finalParts    = [];
+  let lbOpen        = false;
+  let mouseX = -500, mouseY = -500;
+  // anclas genéricas del degradé (cualquier trabajo con .work-concept / .work-proceso lo usa)
+  let vigConceptPart = null;
+  let vigProcesoPart = null;
+
+  // ---- carrusel de "proceso": 2 videos + 2 fotos, en orden fijo ----
+  function pickVideoUrl(mp4Path, webmPath){
+    const probe = document.createElement('video');
+    const okMp4 = !!probe.canPlayType('video/mp4; codecs="avc1.42E01E"');
+    return okMp4 ? mp4Path : webmPath;
+  }
+  const SMB_V1_URL = pickVideoUrl(SMB_V1_MP4, SMB_V1_WEBM);
+  const SMB_V2_URL = pickVideoUrl(SMB_V2_MP4, SMB_V2_WEBM);
+
+  // proporción real de cada pieza (conocida de antemano): el recuadro se
+  // dimensiona al toque, sin esperar a que cargue nada. Si el video nunca
+  // llega a arrancar (algunas vistas previas restringidas bloquean blob o
+  // el autoplay directamente) se muestra su poster en vez de quedar vacío.
+  const SMB_MEDIA = [
+    { type:'video', src: SMB_V1_URL, poster: SMB_V1_POSTER, ratio: 900/642 },
+    { type:'image', src: SMB_P1, ratio: 1500/1071 },
+    { type:'video', src: SMB_V2_URL, poster: SMB_V2_POSTER, ratio: 900/642 },
+    { type:'image', src: SMB_P2, ratio: 1500/1071 },
+  ];
+  const SMB_IMG_MS    = 4000;   // cuánto se queda cada foto (o el poster de respaldo) antes de pasar a la siguiente
+  const SMB_FADE_MS   = 480;    // más lento que antes: que se note poco el paso de una pieza a otra
+  const SMB_FADE_LEAD = 0.55;   // el video empieza a apagarse este ratito antes de llegar a su propio final
+  const SMB_STALL_MS  = 1700;   // si el video no arrancó en este tiempo, se lo da por caído
+
+  const smbSlot   = document.getElementById('smbMediaSlot');
+  const smbVideo  = document.getElementById('smbMediaVideo');
+  const smbImage  = document.getElementById('smbMediaImage');
+  const smbPoster = document.getElementById('smbMediaPoster');
+  const smbPrev   = document.getElementById('smbMediaPrev');
+  const smbNext   = document.getElementById('smbMediaNext');
+  let mediaIndex    = 0;
+  let mediaTimer    = null;
+  let stallTimer    = null;
+  let mediaOn       = false;
+  let advanced      = false;   // evita disparar el avance dos veces para la misma pieza
+
+  function sizeSlot(ratio){
+    if(!smbSlot || !procesoPart || !ratio) return;
+    const textEl = procesoPart.querySelector('.smb-proceso-text');
+    if(!textEl) return;
+    const h = textEl.offsetHeight;
+    smbSlot.style.height = h + 'px';
+    smbSlot.style.width  = (h * ratio) + 'px';
+  }
+
+  function goNext(){
+    if(advanced) return;
+    advanced = true;
+    showMedia(mediaIndex + 1);
+  }
+
+  function showPoster(item, forIndex){
+    if(forIndex !== mediaIndex || !mediaOn) return;   // ya se avanzó a otra cosa mientras tanto
+    smbVideo.pause();
+    smbVideo.classList.remove('is-current');
+    smbImage.classList.remove('is-current');
+    smbPoster.src = item.poster;
+    smbPoster.classList.add('is-current');
+    mediaTimer = setTimeout(goNext, SMB_IMG_MS);
+  }
+
+  function showMedia(i){
+    if(!mediaOn) return;
+    mediaIndex = (i + SMB_MEDIA.length) % SMB_MEDIA.length;
+    clearTimeout(mediaTimer);
+    clearTimeout(stallTimer);
+    const item = SMB_MEDIA[mediaIndex];
+
+    // primero se apaga lo que está, recién después entra lo nuevo: un
+    // parpadeo corto en vez de un corte brusco. El tamaño se define ya,
+    // con la proporción conocida, para que no salte al entrar.
+    smbVideo.classList.remove('is-current');
+    smbImage.classList.remove('is-current');
+    smbPoster.classList.remove('is-current');
+    smbVideo.ontimeupdate = null;
+    smbVideo.onended = null;
+    sizeSlot(item.ratio);
+    advanced = false;
+
+    mediaTimer = setTimeout(() => {
+      if(!mediaOn) return;
+      smbVideo.pause();
+
+      if(item.type === 'video'){
+        if(smbVideo.getAttribute('src') !== item.src) smbVideo.src = item.src;
+        smbVideo.currentTime = 0;
+        smbVideo.classList.add('is-current');
+        const p = smbVideo.play();
+        if(p && p.catch) p.catch(() => {});
+
+        // se apaga un poco antes de que el video termine, para que el
+        // corte real quede escondido dentro del fundido
+        smbVideo.ontimeupdate = () => {
+          if(smbVideo.duration && (smbVideo.duration - smbVideo.currentTime) <= SMB_FADE_LEAD) goNext();
+        };
+        smbVideo.onended = goNext;   // red de seguridad si "timeupdate" no llega a tiempo
+
+        // si en un rato razonable no arrancó (bloqueado por el entorno),
+        // se cae al poster en vez de dejar el recuadro vacío
+        const myIndex = mediaIndex;
+        stallTimer = setTimeout(() => {
+          if(smbVideo.readyState < 2) showPoster(item, myIndex);
+        }, SMB_STALL_MS);
+        smbVideo.addEventListener('error', () => showPoster(item, myIndex), { once:true });
+      } else {
+        smbImage.src = item.src;
+        smbImage.classList.add('is-current');
+        mediaTimer = setTimeout(goNext, SMB_IMG_MS);
+      }
+    }, SMB_FADE_MS);
+  }
+
+  if(smbPrev) smbPrev.addEventListener('click', (e) => { e.stopPropagation(); showMedia(mediaIndex - 1); });
+  if(smbNext) smbNext.addEventListener('click', (e) => { e.stopPropagation(); showMedia(mediaIndex + 1); });
+
+  function startMedia(){ mediaOn = true; showMedia(0); }
+  function stopMedia(){
+    mediaOn = false;
+    clearTimeout(mediaTimer);
+    clearTimeout(stallTimer);
+    smbVideo.ontimeupdate = null;
+    smbVideo.onended = null;
+    smbVideo.pause();
+  }
+
+  // ---- 7600: video final ("resumen") + botón a YouTube ----
+  const albVideo       = document.getElementById('albVideo');
+  const albPlaceholder = document.getElementById('albFinalPlaceholder');
+  const albYtBtn       = document.getElementById('albYtBtn');
+  let albFinalStarted  = false; // para que arranque solo una vez, al llegar scrolleando
+  let albSnapped       = false; // ya se acomodó solo al centro de la pantalla
+  let albVigHold       = false; // sostiene el degradé de abajo en la entrada del video
+
+  // el audio no arranca a pleno volumen de golpe: sube en poco menos de un segundo
+  // (corto, porque casi enseguida empieza a hablar y no queremos demorar eso)
+  let albVolumeRAF = null;
+  function fadeInAlbVolume(){
+    if(!albVideo) return;
+    cancelAnimationFrame(albVolumeRAF);
+    const DUR = 550; // corta: que se llegue a escuchar ya desde las primeras palabras
+    albVideo.volume = 0;
+    const t0 = performance.now();
+    function step(now){
+      const t = Math.min((now - t0) / DUR, 1);
+      // lineal: arranca en 0 pero sube parejo, sin quedarse casi muda un buen
+      // tramo como pasaba con la curva más agresiva
+      albVideo.volume = t;
+      if(t < 1){ albVolumeRAF = requestAnimationFrame(step); }
+      else { albVideo.volume = 1; }
+    }
+    albVolumeRAF = requestAnimationFrame(step);
+  }
+  const ALB_FINAL_VIDEO_RAW = 'assets/7600-resumen-video.mp4';
+  let albFinalVideoReady = false;
+
+  function setupAlbFinal(){
+    if(!albVideo) return;
+    if(!albFinalVideoReady){
+      albVideo.src = ALB_FINAL_VIDEO_RAW;
+      albFinalVideoReady = true;
+    }
+    albVideo.style.display = '';
+    albVideo.style.opacity = '1';
+    if(albPlaceholder) albPlaceholder.style.display = 'none';
+    albYtBtn.classList.remove('show');
+    albFinalStarted = false;
+    albSnapped = false;
+    albVigHold = false;
+    albVideo.pause();
+    try{ albVideo.currentTime = 0; } catch(e){}
+
+    // se funde a negro un poco antes de llegar al final del recorte,
+    // y ahí mismo aparece la referencia a YouTube
+    albVideo.ontimeupdate = () => {
+      if(albVideo.duration && (albVideo.duration - albVideo.currentTime) <= 1.2){
+        albVideo.style.opacity = '0';
+      }
+    };
+    albVideo.onended = () => {
+      albVideo.style.opacity = '0';
+      albYtBtn.classList.add('show');
+    };
+  }
+
+
+  function teardownAlbFinal(){
+    if(!albVideo) return;
+    albVideo.onended = null;
+    albVideo.ontimeupdate = null;
+    albVideo.pause();
+    cancelAnimationFrame(albVolumeRAF);
+    albFinalStarted = false;
+    albSnapped = false;
+    albVigHold = false;
+    albYtBtn.classList.remove('show');
+  }
+
+  // ---- 7600: la portada entra deslizándose de derecha a izquierda; cada bloque de
+  //      texto entra por separado con el mismo movimiento, en cascada; la firma de
+  //      la foto aparece recién cuando la portada terminó de asentarse ----
+  // ---- 7600: la portada se "congela" en pantalla cuando ya se vio completa, y una
+  //      cortina negra la va tapando desde abajo a medida que seguís scrolleando ----
+  const albScrollTag = document.getElementById('albScrollTag');
+  const albCurtainCaption = document.getElementById('albCurtainCaption');
+
+  function updateAlbCoverPin(){
+    const coverEl = document.getElementById('albCoverFull');
+    const pinWrap = document.getElementById('albCoverPin');
+    const curtain = document.getElementById('albCurtain');
+    if(!coverEl || !pinWrap || !curtain) return;
+
+    // la portada congelada y la cortina son position:fixed dentro del trabajo, así
+    // que solo tienen sentido mientras 7600 es el trabajo activo
+    if(workTrack !== document.getElementById('albTrack')){
+      pinWrap.style.opacity = '0';
+      curtain.style.height = '0px';
+      coverEl.style.opacity = '';
+      if(albScrollTag) albScrollTag.style.opacity = '0';
+      if(albCurtainCaption) albCurtainCaption.style.opacity = '0';
+      return;
+    }
+
+    const vh = window.innerHeight;
+    const coverH = coverEl.offsetHeight;
+    const coverTop = coverEl.offsetTop; // 0: es el primer elemento del recorrido
+    const screenTop = coverTop - workCurrent; // dónde iría su borde superior sin congelar
+    const pinThreshold = vh - coverH; // en screenTop <= esto, la portada ya se vio entera
+
+    if(screenTop <= pinThreshold){
+      // la portada queda quieta (la muestra la copia congelada) y la cortina sube,
+      // con degradé propio, hasta cubrir la pantalla y se queda así — nunca se
+      // esconde de un salto ni se "censura": como de ahí en más el recorrido real
+      // también es negro, quedarse quieta no se nota.
+      const past = pinThreshold - screenTop; // 0 apenas se congela; crece con el scroll
+      coverEl.style.opacity = '0';
+      pinWrap.style.opacity = '1';
+      pinWrap.style.transform = `translateY(${pinThreshold}px)`;
+      curtain.style.height = Math.min(past, vh) + 'px';
+      // se apaga apenas empieza a subir la cortina, junto con la portada
+      if(albScrollTag) albScrollTag.style.opacity = String(Math.max(1 - past / (vh * 0.18), 0));
+      // "arte de tapa": una vez que la cortina ya cubrió toda la pantalla, se
+      // deja un rato leíble y después se pierde en negro, para no chocar con
+      // el texto que viene enseguida en el recorrido
+      if(albCurtainCaption){
+        // se pierde en negro apenas la cortina llena la pantalla (para no chocar
+        // con el texto que sigue), pero de forma más gradual, no de un tirón
+        const fadeStart = vh * 0.04;
+        const fadeDist  = vh * 0.26;
+        const extra = past - vh; // 0 hasta que la cortina llena la pantalla; crece después
+        const rawT = extra <= fadeStart ? 1 : Math.max(1 - (extra - fadeStart) / fadeDist, 0);
+        const capOpacity = rawT * rawT; // ease-in: se nota más lento al principio del desvanecido
+        albCurtainCaption.style.opacity = String(capOpacity);
+      }
+    } else {
+      coverEl.style.opacity = '';
+      pinWrap.style.opacity = '0';
+      curtain.style.height = '0px';
+      if(albScrollTag) albScrollTag.style.opacity = '1';
+      if(albCurtainCaption) albCurtainCaption.style.opacity = '0';
+    }
+  }
+
+  // ---- 7600 "proceso": mismo carrusel que en La Sombrerera (video + fotos, con
+  //      flechas que solo se ven al pasar el mouse; si no, avanza solo) ----
+  const ALB_P0 = 'assets/7600-proceso-0.jpg';
+  const ALB_P2 = 'assets/7600-proceso-2.jpg';
+  const ALB_P3 = 'assets/7600-proceso-3.jpg';
+  const ALB_P4 = 'assets/7600-proceso-4.jpg';
+  const ALB_P5 = 'assets/7600-proceso-5.jpg';
+  const ALB_RATIO = 1200/857; // misma proporción en todas las piezas, así el recuadro no salta
+
+  const ALB_MEDIA = [
+    { type:'image', src: ALB_P4, ratio: ALB_RATIO },
+    { type:'image', src: ALB_P2, ratio: ALB_RATIO },
+    { type:'image', src: ALB_P5, ratio: ALB_RATIO },
+    { type:'image', src: ALB_P0, ratio: ALB_RATIO },
+    { type:'image', src: ALB_P3, ratio: ALB_RATIO },
+  ];
+
+  const albSlot    = document.getElementById('albMediaSlot');
+  const albMVideo  = document.getElementById('albMediaVideo');
+  const albMImage  = document.getElementById('albMediaImage');
+  const albMPoster = document.getElementById('albMediaPoster');
+  const albMPrev   = document.getElementById('albMediaPrev');
+  const albMNext   = document.getElementById('albMediaNext');
+  let albMediaIndex = 0;
+  let albMediaTimer = null;
+  let albStallTimer = null;
+  let albMediaOn     = false;
+  let albAdvanced    = false;
+
+  function sizeAlbSlot(ratio){
+    if(!albSlot) return;
+    const textEl = document.querySelector('.alb-proceso-text');
+    if(!textEl || !ratio) return;
+    const h = textEl.offsetHeight;
+    albSlot.style.height = h + 'px';
+    albSlot.style.width  = (h * ratio) + 'px';
+  }
+
+  function goAlbNext(){
+    if(albAdvanced) return;
+    albAdvanced = true;
+    showAlbMedia(albMediaIndex + 1);
+  }
+
+  function showAlbPoster(item, forIndex){
+    if(forIndex !== albMediaIndex || !albMediaOn) return;
+    albMVideo.pause();
+    albMVideo.classList.remove('is-current');
+    albMImage.classList.remove('is-current');
+    albMPoster.src = item.poster;
+    albMPoster.classList.add('is-current');
+    albMediaTimer = setTimeout(goAlbNext, SMB_IMG_MS);
+  }
+
+  function showAlbMedia(i){
+    if(!albMediaOn) return;
+    albMediaIndex = (i + ALB_MEDIA.length) % ALB_MEDIA.length;
+    clearTimeout(albMediaTimer);
+    clearTimeout(albStallTimer);
+    const item = ALB_MEDIA[albMediaIndex];
+
+    albMVideo.classList.remove('is-current');
+    albMImage.classList.remove('is-current');
+    albMPoster.classList.remove('is-current');
+    albMVideo.ontimeupdate = null;
+    albMVideo.onended = null;
+    sizeAlbSlot(item.ratio);
+    albAdvanced = false;
+
+    albMediaTimer = setTimeout(() => {
+      if(!albMediaOn) return;
+      albMVideo.pause();
+
+      if(item.type === 'video'){
+        if(albMVideo.getAttribute('src') !== item.src) albMVideo.src = item.src;
+        albMVideo.currentTime = 0;
+        albMVideo.classList.add('is-current');
+        const p = albMVideo.play();
+        if(p && p.catch) p.catch(() => {});
+
+        albMVideo.ontimeupdate = () => {
+          if(albMVideo.duration && (albMVideo.duration - albMVideo.currentTime) <= SMB_FADE_LEAD) goAlbNext();
+        };
+        albMVideo.onended = goAlbNext;
+
+        const myIndex = albMediaIndex;
+        albStallTimer = setTimeout(() => {
+          if(albMVideo.readyState < 2) showAlbPoster(item, myIndex);
+        }, 4000); // más margen que en La Sombrerera: el video pesa más
+        albMVideo.addEventListener('error', () => showAlbPoster(item, myIndex), { once:true });
+      } else {
+        albMImage.src = item.src;
+        albMImage.classList.add('is-current');
+        albMediaTimer = setTimeout(goAlbNext, SMB_IMG_MS);
+      }
+    }, SMB_FADE_MS);
+  }
+
+  if(albMPrev) albMPrev.addEventListener('click', (e) => { e.stopPropagation(); showAlbMedia(albMediaIndex - 1); });
+  if(albMNext) albMNext.addEventListener('click', (e) => { e.stopPropagation(); showAlbMedia(albMediaIndex + 1); });
+
+  function startAlbMedia(){ albMediaOn = true; showAlbMedia(0); }
+  function stopAlbMedia(){
+    albMediaOn = false;
+    clearTimeout(albMediaTimer);
+    clearTimeout(albStallTimer);
+    if(albMVideo){ albMVideo.ontimeupdate = null; albMVideo.onended = null; albMVideo.pause(); }
+  }
+
+
+  // ---- Un Mundo para Exprimir: flecha curva del boceto del prototipo al geometral ----
+  // Va dibujada a mano (SVG) y no con CSS porque arranca dentro de una imagen y
+  // termina dentro de otra, con un gap en el medio: las dos posiciones dependen
+  // del alto real que toman las imagenes en pantalla, asi que hay que medirlas.
+  function drawExprArrow(){
+    const track = document.getElementById('exprTrack');
+    const svg   = document.getElementById('exprArrow');
+    const line  = document.getElementById('exprArrowLine');
+    const head  = document.getElementById('exprArrowHead');
+    const boc   = document.getElementById('exprBocetosImg');
+    const geo   = document.getElementById('exprGeoImg');
+    if(!track || !svg || !boc || !geo) return;
+
+    const tr = track.getBoundingClientRect();
+    const b  = boc.getBoundingClientRect();
+    const g  = geo.getBoundingClientRect();
+    if(!tr.width || !b.width || !g.width) return;   // el trabajo no esta a la vista todavia
+
+    // arranque: sobre el boceto del prototipo (centro del lado izquierdo, a tres cuartos
+    // del alto), corrido hacia abajo, y ahora en el centro del espacio entre esa posicion
+    // y el margen izquierdo de la pagina (el mismo clamp que usa --expr-m)
+    const START_SHIFT_LEFT = 16, START_SHIFT_DOWN = START_SHIFT_LEFT * 2;
+    const baseX1 = (b.left - tr.left) + b.width * 0.25 - START_SHIFT_LEFT;
+    const marginPx = Math.min(Math.max(20, window.innerWidth * 0.04), 56);
+    const x1 = (baseX1 + marginPx) / 2;
+    const y1 = (b.top  - tr.top ) + b.height * 0.75 + START_SHIFT_DOWN;
+    // llegada: apenas afuera del borde izquierdo del geometral, en su parte alta
+    const x2 = (g.left - tr.left) - 18;
+    const y2 = (g.top  - tr.top ) + g.height * 0.14;
+    const dy = y2 - y1;
+
+    // curva suave: se abre hacia la izquierda y vuelve a entrar al final
+    const c1x = x1 - Math.max(70, dy * 0.16), c1y = y1 + dy * 0.34;
+    const c2x = x2 - Math.max(90, dy * 0.26), c2y = y2 - dy * 0.24;
+
+    svg.setAttribute('width',  tr.width);
+    svg.setAttribute('height', Math.max(y2 + 60, 0));
+    line.setAttribute('d', `M ${x1} ${y1} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${x2} ${y2}`);
+
+    // punta: dos trazos finos del mismo grosor que la linea, en la direccion de llegada
+    const ang = Math.atan2(y2 - c2y, x2 - c2x);
+    const L = 13, s = 0.36;
+    head.setAttribute('d',
+      `M ${x2 - L*Math.cos(ang-s)} ${y2 - L*Math.sin(ang-s)} L ${x2} ${y2} L ${x2 - L*Math.cos(ang+s)} ${y2 - L*Math.sin(ang+s)}`);
+  }
+  // se redibuja cuando cargan las imagenes (hasta entonces no tienen alto real)
+  ['exprBocetosImg','exprGeoImg'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.addEventListener('load', drawExprArrow);
+  });
+
+  // ---- Un Mundo para Exprimir: texto que entra progresivamente, linea por linea ----
+  // Parte cada <p> en sus lineas reales (agrupando por posicion vertical, igual
+  // que en "Sobre mi") y envuelve cada una en un recuadro que la recorta: la
+  // linea entra deslizandose desde abajo de ese recuadro en vez de solo aparecer.
+  function exprPrepareReveal(container){
+    if(!container || container.dataset.rlReady) return;
+    const isEn = document.documentElement.lang === 'en';
+    container.querySelectorAll('p[data-es-text]').forEach(p => {
+      const words = (isEn ? p.getAttribute('data-en-text') : p.getAttribute('data-es-text')).split(' ');
+      p.innerHTML = words.map(w => '<span class="expr-rl-w">' + w + '</span>').join(' ');
+      const spans = Array.from(p.querySelectorAll('.expr-rl-w'));
+      const rows = []; let top = null, row = null;
+      spans.forEach(s => {
+        const t = Math.round(s.offsetTop);
+        if(top === null || Math.abs(t - top) > 3){ top = t; row = []; rows.push(row); }
+        row.push(s.textContent);
+      });
+      p.innerHTML = rows.map(r =>
+        '<span class="expr-rl-line"><span class="expr-rl-inner">' + r.join(' ') + '</span></span>'
+      ).join(' ');
+    });
+    container.dataset.rlReady = '1';
+  }
+  // el orden en que entran/salen las lineas depende de para donde se scrollea:
+  // bajando, de arriba hacia abajo (la primera linea primero); subiendo, al
+  // reves, de abajo hacia arriba (la ultima linea primero)
+  function exprPlayReveal(container, stagger, reverseOrder){
+    if(!container) return;
+    const inners = Array.from(container.querySelectorAll('.expr-rl-inner'));
+    const n = inners.length;
+    inners.forEach((s, i) => { const idx = reverseOrder ? (n - 1 - i) : i; s.style.transitionDelay = (idx * (stagger || 70)) + 'ms'; });
+    requestAnimationFrame(() => inners.forEach(s => s.classList.add('show')));
+  }
+  // igual que exprPlayReveal pero para esconderlas, con el mismo criterio de orden
+  function exprPlayHide(container, stagger, reverseOrder){
+    if(!container) return;
+    const inners = Array.from(container.querySelectorAll('.expr-rl-inner'));
+    const n = inners.length;
+    inners.forEach((s, i) => { const idx = reverseOrder ? (n - 1 - i) : i; s.style.transitionDelay = (idx * (stagger || 70)) + 'ms'; });
+    requestAnimationFrame(() => inners.forEach(s => s.classList.remove('show')));
+  }
+  function exprResetReveal(container){
+    if(!container) return;
+    container.querySelectorAll('.expr-rl-inner').forEach(s => { s.classList.remove('show'); s.style.transitionDelay = ''; });
+  }
+  // si se cambia de idioma con el trabajo 03 abierto, los tres textos con
+  // movimiento (concepto, tercer parrafo, geometral) se rearman en el idioma
+  // nuevo -- y si ya estaban a la vista, quedan a la vista igual
+  function exprRefreshLanguage(){
+    if(!(typeof root !== 'undefined' && root.classList.contains('work-open') && workTrack === exprTrackEl)) return;
+    [exprConceptText, document.getElementById('exprFruitsText'), exprGeoText].forEach(container => {
+      if(!container) return;
+      const wasShown = container.querySelectorAll('.expr-rl-inner.show').length > 0;
+      container.dataset.rlReady = '';
+      exprPrepareReveal(container);
+      if(wasShown) exprPlayReveal(container, 45);
+    });
+  }
+
+  // ---- Un Mundo para Exprimir: geometral -- se levanta al pasar el mouse
+  // (con un "click" seuido al cursor) y el texto se abre recien con un click,
+  // sin recuadro; al abrirse, la imagen vuelve a su tamano sin la ampliacion ----
+  const exprGeoWrap = document.getElementById('exprGeoWrap');
+  const exprGeoHint = document.getElementById('exprGeoHint');
+  const exprGeoText = document.getElementById('exprGeoText');
+  const exprGeoSection = document.querySelector('.expr-geometral');
+  let exprGeoOpen = false;
+  if(exprGeoWrap){
+    exprGeoWrap.addEventListener('mouseenter', () => {
+      if(exprGeoHint) exprGeoHint.classList.add('show');
+    });
+    exprGeoWrap.addEventListener('mouseleave', () => {
+      if(exprGeoHint) exprGeoHint.classList.remove('show');
+    });
+    exprGeoWrap.addEventListener('click', () => {
+      if(exprGeoHint) exprGeoHint.classList.remove('show');
+      if(exprGeoOpen) return;   // ya esta abierto: un click de mas no lo cierra
+      exprGeoOpen = true;
+      exprPrepareReveal(exprGeoText);
+      exprPlayReveal(exprGeoText, 45);
+    });
+  }
+
+  // ================= UN MUNDO PARA EXPRIMIR: frutas rodando =================
+  // Motor a mano cuadro a cuadro (no @keyframes) porque hace falta: invertir
+  // el sentido con un click, frenar y "explotar" el grupo al azar, y mantener
+  // siempre el mismo punto de freno sea cual sea el ancho real de cada fruta.
+  const exprFruitEls = Array.from(document.querySelectorAll('.expr-fruit'));
+  const EXPR_N          = exprFruitEls.length;
+  const EXPR_ENTER_MS   = 1500;                                 // entra y frena (recorrido: no se toca)
+  const EXPR_PAUSE_MS   = 300;                                  // se queda quieta (el "frenado": recortado a 0,3s)
+  const EXPR_EXIT_MS    = 2200;                                 // vuelve a rodar y sale (recorrido: no se toca)
+  const EXPR_ACTIVE_MS  = EXPR_ENTER_MS + EXPR_PAUSE_MS + EXPR_EXIT_MS;   // 4500ms
+  const EXPR_CROSS_MS   = 400;                                  // la siguiente sale cuando a esta le faltan estos ms para desaparecer
+  const EXPR_STAGGER_MS = EXPR_ACTIVE_MS - EXPR_CROSS_MS;
+  const EXPR_GROUP_GAP  = 8;                                    // separacion entre ellas en la formacion de grupo
+  const EXPR_REST_VW    = 66;                                   // centro del espacio libre a la derecha del texto (igual solas o en grupo)
+  const EXPR_SHAKE_MS   = 550;                                  // sacudon amigable, no un tironeo robotico
+  const EXPR_T_REST     = EXPR_ENTER_MS / EXPR_ACTIVE_MS;
+  const EXPR_GROUP_STAGGER_MS = 180;                            // cuanto se escalonan entre si al formar/deshacer el grupo
+
+  let exprDir        = 1;      // 1: entra por la derecha, sale por la izquierda | -1: al reves
+  let exprMode       = 'solo'; // 'solo' | 'group' | 'exploding'
+  let exprRoundT0    = 0;
+  let exprOverride   = {};     // por indice de fruta: sacudon + salida propia tras un click individual
+  let exprBoom       = null;   // datos de la explosion grupal en curso
+  let exprGroupPlan  = null;   // por fruta: a que hueco de la fila va, y cuando le toca entrar/salir
+  let exprGroupFinish = 0;
+  let exprFruitsTextState = 'hidden';   // 'hidden' | 'shown', para poder revertir la entrada al scrollear de vuelta
+  let exprConceptTextState = 'hidden';
+  let exprLastWorkCurrent = null;   // para saber si se scrollea para abajo o para arriba
+  const exprConceptText = document.getElementById('exprConceptText');
+  const exprConceptPartEl = document.getElementById('exprConceptPart');
+  const exprTrackEl = document.getElementById('exprTrack');
+  const exprFruitsPartEl = document.getElementById('exprFruitsPart');
+  // inclinacion propia de cada fruta al quedar quieta: leve, para un costado
+  // distinto en cada una (nunca todas iguales ni "acostadas")
+  const exprFruitTilt = exprFruitEls.map(() => (Math.random() < 0.5 ? -1 : 1) * (6 + Math.random() * 12));
+
+  function exprEaseOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
+  function exprEaseInCubic(t){ return t * t * t; }
+  function exprShuffled(n){
+    const a = Array.from({ length: n }, (_, i) => i);
+    for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    return a;
+  }
+
+  // fase (entra/pausa/sale) y progreso 0..1 ya pasado por su curva de
+  // aceleracion propia -- la comparten la posicion real y el giro, para que
+  // siempre se muevan exactamente al mismo ritmo
+  function exprPhaseP(t){
+    const tB = (EXPR_ENTER_MS + EXPR_PAUSE_MS) / EXPR_ACTIVE_MS;
+    if(t <= EXPR_T_REST) return { phase:'enter', p: exprEaseOutCubic(Math.min(t / EXPR_T_REST, 1)) };
+    if(t <= tB) return { phase:'pause', p: 1 };
+    return { phase:'exit', p: exprEaseInCubic(Math.min((t - tB) / (1 - tB), 1)) };
+  }
+  const EXPR_ROT_RATE = (2880 / 122) / 2;   // grados por px recorrido (ya bajado a la mitad: que no giren tanto)
+  // giro "crudo" de una fruta yendo de START a targetLeftPx, en el instante t
+  // (sin la correccion de reposo/inclinacion todavia)
+  function exprRawRot(t, dir, widthPx, targetLeftPx, offRight, offLeft){
+    const START = dir === 1 ? offRight : offLeft, END = dir === 1 ? offLeft : offRight;
+    const { phase, p } = exprPhaseP(t);
+    const x = phase === 'enter' ? START + p * (targetLeftPx - START) : phase === 'pause' ? targetLeftPx : targetLeftPx + p * (END - targetLeftPx);
+    return (x - START) / window.innerWidth * 100 * EXPR_ROT_RATE;
+  }
+  // posicion (px) y giro de UNA fruta yendo hacia un punto de reposo cualquiera
+  // (targetLeftPx: el propio para las que van solas, o su lugar en la fila
+  // cuando forman grupo), ya con su inclinacion propia asentada en el reposo
+  function exprLapTo(t, dir, widthPx, targetLeftPx, tiltDeg){
+    const vwPx = window.innerWidth;
+    const offRight = vwPx + 40, offLeft = -widthPx - 40;
+    const START = dir === 1 ? offRight : offLeft, END = dir === 1 ? offLeft : offRight;
+    const { phase, p } = exprPhaseP(t);
+    const x = phase === 'enter' ? START + p * (targetLeftPx - START) : phase === 'pause' ? targetLeftPx : targetLeftPx + p * (END - targetLeftPx);
+    const rawNow = exprRawRot(t, dir, widthPx, targetLeftPx, offRight, offLeft);
+    const atRest = exprRawRot(EXPR_T_REST, dir, widthPx, targetLeftPx, offRight, offLeft);
+    const rot = rawNow - atRest + tiltDeg;
+    return { x, rot };
+  }
+  function exprSoloTarget(widthPx){ return (EXPR_REST_VW / 100) * window.innerWidth - widthPx / 2; }
+
+  function exprFruitClick(i){
+    const now = performance.now();
+    if(exprMode === 'solo'){
+      if(exprOverride[i]) return;
+      const elapsed = now - exprRoundT0 - i * EXPR_STAGGER_MS;
+      if(elapsed < 0 || elapsed > EXPR_ACTIVE_MS) return;   // no esta activa: no responde
+      const newDir = -exprDir;
+      exprDir = newDir;
+      exprOverride[i] = { shakeUntil: now + EXPR_SHAKE_MS, exitFrom: now + EXPR_SHAKE_MS, dir: newDir, seed: Math.random() * 1000 };
+    } else if(exprMode === 'group'){
+      exprStartExplosion(now);
+    }
+  }
+  exprFruitEls.forEach((el, i) => {
+    el.addEventListener('click', (e) => { e.stopPropagation(); exprFruitClick(i); });
+  });
+
+  // arma el plan de la formacion en grupo: el hueco de fila que le toca a cada
+  // una (segun su ancho real), y en que momento entra y sale -- barajado y
+  // escalonado, para que no se muevan todas sincronizadas
+  function exprEnterGroup(now){
+    exprMode = 'group';
+    exprRoundT0 = now;
+    const widths = exprFruitEls.map(el => el.offsetWidth);
+    const blockW = widths.reduce((a, b) => a + b, 0) + EXPR_GROUP_GAP * (EXPR_N - 1);
+    let cursor = (EXPR_REST_VW / 100) * window.innerWidth - blockW / 2;
+    const slots = widths.map(w => { const L = cursor; cursor += w + EXPR_GROUP_GAP; return L; });
+
+    const enterOrder = exprShuffled(EXPR_N), enterRank = [];
+    enterOrder.forEach((fruitIdx, rank) => { enterRank[fruitIdx] = rank; });
+    exprGroupPlan = exprFruitEls.map((el, i) => ({
+      target: slots[i],
+      enterStart: enterRank[i] * EXPR_GROUP_STAGGER_MS + (Math.random() - 0.5) * 70,
+    }));
+    const lastArrival = Math.max(...exprGroupPlan.map(g => g.enterStart)) + EXPR_ENTER_MS;
+    const pauseEnd = lastArrival + EXPR_PAUSE_MS;
+    const exitOrder = exprShuffled(EXPR_N), exitRank = [];
+    exitOrder.forEach((fruitIdx, rank) => { exitRank[fruitIdx] = rank; });
+    exprGroupPlan.forEach((g, i) => { g.exitStart = pauseEnd + exitRank[i] * EXPR_GROUP_STAGGER_MS + (Math.random() - 0.5) * 70; });
+    exprGroupFinish = Math.max(...exprGroupPlan.map(g => g.exitStart)) + EXPR_EXIT_MS;
+  }
+
+  // posicion/giro de la fruta `i` a los `elapsed` ms de haber arrancado el
+  // grupo: cada una tiene su propio arranque y su propio hueco de destino, asi
+  // que se le arma su "reloj" particular dentro del mismo esquema entra/pausa/sale
+  function exprGroupFruitState(i, elapsed){
+    const g = exprGroupPlan[i], el = exprFruitEls[i], w = el.offsetWidth;
+    if(elapsed < g.enterStart){
+      return { x: exprDir === 1 ? (window.innerWidth + 40) : (-w - 40), rot: 0 };
+    }
+    if(elapsed >= g.exitStart + EXPR_EXIT_MS){
+      return { x: exprDir === 1 ? (-w - 40) : (window.innerWidth + 40), rot: 0 };
+    }
+    let localT;
+    if(elapsed < g.enterStart + EXPR_ENTER_MS){
+      localT = (elapsed - g.enterStart) / EXPR_ENTER_MS * EXPR_T_REST;
+    } else if(elapsed < g.exitStart){
+      localT = EXPR_T_REST;   // ya llego: espera en la fase de pausa hasta que le toque salir
+    } else {
+      const tB = (EXPR_ENTER_MS + EXPR_PAUSE_MS) / EXPR_ACTIVE_MS;
+      localT = tB + Math.min((elapsed - g.exitStart) / EXPR_EXIT_MS, 1) * (1 - tB);
+    }
+    return exprLapTo(localT, exprDir, w, g.target, exprFruitTilt[i]);
+  }
+
+  function exprStartExplosion(now){
+    exprMode = 'exploding';
+    const elapsed = now - exprRoundT0;
+    const captured = exprFruitEls.map((el, i) => exprGroupFruitState(i, elapsed));
+    exprDir = -exprDir;
+    const items = exprFruitEls.map((el, i) => {
+      const shakeDur = 450 + Math.random() * 250;
+      const goRight = Math.random() < 0.5;
+      const travelDur = 900 + Math.random() * 600;
+      const shakeStart = now + Math.random() * 150;
+      return {
+        shakeStart, shakeEnd: shakeStart + shakeDur, travelDur,
+        dirOut: goRight ? 1 : -1, rotSpin: 600 + Math.random() * 900, seed: Math.random() * 1000,
+        xAtLaunch: captured[i].x, rotAtLaunch: captured[i].rot,
+      };
+    });
+    const finishAt = Math.max(...items.map(it => it.shakeEnd + it.travelDur));
+    exprBoom = { items, finishAt, resumeAt: finishAt - EXPR_CROSS_MS };
+  }
+
+  function exprRenderFruits(now){
+    if(!exprFruitEls.length) return;
+
+    if(exprMode === 'solo'){
+      const elapsedRound = now - exprRoundT0;
+      exprFruitEls.forEach((el, i) => {
+        const w = el.offsetWidth;
+        const ov = exprOverride[i];
+        if(ov){
+          if(now < ov.shakeUntil){
+            // sacudon amigable desde su propio eje: se rocking (gira un poco
+            // para cada lado sobre si misma), no se desliza de costado
+            const s = 1 - (ov.shakeUntil - now) / EXPR_SHAKE_MS;
+            const wob = Math.sin(s * Math.PI * 5 + ov.seed) * (1 - s) * 14;
+            const restLeft = exprSoloTarget(w);
+            el.style.transform = `translate(${restLeft}px, -50%) rotate(${exprFruitTilt[i] + wob}deg)`;
+          } else {
+            const p = Math.min((now - ov.exitFrom) / EXPR_EXIT_MS, 1);
+            const tB = (EXPR_ENTER_MS + EXPR_PAUSE_MS) / EXPR_ACTIVE_MS;
+            const virtualT = tB + p * (1 - tB);
+            const { x, rot } = exprLapTo(virtualT, ov.dir, w, exprSoloTarget(w), exprFruitTilt[i]);
+            el.style.transform = `translate(${x}px, -50%) rotate(${rot}deg)`;
+            if(p >= 1) delete exprOverride[i];
+          }
+          return;
+        }
+        const local = elapsedRound - i * EXPR_STAGGER_MS;
+        if(local < 0 || local > EXPR_ACTIVE_MS){
+          const off = exprDir === 1 ? (window.innerWidth + 40) : (-w - 40);   // bien afuera: nunca amontonadas a la vista
+          el.style.transform = `translate(${off}px, -50%) rotate(0deg)`;
+          return;
+        }
+        const { x, rot } = exprLapTo(local / EXPR_ACTIVE_MS, exprDir, w, exprSoloTarget(w), exprFruitTilt[i]);
+        el.style.transform = `translate(${x}px, -50%) rotate(${rot}deg)`;
+      });
+      if(elapsedRound - (EXPR_N - 1) * EXPR_STAGGER_MS > EXPR_ACTIVE_MS){
+        exprEnterGroup(now);
+      }
+      return;
+    }
+
+    if(exprMode === 'group'){
+      const elapsed = now - exprRoundT0;
+      exprFruitEls.forEach((el, i) => {
+        const { x, rot } = exprGroupFruitState(i, elapsed);
+        el.style.transform = `translate(${x}px, -50%) rotate(${rot}deg)`;
+      });
+      if(elapsed >= exprGroupFinish){ exprMode = 'solo'; exprRoundT0 = now; exprOverride = {}; }
+      return;
+    }
+
+    if(exprMode === 'exploding' && exprBoom){
+      const vwPx = window.innerWidth;
+      exprFruitEls.forEach((el, i) => {
+        const it = exprBoom.items[i];
+        const finishedExplosion = now - it.shakeEnd >= it.travelDur;
+        if(!finishedExplosion){
+          if(now < it.shakeStart){
+            el.style.transform = `translate(${it.xAtLaunch}px, -50%) rotate(${it.rotAtLaunch}deg)`;
+          } else if(now < it.shakeEnd){
+            const s = (now - it.shakeStart) / (it.shakeEnd - it.shakeStart);
+            const wob = Math.sin(s * Math.PI * 5 + it.seed) * (1 - s) * 14;
+            el.style.transform = `translate(${it.xAtLaunch}px, -50%) rotate(${it.rotAtLaunch + wob}deg)`;
+          } else {
+            const p = exprEaseInCubic(Math.min((now - it.shakeEnd) / it.travelDur, 1));
+            const endX = it.dirOut === 1 ? (vwPx + 220) : -220;
+            const x = it.xAtLaunch + p * (endX - it.xAtLaunch);
+            const rot = it.rotAtLaunch + p * it.rotSpin * it.dirOut;
+            el.style.transform = `translate(${x}px, -50%) rotate(${rot}deg)`;
+          }
+          return;
+        }
+        // esta ya termino su explosion: si ya toca, se suma al arranque normal
+        if(now >= exprBoom.resumeAt){
+          const elapsedRound = now - exprBoom.resumeAt;
+          const local = elapsedRound - i * EXPR_STAGGER_MS;
+          const w = el.offsetWidth;
+          if(local < 0 || local > EXPR_ACTIVE_MS){
+            const off = exprDir === 1 ? (vwPx + 40) : (-w - 40);
+            el.style.transform = `translate(${off}px, -50%) rotate(0deg)`;
+          } else {
+            const { x, rot } = exprLapTo(local / EXPR_ACTIVE_MS, exprDir, w, exprSoloTarget(w), exprFruitTilt[i]);
+            el.style.transform = `translate(${x}px, -50%) rotate(${rot}deg)`;
+          }
+        } else {
+          el.style.transform = `translate(${it.dirOut === 1 ? vwPx + 220 : -220}px, -50%) rotate(${it.rotAtLaunch}deg)`;
+        }
+      });
+      const allDone = exprBoom.items.every(it => now - it.shakeEnd >= it.travelDur);
+      if(allDone && now >= exprBoom.resumeAt){
+        exprMode = 'solo'; exprRoundT0 = exprBoom.resumeAt; exprOverride = {}; exprBoom = null;
+      }
+    }
+  }
+
+  function setupWorkProject(id){
+    teardownWorkProject();
+    if(!id) return;
+
+    let page = document.querySelector('.work-project[data-project="' + id + '"]');
+    if(!page) page = document.querySelector('.work-project[data-project="placeholder"]');
+    page.classList.add('is-active');
+
+    root.classList.add('work-open');
+    root.classList.toggle('work-dark', DARK_WORKS.indexOf(String(id)) !== -1);
+
+    workTrack = page.querySelector('.work-track');
+    if(!workTrack) return;
+
+    procesoPart = workTrack.querySelector('.smb-proceso');
+    conceptPart = workTrack.querySelector('.smb-conceptual');
+    finalParts  = Array.from(workTrack.querySelectorAll('.smb-final'));
+    vigProcesoPart = workTrack.querySelector('.work-proceso');
+    vigConceptPart = workTrack.querySelector('.work-concept');
+
+    workCurrent = 0; workTarget = 0; workLeaving = false;
+    workTrack.style.transform = 'translateY(0px)';
+    measureWork();
+    if(procesoPart) startMedia();
+    if(String(id) === '5'){ setupAlbFinal(); startAlbMedia(); updateAlbCoverPin(); }
+    if(String(id) === '3'){
+      drawExprArrow();
+      setTimeout(() => { drawExprArrow(); measureWork(); }, 260);
+      exprDir = 1; exprMode = 'solo'; exprRoundT0 = performance.now(); exprOverride = {}; exprBoom = null;
+      exprConceptTextState = 'hidden';
+      exprFruitsTextState = 'hidden';
+      exprGeoOpen = false;
+      // se preparan (parten en lineas) ya mismo, ocultas: asi no se ven hasta
+      // que corresponda (scrollear hasta ahi, o clickear en el geometral)
+      exprPrepareReveal(exprConceptText);
+      exprResetReveal(exprConceptText);
+      exprPrepareReveal(document.getElementById('exprFruitsText'));
+      exprResetReveal(document.getElementById('exprFruitsText'));
+      exprPrepareReveal(exprGeoText);
+      exprResetReveal(exprGeoText);
+    }
+  }
+
+  function teardownWorkProject(){
+    root.classList.remove('work-open','work-dark','work-nav-hidden',
+                          'smb-click-on','smb-lb-open','smb-vig-top','smb-vig-bottom');
+    workPages.forEach(p => p.classList.remove('is-active'));
+    finalParts.forEach(f => { f.style.opacity = ''; });
+    stopMedia();
+    stopAlbMedia();
+    teardownAlbFinal();
+    const albPin = document.getElementById('albCoverPin');
+    const albCurtainEl = document.getElementById('albCurtain');
+    const albCoverEl = document.getElementById('albCoverFull');
+    if(albPin) albPin.style.opacity = '0';
+    if(albCurtainEl) albCurtainEl.style.height = '0px';
+    if(albCoverEl) albCoverEl.style.opacity = '';
+    const lb = document.getElementById('smbLightbox');
+    if(lb) lb.classList.remove('on');
+    lbOpen = false;
+    procesoPart = null; conceptPart = null; finalParts = [];
+    vigProcesoPart = null; vigConceptPart = null;
+    workTrack = null; workLeaving = false;
+  }
+
+  function measureWork(){
+    if(!workTrack) return;
+    // 140px de más: hay que "pasarse" del final para que vuelva sola al home
+    workMax = Math.max(workTrack.scrollHeight - window.innerHeight, 0) + 140;
+  }
+  window.addEventListener('resize', () => { if(root.classList.contains('work-open')){ measureWork(); sizeAlbSlot(ALB_RATIO); drawExprArrow(); } });
+
+  window.addEventListener('wheel', (e) => {
+    if(!panel.classList.contains('open') || !panel.classList.contains('show-work')) return;
+    if(!workTrack || workLeaving) return;
+    e.preventDefault();
+    if(lbOpen) return;
+    workTarget += e.deltaY;
+    if(workTarget < -90){
+      workLeaving = true;
+      sectionTransition(goHome, root.classList.contains('work-dark'));
+      return;
+    }
+    if(workTarget < 0) workTarget = Math.max(workTarget, -90);
+    if(workTarget > workMax) workTarget = workMax;
+  }, { passive:false });
+
+  const smbVeil   = document.getElementById('smbVeil');
+  const smbCursor = document.getElementById('smbCursor');
+  window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX; mouseY = e.clientY;
+    if(smbCursor){
+      smbCursor.style.left = mouseX + 'px';
+      smbCursor.style.top  = mouseY + 'px';
+    }
+    if(exprGeoHint){
+      exprGeoHint.style.left = mouseX + 'px';
+      exprGeoHint.style.top  = mouseY + 'px';
+    }
+  });
+
+  // ---- foto final ampliada ----
+  const smbLb    = document.getElementById('smbLightbox');
+  const smbLbImg = document.getElementById('smbLightboxImg');
+
+  function openLightbox(img){
+    if(!smbLb || !smbLbImg) return;
+    smbLbImg.src = img.currentSrc || img.src;
+    const vert  = document.querySelector('.smb-final img');
+    const hVert = window.innerHeight * 0.78;
+    const wVert = hVert * (vert.naturalWidth / vert.naturalHeight);
+    const ratio = img.naturalWidth / img.naturalHeight;
+    let h = (img === vert) ? hVert : wVert;
+    let w = h * ratio;
+    const wMax = window.innerWidth * 0.86;
+    if(w > wMax){ h *= wMax / w; w = wMax; }
+    smbLbImg.style.height = h + 'px';
+    smbLbImg.style.width  = w + 'px';
+    smbLb.classList.add('on');
+    root.classList.add('smb-lb-open');
+    root.classList.remove('smb-click-on');
+    lbOpen = true;
+  }
+  function closeLightbox(){
+    if(!smbLb) return;
+    smbLb.classList.remove('on');
+    root.classList.remove('smb-lb-open');
+    lbOpen = false;
+  }
+  if(smbLb) smbLb.addEventListener('click', closeLightbox);
+  document.querySelectorAll('.smb-final').forEach(sec => {
+    sec.addEventListener('click', () => {
+      if(lbOpen) return;
+      openLightbox(sec.querySelector('img'));
+    });
+  });
+
+  function workLoop(){
+    if(workTrack && panel.classList.contains('open') && panel.classList.contains('show-work')){
+      workCurrent += (workTarget - workCurrent) * 0.075;
+      workTrack.style.transform = 'translateY(' + (-workCurrent) + 'px)';
+      const vh = window.innerHeight;
+
+      const enPantalla = (el, margen) => {
+        const top = el.offsetTop - workCurrent;
+        return top < vh - (margen || 0) && top + el.offsetHeight > (margen || 0);
+      };
+
+      if(smbVeil){
+        const r = smbVeil.getBoundingClientRect();
+        smbVeil.style.setProperty('--smb-mx', (mouseX - r.left) + 'px');
+        smbVeil.style.setProperty('--smb-my', (mouseY - r.top)  + 'px');
+      }
+
+      updateAlbCoverPin();
+
+      if(workTrack === exprTrackEl){
+        exprRenderFruits(performance.now());
+
+        if(exprLastWorkCurrent === null) exprLastWorkCurrent = workCurrent;
+        const exprScrollingDown = workCurrent >= exprLastWorkCurrent;
+        exprLastWorkCurrent = workCurrent;
+
+        // "visible" es el mismo criterio para las tres secciones (concepto,
+        // tercer parrafo, geometral): al menos el 70% de su alto tiene que
+        // estar dentro de la pantalla. Con full-visibility exacta se cerraban
+        // solas apenas el scroll quedaba un poco corrido; con un margen
+        // grande, para cuando "dejaban de verse" ya habian scrolleado tan
+        // lejos que el movimiento de salida pasaba afuera de la pantalla, sin
+        // que se llegara a ver. Este punto medio se nota entrando/saliendo y
+        // no se dispara solo por quedar la pantalla un poco corrida.
+        const exprFullyVisible = (el) => {
+          const top = el.offsetTop - workCurrent;
+          const bottom = top + el.offsetHeight;
+          const visH = Math.max(Math.min(bottom, vh) - Math.max(top, 0), 0);
+          return (visH / el.offsetHeight) >= 0.7;
+        };
+
+        // concepto y tercer parrafo: al bajar, entran y se van de arriba hacia
+        // abajo; al subir, al reves, de abajo hacia arriba -- en ambos casos,
+        // en el mismo sentido en el que se esta scrolleando
+        if(exprConceptPartEl){
+          const visible = exprFullyVisible(exprConceptPartEl);
+          if(visible && exprConceptTextState !== 'shown'){
+            exprConceptTextState = 'shown';
+            exprPrepareReveal(exprConceptText);
+            exprPlayReveal(exprConceptText, 45, !exprScrollingDown);
+          } else if(!visible && exprConceptTextState === 'shown'){
+            exprConceptTextState = 'hidden';
+            exprPlayHide(exprConceptText, 45, !exprScrollingDown);
+          }
+        }
+        if(exprFruitsPartEl){
+          const ft = document.getElementById('exprFruitsText');
+          const visible = exprFullyVisible(exprFruitsPartEl);
+          if(visible && exprFruitsTextState !== 'shown'){
+            exprFruitsTextState = 'shown';
+            exprPrepareReveal(ft);
+            exprPlayReveal(ft, 45, !exprScrollingDown);
+          } else if(!visible && exprFruitsTextState === 'shown'){
+            exprFruitsTextState = 'hidden';
+            exprPlayHide(ft, 45, !exprScrollingDown);
+          }
+        }
+
+        // geometral: el click lo abre; si se scrollea (para cualquier lado) y
+        // deja de verse completo, se cierra igual que los otros textos, y hay
+        // que volver a clickear para verlo de nuevo
+        if(exprGeoOpen && exprGeoSection && !exprFullyVisible(exprGeoSection)){
+          exprGeoOpen = false;
+          exprPlayHide(exprGeoText, 45, !exprScrollingDown);
+        }
+      }
+
+      // el video final solo corre mientras está a la vista: si se va de pantalla
+      // se frena y se reinicia, así al volver arranca siempre de cero
+      if(workTrack === document.getElementById('albTrack') && albVideo){
+        const finalSec = document.getElementById('albFinal');
+        if(finalSec){
+          const top = finalSec.offsetTop - workCurrent;
+          const bottom = top + finalSec.offsetHeight;
+          const visible = bottom > 0 && top < vh;   // aunque sea un poco en pantalla
+          if(visible && !albFinalStarted){
+            albFinalStarted = true;
+            albVideo.style.opacity = '1';
+            albYtBtn.classList.remove('show');
+            try{ albVideo.currentTime = 0; } catch(e){}
+            fadeInAlbVolume();
+            const p = albVideo.play();
+            if(p && p.catch) p.catch(() => {});
+          } else if(!visible && albFinalStarted){
+            albFinalStarted = false;
+            albVideo.pause();
+            cancelAnimationFrame(albVolumeRAF);
+            try{ albVideo.currentTime = 0; } catch(e){}
+            albVideo.style.opacity = '1';
+            albYtBtn.classList.remove('show');
+          }
+
+          // pasada la mitad del video en pantalla, se acomoda solo al centro:
+          // se corrige el destino del scroll y el propio suavizado hace el resto
+          const shown = Math.min(bottom, vh) - Math.max(top, 0);
+          const halfIn = shown > finalSec.offsetHeight * 0.5;
+          if(halfIn && !albSnapped && !workLeaving){
+            albSnapped = true;
+            workTarget = finalSec.offsetTop;
+          } else if(!halfIn && albSnapped){
+            albSnapped = false;
+          }
+
+          // el degradé de abajo se sostiene hasta que el video está por encuadrarse,
+          // y recién ahí se retira (con un fundido largo, para no molestar)
+          albVigHold = top < vh && shown < finalSec.offsetHeight * 0.75;
+        }
+      }
+
+      if(vigProcesoPart){
+        const pBot = vigProcesoPart.offsetTop + vigProcesoPart.offsetHeight - workCurrent;
+        root.classList.toggle('smb-vig-top', pBot < vh * 0.25 && pBot > -vh * 0.25);
+      }
+      if(vigConceptPart){
+        const cBot = vigConceptPart.offsetTop + vigConceptPart.offsetHeight - workCurrent;
+        root.classList.toggle('smb-vig-bottom', (cBot < vh * 0.25 && cBot > -vh * 0.25) || albVigHold);
+      }
+
+      if(finalParts.length){
+        const enFinales = finalParts.some(f => enPantalla(f, vh * 0.25));
+        root.classList.toggle('work-nav-hidden', enFinales);
+        root.classList.toggle('smb-click-on', enFinales && !lbOpen);
+
+        finalParts.forEach(f => {
+          const top = f.offsetTop - workCurrent;
+          const t = Math.min(Math.max((vh * 1.05 - top) / (vh * 0.8), 0), 1);
+          f.style.opacity = t;
+        });
+      }
+
+      if(!workLeaving && workCurrent > workMax - 4){
+        workLeaving = true;
+        sectionTransition(goHome, root.classList.contains('work-dark'));
+      }
+    }
+    requestAnimationFrame(workLoop);
+  }
+  requestAnimationFrame(workLoop);
+
+  items.forEach(it => it.addEventListener('click', (e) => {
+    const id = it.dataset.project;
+    sectionTransition(() => openPanel('work', id));
+  }));
+</script>
+
+</body>
+</html>
