@@ -383,6 +383,85 @@
     .alb-proceso-text{ max-width:none; }
   }
 
+  /* =============== DUALIDAD FUSIONADA (proyecto 02) =============== */
+  /* Tema claro (no entra en DARK_WORKS). El fondo no es del panel: es una capa
+     propia (.df-bg) que viaja con el recorrido y pasa, muy de a poco, de blanco
+     a #f6f6f6 durante el concepto. Va POR DEBAJO de las imágenes del moodboard
+     que pasan "por detrás" del texto, por eso no puede estar dentro del recorrido. */
+  .df{ --df-m: clamp(20px,4vw,56px); --df-bg:#f6f6f6; position:relative; }
+  .df-bg{ position:absolute; left:0; top:0; width:100vw; z-index:0; pointer-events:none; will-change:transform; }
+  .df-track{ position:relative; z-index:2; }
+  .df-part{ width:100vw; position:relative; }
+
+  /* capas de las imágenes del moodboard: fijas a la pantalla, una por debajo
+     del texto y otra por encima. Cada imagen la mueve el JS cuadro a cuadro. */
+  .df-mood{ position:fixed; inset:0; overflow:hidden; pointer-events:none; }
+  .df-mood-back{ z-index:1; }
+  .df-mood-front{ z-index:3; }
+  .df-mood img{ position:absolute; left:0; top:0; display:block; visibility:hidden; will-change:transform; }
+
+  /* degradés fijos a la pantalla, en el color que tenga el fondo en ese punto
+     (--df-fade-c, lo actualiza el JS). El de arriba se prende cuando la portada
+     ya se fue; el de abajo, solo para la entrada del video. */
+  .df-fade{ position:fixed; left:0; right:0; height:24vh; z-index:4; pointer-events:none; opacity:0; transition:opacity 1s ease; --df-fade-c:255,255,255; }
+  .df-fade-t{ top:0;    background:linear-gradient(to bottom, rgb(var(--df-fade-c)) 0%, rgba(var(--df-fade-c),.72) 30%, rgba(var(--df-fade-c),.34) 60%, rgba(var(--df-fade-c),.09) 84%, rgba(var(--df-fade-c),0) 100%); }
+  .df-fade-b{ bottom:0; background:linear-gradient(to top,    rgb(var(--df-fade-c)) 0%, rgba(var(--df-fade-c),.72) 30%, rgba(var(--df-fade-c),.34) 60%, rgba(var(--df-fade-c),.09) 84%, rgba(var(--df-fade-c),0) 100%); }
+  .df-fade.on{ opacity:1; }
+
+  /* ---- 1. INICIAL: la foto a todo el ancho, alto según su proporción ---- */
+  /* el pie de la foto se disuelve en el fondo: Carolina ya dejó la última franja
+     casi blanca, así que alcanza con un difuminado corto sobre esa zona clara */
+  .df-inicial{ width:100vw; position:relative; }
+  .df-hero{
+    width:100%; height:auto; aspect-ratio:2841/3386; display:block;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 77%, rgba(0,0,0,.86) 83%, rgba(0,0,0,.62) 88%, rgba(0,0,0,.36) 92.5%, rgba(0,0,0,.15) 96%, rgba(0,0,0,.04) 98.4%, transparent 99.4%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 77%, rgba(0,0,0,.86) 83%, rgba(0,0,0,.62) 88%, rgba(0,0,0,.36) 92.5%, rgba(0,0,0,.15) 96%, rgba(0,0,0,.04) 98.4%, transparent 99.4%);
+  }
+  /* título + subtítulo centrados, apoyados justo encima de la prenda (la
+     cintura del short está al 43% del alto de la foto, centrada en el ancho) */
+  .df-head{ position:absolute; left:49.7%; top:40.5%; transform:translate(-50%,-100%); text-align:center; color:#fff; white-space:nowrap; text-shadow:0 1px 22px rgba(10,25,45,.28); }
+  .df-title{ font-size:clamp(34px,4.6vw,64px); font-weight:500; line-height:1.02; letter-spacing:-.015em; }
+  .df-sub{ margin-top:14px; font-size:clamp(13px,1.25vw,15px); color:rgba(255,255,255,.78); }
+  .df-sub em{ font-style:normal; color:#fff; }
+  /* servicios: esquina inferior izquierda de la primera pantalla */
+  .df-roles{ position:absolute; left:calc(var(--df-m) * 2); top:100vh; transform:translateY(calc(-100% - 9vh)); font-size:11.5px; letter-spacing:.06em; line-height:2.05; color:#fff; text-shadow:0 1px 14px rgba(10,25,45,.35); }
+
+  .df-gap{ width:100vw; }
+
+  /* ---- 2. CONCEPTO: tres párrafos en zigzag ---- */
+  .df-text p{ font-size:clamp(12.5px,1.05vw,14px); line-height:1.85; color:var(--ink); margin-bottom:1.25em; }
+  .df-text p:last-child{ margin-bottom:0; }
+  .df-concept p{ width:min(46ch,38vw); }
+  .df-p1{ margin-left:var(--df-m); }
+  .df-p2{ margin-left:auto; margin-right:var(--df-m); }
+  /* más adentro que el primero, sin llegar al centro */
+  .df-p3{ margin-left:calc(var(--df-m) + 13vw); }
+  .df-cgap{ height:42vh; }
+
+  /* ---- 3. PROCESO: figurín centrado en la pantalla, texto a la derecha ---- */
+  .df-proceso{ position:relative; }
+  .df-proceso .df-text{ margin-left:auto; margin-right:var(--df-m); width:min(50ch,29vw); }
+  /* el figurín mide lo mismo que el texto (alto) y conserva su proporción */
+  .df-figurin{ position:absolute; top:0; left:50%; height:100%; transform:translateX(-50%); }
+  .df-figurin img{ height:100%; width:auto; display:block; }
+  .df-figurin-ph{ height:100%; aspect-ratio:1/2; background:#ecebe8; display:flex; align-items:center; justify-content:center; font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--stone); text-align:center; }
+
+  /* ---- 4. VIDEO a todo el ancho ---- */
+  .df-video{ width:100vw; position:relative; }
+  .df-video video{ width:100%; height:auto; aspect-ratio:2044/1080; display:block; }
+
+  /* ---- 5. FINALES: las dos fotos una al lado de la otra, mismo alto ---- */
+  .df-finals{ width:100vw; display:flex; gap:10px; opacity:0; }
+  .df-finals img{ min-width:0; height:auto; display:block; }
+  .df-finals img:first-child{ flex:3601 1 0; aspect-ratio:3601/2083; }
+  .df-finals img:last-child{ flex:1562 1 0; aspect-ratio:3024/4032; }
+
+  @media (max-width:900px){
+    .df-concept p, .df-proceso .df-text{ width:auto; margin:0 var(--df-m); }
+    .df-figurin{ position:static; transform:none; height:60vh; margin:0 auto 6vh; width:max-content; }
+    .df-head{ white-space:normal; width:90vw; }
+  }
+
   /* =============== UN MUNDO PARA EXPRIMIR (proyecto 03) =============== */
   /* Tema claro: no define colores propios (usa --ink / --stone directo) y no
      entra en DARK_WORKS, asi que el panel conserva el fondo blanco y el texto
@@ -698,7 +777,6 @@
       <button class="scatter-item dark"  data-project="3" id="p3"><span class="item-inner"><span class="ph" style="background-image:url(&quot;assets/exprimir-thumb-bocetos.jpg&quot;); background-size:cover; background-position:center;"></span></span></button>
       <button class="scatter-item light" data-project="4" id="p4"><span class="item-inner"><span class="ph" style="background-image:url(&quot;assets/trabajo-04-thumb.jpg&quot;); background-size:cover; background-position:center;"></span></span></button>
       <button class="scatter-item dark"  data-project="5" id="p5"><span class="item-inner"><span class="ph" style="background-image:url(&quot;assets/7600-thumb-sax.jpg&quot;); background-size:cover; background-position:30% center;"></span></span></button>
-      <button class="scatter-item light" data-project="6" id="p6"><span class="item-inner"><span class="ph"></span></span></button>
     </div>
 
   </div>
@@ -768,6 +846,108 @@
     </div>
 
     <div class="panel-page" data-page="work">
+
+      <!-- ===== 02 - Dualidad Fusionada ===== -->
+      <div class="work-project df" data-project="2">
+        <div class="df-bg" id="dfBg"></div>
+        <!-- imagenes del moodboard: el JS las reparte al azar entre la capa de
+             atras (por debajo del texto) y la de adelante (por encima de todo) -->
+        <div class="df-mood df-mood-back" id="dfMoodBack"></div>
+        <div class="df-mood df-mood-front" id="dfMoodFront"></div>
+        <div class="df-mood-src" id="dfMoodSrc" hidden>
+          <img src="assets/dualidad-mood-01.jpg" data-w="923" data-h="960" alt="">
+          <img src="assets/dualidad-mood-02.jpg" data-w="1170" data-h="1389" alt="">
+          <img src="assets/dualidad-mood-03.jpg" data-w="881" data-h="1345" alt="">
+          <img src="assets/dualidad-mood-04.jpg" data-w="979" data-h="1499" alt="">
+          <img src="assets/dualidad-mood-05.jpg" data-w="1170" data-h="1153" alt="">
+          <img src="assets/dualidad-mood-06.jpg" data-w="1170" data-h="753" alt="">
+          <img src="assets/dualidad-mood-07.jpg" data-w="981" data-h="1228" alt="">
+          <img src="assets/dualidad-mood-08.jpg" data-w="951" data-h="1447" alt="">
+          <img src="assets/dualidad-mood-09.jpg" data-w="959" data-h="1461" alt="">
+          <img src="assets/dualidad-mood-10.jpg" data-w="984" data-h="1480" alt="">
+          <img src="assets/dualidad-mood-11.jpg" data-w="987" data-h="1074" alt="">
+          <img src="assets/dualidad-mood-12.jpg" data-w="965" data-h="1383" alt="">
+          <img src="assets/dualidad-mood-13.jpg" data-w="979" data-h="1373" alt="">
+          <img src="assets/dualidad-mood-14.jpg" data-w="697" data-h="489" alt="">
+          <img src="assets/dualidad-mood-15.jpg" data-w="799" data-h="794" alt="">
+          <img src="assets/dualidad-mood-16.jpg" data-w="358" data-h="255" alt="">
+          <img src="assets/dualidad-mood-17.jpg" data-w="498" data-h="817" alt="">
+          <img src="assets/dualidad-mood-18.jpg" data-w="1080" data-h="1315" alt="">
+          <img src="assets/dualidad-mood-19.jpg" data-w="621" data-h="466" alt="">
+          <img src="assets/dualidad-mood-20.jpg" data-w="540" data-h="374" alt="">
+          <img src="assets/dualidad-mood-21.jpg" data-w="906" data-h="694" alt="">
+          <img src="assets/dualidad-mood-22.jpg" data-w="564" data-h="364" alt="">
+          <img src="assets/dualidad-mood-23.jpg" data-w="736" data-h="1308" alt="">
+          <img src="assets/dualidad-mood-24.jpg" data-w="494" data-h="743" alt="">
+          <img src="assets/dualidad-mood-25.jpg" data-w="564" data-h="588" alt="">
+          <img src="assets/dualidad-mood-26.jpg" data-w="453" data-h="610" alt="">
+          <img src="assets/dualidad-mood-27.jpg" data-w="564" data-h="591" alt="">
+          <img src="assets/dualidad-mood-28.jpg" data-w="736" data-h="1104" alt="">
+          <img src="assets/dualidad-mood-29.jpg" data-w="1170" data-h="2032" alt="">
+          <img src="assets/dualidad-mood-30.jpg" data-w="384" data-h="395" alt="">
+          <img src="assets/dualidad-mood-31.jpg" data-w="977" data-h="680" alt="">
+          <img src="assets/dualidad-mood-32.jpg" data-w="414" data-h="682" alt="">
+          <img src="assets/dualidad-mood-33.jpg" data-w="564" data-h="564" alt="">
+          <img src="assets/dualidad-mood-34.jpg" data-w="1545" data-h="963" alt="">
+          <img src="assets/dualidad-mood-35.jpg" data-w="576" data-h="587" alt="">
+          <img src="assets/dualidad-mood-36.jpg" data-w="564" data-h="585" alt="">
+          <img src="assets/dualidad-mood-37.jpg" data-w="600" data-h="573" alt="">
+        </div>
+        <div class="df-fade df-fade-t" id="dfFadeTop"></div>
+        <div class="df-fade df-fade-b" id="dfFadeBottom"></div>
+
+        <div class="df-track work-track" id="dfTrack">
+
+          <!-- 1. INICIAL -->
+          <section class="df-part df-inicial" id="dfInicial">
+            <img class="df-hero" src="assets/dualidad-hero.jpg" alt="Dualidad Fusionada">
+            <div class="df-head">
+              <h1 class="df-title">Dualidad Fusionada</h1>
+              <div class="df-sub"><em>Colecci&oacute;n de Indumentaria</em> &nbsp;2025</div>
+            </div>
+            <div class="df-roles">Direcci&oacute;n Creativa<br>Desarrollo Conceptual<br>Desarrollo de Colecci&oacute;n</div>
+          </section>
+
+          <div class="df-gap" style="height:14vh"></div>
+
+          <!-- 2. CONCEPTO: tres parrafos en zigzag (izquierda / derecha / izquierda mas adentro) -->
+          <section class="df-part df-concept df-text" id="dfConcept">
+            <p class="df-p1" id="dfP1">Como trabajo final de segundo a&ntilde;o, el proyecto parti&oacute; de una consigna vinculada con Mar del Plata. Desde una cercan&iacute;a personal con el universo de la navegaci&oacute;n recreativa, surgi&oacute; el inter&eacute;s por tomar su dimensi&oacute;n mar&iacute;tima como punto de partida y explorar la proximidad entre dos formas de habitar un mismo entorno. La investigaci&oacute;n profundiz&oacute; entonces en una convivencia particular: un mismo mar habitado desde la funcionalidad del trabajo y desde el ocio de la navegaci&oacute;n recreativa, dos universos que se diferencian en sus pr&aacute;cticas, materiales y c&oacute;digos, pero que forman parte de un mismo paisaje.</p>
+            <div class="df-cgap"></div>
+            <p class="df-p2" id="dfP2">Entre ambos aparecen formas de habitar el mar profundamente distintas. Mientras uno responde a las exigencias del entorno a trav&eacute;s de la resistencia, la protecci&oacute;n y la practicidad, el otro construye una relaci&oacute;n m&aacute;s asociada al disfrute, donde la funcionalidad convive con la est&eacute;tica, la liviandad y el cuidado por los detalles. Sus diferencias no solo se encuentran en las prendas, sino tambi&eacute;n en las embarcaciones, los materiales y las formas de movimiento que caracterizan cada universo.</p>
+            <div class="df-cgap"></div>
+            <p class="df-p3" id="dfP3">Dualidad Fusionada explora ese punto de encuentro. La colecci&oacute;n recupera elementos de ambos mundos para construir un lenguaje contempor&aacute;neo de indumentaria, donde lo resistente y lo liviano, lo utilitario y lo sofisticado, encuentran una forma de coexistir.</p>
+          </section>
+
+          <div class="df-gap" style="height:85vh"></div>
+
+          <!-- 3. PROCESO: figurin centrado (mismo alto que el texto) + texto a la derecha -->
+          <section class="df-part df-proceso" id="dfProceso">
+            <div class="df-figurin" id="dfFigurin"><div class="df-figurin-ph">[ Figur&iacute;n 01 ]</div></div>
+            <div class="df-text" id="dfProcesoText">
+              <p>El desarrollo parti&oacute; de una investigaci&oacute;n sobre la historia y evoluci&oacute;n de las pr&aacute;cticas mar&iacute;timas de Mar del Plata, profundizando en las diferencias y conexiones entre el trabajo portuario y la navegaci&oacute;n recreativa. A partir de este recorrido se definieron los recursos que dar&iacute;an forma a la colecci&oacute;n y se desarrollaron seis propuestas, explorando distintas maneras de hacer convivir los c&oacute;digos de ambos universos.</p>
+              <p>La investigaci&oacute;n se traslad&oacute; al dise&ntilde;o a trav&eacute;s de la exploraci&oacute;n de formas, materiales, texturas y recursos constructivos, buscando conservar el contraste entre ambas referencias incluso cuando se integraban dentro de una misma propuesta. El proceso se complet&oacute; con la materializaci&oacute;n de uno de los dise&ntilde;os y el desarrollo de sus fichas t&eacute;cnicas, incorporando las especificaciones necesarias para trasladar la propuesta conceptual a una resoluci&oacute;n concreta.</p>
+              <p>En el conjunto final, el blanco atraviesa ambas prendas y las re&uacute;ne visualmente dentro de un mismo universo, mientras que sus materialidades y texturas mantienen una diferencia marcada. De esta manera, una apariencia limpia y unificada convive con contrastes que remiten a las distintas formas de habitar el paisaje mar&iacute;timo que dio origen a la colecci&oacute;n.</p>
+            </div>
+          </section>
+
+          <div class="df-gap" style="height:50vh"></div>
+
+          <!-- 4. VIDEO a todo el ancho -->
+          <section class="df-video" id="dfVideoSec">
+            <video id="dfVideo" src="assets/dualidad-video.mp4" playsinline loop preload="metadata"></video>
+          </section>
+
+          <div class="df-gap" style="height:50vh"></div>
+
+          <!-- 5. FINALES -->
+          <section class="df-finals" id="dfFinals">
+            <img src="assets/dualidad-final-1.jpg" alt="Dualidad Fusionada">
+            <img src="assets/dualidad-final-2.jpg" alt="Dualidad Fusionada">
+          </section>
+
+        </div>
+      </div>
 
       <!-- ===== 03 - Un Mundo para Exprimir ===== -->
       <div class="work-project expr" data-project="3">
@@ -1060,13 +1240,13 @@
 <script>
   // ---- Trabajos: setup (definido antes para poder animar la entrada apenas termina la intro) ----
   const homeSection = document.getElementById('home');
-  const items = [1,2,3,4,5,6].map(n => document.getElementById('p'+n));
+  const items = [1,2,3,4,5].map(n => document.getElementById('p'+n));
   const N = items.length;
   const D = 0.45;
   const step = (1 - D) / (N - 1);
   const starts = items.map((_, i) => i * step);
-  const laneOffset = [20, 60, 20, -20, 100, -60];
-  const laneExtraY = [0, 0, 0, 0, 0, 40];
+  const laneOffset = [20, 60, 20, -20, 100];
+  const laneExtraY = [0, 0, 0, 0, 0];
   const offsetG = starts[0] + D/2 + 0.04; // trabajo 1 un poco más avanzado; asoma la esquina del 3er trabajo
 
   function layoutHome(){
@@ -2574,6 +2754,221 @@
     }
   }
 
+  // =============== 02 · DUALIDAD FUSIONADA ===============
+  // Fondo: una capa propia (#dfBg) que viaja junto con el recorrido. Pasa de
+  // blanco a #f6f6f6 de forma lineal y muy larga: empieza con el primer párrafo
+  // y la mitad exacta del degradé cae en la mitad del segundo.
+  // Moodboard: cada imagen asoma por el pie de la pantalla y sube más lento que
+  // el texto (DF_MOOD_K) y con más inercia (DF_MOOD_LERP), así se sienten más
+  // "pesadas". El orden es aleatorio cada vez que se abre el trabajo; la
+  // posición horizontal de cada una se elige entre varias al azar, quedándose
+  // con la que menos tapa los párrafos y menos se amontona con las demás.
+  const dfTrackEl   = document.getElementById('dfTrack');
+  const dfBgEl      = document.getElementById('dfBg');
+  const dfMoodBack  = document.getElementById('dfMoodBack');
+  const dfMoodFront = document.getElementById('dfMoodFront');
+  const dfFadeTop   = document.getElementById('dfFadeTop');
+  const dfFadeBot   = document.getElementById('dfFadeBottom');
+  const dfVideo     = document.getElementById('dfVideo');
+  const dfFinals    = document.getElementById('dfFinals');
+  const dfMoodImgs  = Array.from(document.querySelectorAll('#dfMoodSrc img'));
+
+  const DF_BG_TO      = 246;   // #f6f6f6
+  const DF_MOOD_SCALE = 0.1;   // tamaño de cada imagen: una décima parte de su tamaño original
+  const DF_MOOD_K     = 0.6;   // velocidad de las imágenes respecto del texto (1 = igual que el texto)
+  const DF_MOOD_LERP  = 0.035; // inercia propia de las imágenes (más chico = más pesado)
+  const DF_FIRST_RIGHT = 3;    // las primeras en aparecer van del lado derecho (el texto está a la izquierda)
+
+  let dfSeed = 1;
+  let dfMood = [];             // { el, w, h, x, sIn }
+  let dfMoodCur = 0;
+  let dfGradA = 0, dfGradB = 1;
+  let dfHeroBottom = 0;
+  let dfVideoTop = 0, dfVideoBottom = 0;
+  let dfVideoOn = false;
+  let dfTopC = '', dfBotC = '';
+
+  // azar "con semilla": el mismo orden y las mismas posiciones si solo se
+  // redimensiona la ventana; uno nuevo cada vez que se entra al trabajo
+  function dfRandom(seed){
+    return function(){
+      seed = (seed + 0x6D2B79F5) | 0;
+      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function dfOverlap(ax, ay, aw, ah, bx, by, bw, bh){
+    const w = Math.min(ax + aw, bx + bw) - Math.max(ax, bx);
+    const h = Math.min(ay + ah, by + bh) - Math.max(ay, by);
+    return (w > 0 && h > 0) ? w * h : 0;
+  }
+  function dfBgLevel(y){
+    const t = Math.min(Math.max((y - dfGradA) / (dfGradB - dfGradA), 0), 1);
+    const v = Math.round(255 - (255 - DF_BG_TO) * t);
+    return v + ',' + v + ',' + v;
+  }
+
+  function dfLayout(){
+    if(!dfTrackEl || workTrack !== dfTrackEl) return;
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const tr = dfTrackEl.getBoundingClientRect();
+    const box = (el) => {
+      const r = el.getBoundingClientRect();
+      return { l: r.left - tr.left, t: r.top - tr.top, w: r.width, h: r.height, b: r.bottom - tr.top, r: r.right - tr.left };
+    };
+    const p1 = box(document.getElementById('dfP1'));
+    const p2 = box(document.getElementById('dfP2'));
+    const p3 = box(document.getElementById('dfP3'));
+    const pt = box(document.getElementById('dfProcesoText'));
+    const fg = box(document.getElementById('dfFigurin'));
+    const vd = box(document.getElementById('dfVideoSec'));
+    dfHeroBottom = box(document.getElementById('dfInicial')).b;
+    dfVideoTop = vd.t; dfVideoBottom = vd.b;
+
+    // ---- fondo ----
+    const mid = p2.t + p2.h / 2;
+    dfGradA = p1.t;
+    dfGradB = mid + (mid - p1.t);
+    dfBgEl.style.height = (dfTrackEl.scrollHeight + vh) + 'px';
+    dfBgEl.style.background = `linear-gradient(to bottom, #fff 0px, #fff ${dfGradA}px, #f6f6f6 ${dfGradB}px, #f6f6f6 100%)`;
+
+    // ---- moodboard ----
+    const rnd = dfRandom(dfSeed);
+    const order = dfMoodImgs.slice();
+    for(let i = order.length - 1; i > 0; i--){
+      const j = Math.floor(rnd() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    const n = order.length;
+    const K = DF_MOOD_K;
+    // la primera asoma por el pie cuando la mitad del primer párrafo está ahí;
+    // la última, un poco antes de que empiece a entrar el texto del proceso:
+    // mientras ese texto sube, las últimas se van yendo por arriba (se cruzan)
+    const sStart = p1.t + p1.h / 2 - vh;
+    const sEnd   = Math.max(pt.t - vh * 1.3, sStart + vh * 0.5);
+    const texts  = [p1, p2, p3, pt, fg];
+    const placed = [];
+    dfMood = [];
+
+    order.forEach((el, i) => {
+      const w = Math.max(Math.round(el.dataset.w * DF_MOOD_SCALE), 1);
+      const h = Math.max(Math.round(el.dataset.h * DF_MOOD_SCALE), 1);
+      const u = n > 1 ? (i + (rnd() - 0.5) * 0.8) / (n - 1) : 0;
+      const sIn  = sStart + (sEnd - sStart) * Math.min(Math.max(u, 0), 1);
+      const sOut = sIn + (vh + h) / K;
+
+      let lo = vw * 0.03, hi = vw * 0.97 - w;
+      if(i < DF_FIRST_RIGHT) lo = Math.max(p1.r + vw * 0.05, vw * 0.5);
+      if(hi < lo) hi = lo;
+
+      // se prueban varias posiciones y se queda con la que menos tapa. Tapar
+      // un párrafo cuenta mucho más cuando ese párrafo está en la zona de
+      // lectura (el centro de la pantalla) que cuando ya está entrando o saliendo.
+      let bestX = lo, bestScore = Infinity;
+      for(let c = 0; c < 40; c++){
+        const x = lo + rnd() * (hi - lo);
+        let sc = 0;
+        for(let k = 0; k <= 16; k++){
+          const s = sIn + (sOut - sIn) * k / 16;
+          const y = vh - (s - sIn) * K;
+          texts.forEach(b => {
+            const bt = b.t - s;
+            const reading = (bt < vh * 0.85 && bt + b.h > vh * 0.12) ? 3 : 1;
+            sc += reading * dfOverlap(x, y, w, h, b.l - 22, bt - 22, b.w + 44, b.h + 44);
+          });
+          placed.forEach(q => {
+            if(s < q.sIn || s > q.sOut) return;
+            const qy = vh - (s - q.sIn) * K;
+            sc += 1.6 * dfOverlap(x, y, w, h, q.x - 36, qy - 36, q.w + 72, q.h + 72);
+          });
+        }
+        if(sc < bestScore){ bestScore = sc; bestX = x; }
+      }
+
+      const front = rnd() < 0.5;
+      el.style.width  = w + 'px';
+      el.style.height = h + 'px';
+      el.style.visibility = 'hidden';
+      (front ? dfMoodFront : dfMoodBack).appendChild(el);
+      const m = { el, w, h, x: Math.round(bestX), sIn, sOut };
+      placed.push(m);
+      dfMood.push(m);
+    });
+  }
+
+  function dfSetup(){
+    dfSeed = Math.floor(Math.random() * 1e9);
+    dfMoodCur = 0;
+    dfVideoOn = false;
+    dfTopC = ''; dfBotC = '';
+    dfFadeTop.classList.remove('on');
+    dfFadeBot.classList.remove('on');
+    if(dfFinals) dfFinals.style.opacity = '0';
+    dfLayout();
+    // las fotos pueden terminar de cargar después: se vuelve a medir
+    setTimeout(() => { if(workTrack === dfTrackEl){ dfLayout(); measureWork(); } }, 300);
+  }
+
+  function dfTeardown(){
+    dfVideoOn = false;
+    if(dfVideo){ dfVideo.pause(); try{ dfVideo.currentTime = 0; } catch(e){} }
+    dfFadeTop.classList.remove('on');
+    dfFadeBot.classList.remove('on');
+    dfMood.forEach(m => { m.el.style.visibility = 'hidden'; });
+  }
+
+  function dfFrame(vh){
+    dfBgEl.style.transform = 'translateY(' + (-workCurrent) + 'px)';
+
+    // imágenes del moodboard, con su propio peso
+    dfMoodCur += (workCurrent - dfMoodCur) * DF_MOOD_LERP;
+    dfMood.forEach(m => {
+      const y = vh - (dfMoodCur - m.sIn) * DF_MOOD_K;
+      if(y < vh + 2 && y + m.h > -2){
+        m.el.style.visibility = 'visible';
+        m.el.style.transform = 'translate(' + m.x + 'px,' + y.toFixed(1) + 'px)';
+      } else if(m.el.style.visibility !== 'hidden'){
+        m.el.style.visibility = 'hidden';
+      }
+    });
+
+    // degradés fijos: siempre del mismo color que el fondo en ese punto
+    const topC = dfBgLevel(workCurrent), botC = dfBgLevel(workCurrent + vh);
+    if(topC !== dfTopC){ dfTopC = topC; dfFadeTop.style.setProperty('--df-fade-c', topC); }
+    if(botC !== dfBotC){ dfBotC = botC; dfFadeBot.style.setProperty('--df-fade-c', botC); }
+    // el de arriba se prende cuando de la portada ya solo queda su pie difuminado
+    dfFadeTop.classList.toggle('on', dfHeroBottom - workCurrent < vh * 0.2);
+    // el de abajo, solo mientras entra el video
+    const vt = dfVideoTop - workCurrent, vb = dfVideoBottom - workCurrent;
+    dfFadeBot.classList.toggle('on', vt < vh * 1.15 && vb > vh * 0.76);
+
+    // video: corre solo mientras se ve; el volumen acompaña cuánto se ve
+    if(dfVideo){
+      const shown = Math.min(vb, vh) - Math.max(vt, 0);
+      const frac = Math.min(Math.max(shown / (vb - vt), 0), 1);
+      if(frac > 0 && !dfVideoOn){
+        dfVideoOn = true;
+        try{ dfVideo.currentTime = 0; } catch(e){}
+        dfVideo.muted = false;
+        dfVideo.volume = 0;
+        const p = dfVideo.play();
+        if(p && p.catch) p.catch(() => { dfVideo.muted = true; const q = dfVideo.play(); if(q && q.catch) q.catch(() => {}); });
+      } else if(frac <= 0 && dfVideoOn){
+        dfVideoOn = false;
+        dfVideo.pause();
+        try{ dfVideo.currentTime = 0; } catch(e){}
+      }
+      if(dfVideoOn) dfVideo.volume = Math.min(frac * 1.25, 1);
+    }
+
+    // fotos finales: aparecen de a poco al entrar
+    if(dfFinals){
+      const top = dfFinals.offsetTop - workCurrent;
+      dfFinals.style.opacity = String(Math.min(Math.max((vh * 1.05 - top) / (vh * 0.8), 0), 1));
+    }
+  }
+
   function setupWorkProject(id){
     teardownWorkProject();
     if(!id) return;
@@ -2599,6 +2994,7 @@
     measureWork();
     if(procesoPart) startMedia();
     if(String(id) === '5'){ setupAlbFinal(); startAlbMedia(); updateAlbCoverPin(); }
+    if(String(id) === '2') dfSetup();
     if(String(id) === '3'){
       drawExprArrow();
       setTimeout(() => { drawExprArrow(); measureWork(); }, 260);
@@ -2625,6 +3021,7 @@
     stopMedia();
     stopAlbMedia();
     teardownAlbFinal();
+    dfTeardown();
     const albPin = document.getElementById('albCoverPin');
     const albCurtainEl = document.getElementById('albCurtain');
     const albCoverEl = document.getElementById('albCoverFull');
@@ -2644,7 +3041,7 @@
     // 140px de más: hay que "pasarse" del final para que vuelva sola al home
     workMax = Math.max(workTrack.scrollHeight - window.innerHeight, 0) + 140;
   }
-  window.addEventListener('resize', () => { if(root.classList.contains('work-open')){ measureWork(); sizeAlbSlot(ALB_RATIO); drawExprArrow(); } });
+  window.addEventListener('resize', () => { if(root.classList.contains('work-open')){ measureWork(); sizeAlbSlot(ALB_RATIO); drawExprArrow(); dfLayout(); } });
 
   window.addEventListener('wheel', (e) => {
     if(!panel.classList.contains('open') || !panel.classList.contains('show-work')) return;
@@ -2729,6 +3126,8 @@
       }
 
       updateAlbCoverPin();
+
+      if(workTrack === dfTrackEl) dfFrame(vh);
 
       if(workTrack === exprTrackEl){
         exprRenderFruits(performance.now());

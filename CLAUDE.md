@@ -97,7 +97,7 @@ Editorial, minimalista, mucho espacio en blanco. Fondo blanco constante, sin exc
   #loader                     → intro
   .site
     header (nav)              → Trabajos / Sobre mí / Contacto / ES-EN
-    #home                     → firma, rol rotativo, los 6 "trabajos" dispersos
+    #home                     → firma, rol rotativo, los 5 "trabajos" dispersos
   #panel                      → contiene las 3 "placas" internas, todas en el mismo archivo:
     .panel-page[data-page="about"]
     .panel-page[data-page="contact"]
@@ -189,13 +189,13 @@ Se disparan agregando la clase `revealed` al `<html>` (home) o al abrir un panel
 
 ### 3.4 Trabajos del home (recorrido diagonal disperso)
 
-- 6 elementos recorren individualmente una diagonal de **esquina inferior izquierda a superior derecha**, atados al scroll.
+- 5 elementos recorren individualmente una diagonal de **esquina inferior izquierda a superior derecha**, atados al scroll.
 - Fórmula de posición por trabajo (`p` = progreso individual, 0 a 1, según su ventana de tiempo dentro del scroll total):
   ```
   x = -w + p·(vw+w) + laneOffset[i]
   y = vh - p·(vh+h) + laneOffset[i] + laneExtraY[i]
   ```
-- 6 "carriles" fijos (`laneOffset`) para que nunca se superpongan, dentro de un corredor diagonal acotado (definido a partir de una captura de referencia con líneas rojas).
+- 5 "carriles" fijos (`laneOffset`) para que nunca se superpongan, dentro de un corredor diagonal acotado (definido a partir de una captura de referencia con líneas rojas).
 - El scroll tiene **peso/inercia**: se suaviza con un lerp — `currentG += (targetG - currentG) * 0.022`. Cuanto más chico el factor, más "pesado" se siente.
 - Al terminar la intro, los trabajos hacen una **entrada en reversa**: arrancan ya "recorridos" (fuera de pantalla, arriba a la derecha) y retroceden con `easeOutCubic` durante 1450ms hasta frenar con el primer trabajo cerca del centro.
 - No hay tope de scroll — los trabajos simplemente van desapareciendo a medida que avanzás.
@@ -244,8 +244,8 @@ Zoom: el logo se agranda con `scale()` hasta que una banda vertical específica 
 
 Todo vive en un **único `index.html`**, sin páginas separadas ni rutas — la navegación es 100% interna vía JavaScript, mostrando/ocultando "placas" (`.panel-page`) superpuestas.
 
-1. **Home** — firma (una línea o dos líneas, alternando cada 15s para poder comparar), rol rotativo ("Dirección creativa", "Diseño de indumentaria", etc.), url, info de ubicación/disponibilidad (siempre en inglés), y los 6 "trabajos" dispersos en diagonal.
-2. **Trabajos** (dentro del home) — cada uno de los 6 recuadros es clickeable y abre una placa individual. *(sin definir)* — hoy el contenido es un placeholder ("Funcionó"); falta diseñar cómo se ve el interior de cada proyecto.
+1. **Home** — firma (una línea o dos líneas, alternando cada 15s para poder comparar), rol rotativo ("Dirección creativa", "Diseño de indumentaria", etc.), url, info de ubicación/disponibilidad (siempre en inglés), y los 5 "trabajos" dispersos en diagonal.
+2. **Trabajos** (dentro del home) — cada uno de los 5 recuadros es clickeable y abre una placa individual. *(sin definir)* — hoy el contenido es un placeholder ("Funcionó"); falta diseñar cómo se ve el interior de cada proyecto.
 3. **Sobre mí** — logo centrado + 4 bloques numerados (01 Universo, 02 Curiosidad, 03 Intención, 04 Forma) + lista de servicios + copyright.
 4. **Contacto** — logo ampliado (zoom) + email/web, redes, ubicación/disponibilidad + copyright.
 
@@ -259,7 +259,7 @@ Todo vive en un **único `index.html`**, sin páginas separadas ni rutas — la 
 - **Dominio pensado:** `carolinapicone.com`. *(sin definir)* — todavía no se compró ni se conectó; quedó pendiente para cuando el diseño esté cerrado.
 - **Redes confirmadas:** Instagram `@caropicone` → `instagram.com/caropicone`; LinkedIn → `linkedin.com/in/carolina-picone-680a20331`.
 - **Mail de contacto:** `carolinapicone.t@gmail.com`.
-- Los 6 bloques de "Trabajos" en el home son placeholders (patrón diagonal gris/negro) — *(sin definir)* faltan las imágenes reales de cada proyecto.
+- Los 5 bloques de "Trabajos" en el home son placeholders (patrón diagonal gris/negro) — *(sin definir)* faltan las imágenes reales de cada proyecto.
 - **Proyectos a incluir** (según el brief inicial de Carolina, no necesariamente en este orden): *"Nada es Plano"* (proyecto de graduación), *"Dualidad Fusionada"* (puerto de trabajo vs. universo náutico recreativo de Mar del Plata), un proyecto de indumentaria infantil (deliberadamente discreto, va último — no representa su estética pero muestra versatilidad técnica), dirección artística de un cortometraje, dirección creativa de la producción visual de un álbum musical.
 - **Metodología de trabajo que funciona bien con Carolina:** cuando algo no queda en el lugar exacto que imagina, suele mandar una captura de pantalla con una grilla o bloques de color marcando la posición exacta en píxeles — es el método más efectivo para ajustes finos de ubicación, más que las descripciones en palabras.
 - Cuando algo no funciona como se esperaba, prefiere que se le explique la causa técnica real (qué pasó y por qué), no solo que se corrija en silencio.
@@ -272,7 +272,7 @@ Todo vive en un **único `index.html`**, sin páginas separadas ni rutas — la 
 Estos son los puntos donde no había información clara en la conversación y que conviene definir antes (o durante) de seguir avanzando:
 
 1. **Contenido y diseño de cada placa de "Trabajo" individual** — hoy es un placeholder con el texto "Funcionó".
-2. **Imágenes reales** para los 6 recuadros de trabajos del home (hoy son bloques de color placeholder).
+2. **Imágenes reales** para los 5 recuadros de trabajos del home (hoy son bloques de color placeholder).
 3. **Contenido en inglés de cada sección** — el proceso ya está definido (ver sección 0), pero el texto en sí se va completando trabajo por trabajo, así que en cualquier momento puede haber secciones todavía sin su versión en inglés revisada.
 4. **Compra y conexión del dominio** `carolinapicone.com`.
 5. **Estética y estructura interna** de las páginas de cada trabajo (todavía no se diseñaron).
