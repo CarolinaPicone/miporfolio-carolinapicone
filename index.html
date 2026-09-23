@@ -404,18 +404,22 @@
   /* se recorta la parte de arriba de la foto (700px de sus 3386 de alto) para que
      título y subtítulo queden por encima de la mitad de la pantalla. El recorte
      es solo visual: el archivo está entero. El pie se disuelve en el fondo con un
-     degradé corto, sobre la franja casi blanca que dejó Carolina. */
+     degradé que ocupa el último 8% de la foto, sobre la franja casi blanca que dejó Carolina. */
   .df-inicial{ width:100vw; position:relative; overflow:hidden; aspect-ratio:2841/2686; }
   .df-hero{
     width:100%; height:auto; aspect-ratio:2841/3386; display:block; margin-top:-24.64%;
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 93%, rgba(0,0,0,.72) 95.5%, rgba(0,0,0,.38) 97.6%, rgba(0,0,0,.1) 99.2%, transparent 100%);
-    mask-image: linear-gradient(to bottom, #000 0%, #000 93%, rgba(0,0,0,.72) 95.5%, rgba(0,0,0,.38) 97.6%, rgba(0,0,0,.1) 99.2%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 92%, rgba(0,0,0,.9) 93.5%, rgba(0,0,0,.7) 95%, rgba(0,0,0,.45) 96.6%, rgba(0,0,0,.22) 98%, rgba(0,0,0,.07) 99.2%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 92%, rgba(0,0,0,.9) 93.5%, rgba(0,0,0,.7) 95%, rgba(0,0,0,.45) 96.6%, rgba(0,0,0,.22) 98%, rgba(0,0,0,.07) 99.2%, transparent 100%);
   }
   /* al "estirar" hacia arriba para volver al home aparece esta franja: es la
-     propia foto (su parte de arriba ya recortada), ampliada y desenfocada, igual
-     que en 7600, para que no se vea blanco */
+     propia foto, justo la parte que quedó recortada arriba (continúa exacta la
+     imagen, así no se nota el corte). Justo en la unión va nítida y se va
+     desenfocando apenas hacia arriba: una copia nítida con degradé encima de
+     una copia levemente desenfocada. */
   .df-overscroll{ position:absolute; left:0; top:0; width:100%; height:300px; transform:translateY(-100%); overflow:hidden; pointer-events:none; }
-  .df-overscroll img{ width:100%; height:auto; display:block; margin-top:-24.64%; transform:scale(1.25); transform-origin:center 20%; filter:blur(26px); }
+  .df-overscroll img{ position:absolute; left:0; top:calc(300px - 24.64vw); width:100%; height:auto; display:block; }
+  .df-overscroll img.df-os-soft{ filter:blur(4px); }
+  .df-overscroll img.df-os-sharp{ -webkit-mask-image:linear-gradient(to top, #000 0px, #000 12px, transparent 90px); mask-image:linear-gradient(to top, #000 0px, #000 12px, transparent 90px); -webkit-mask-size:100% 300px; mask-size:100% 300px; -webkit-mask-position:0 calc(24.64vw - 300px); mask-position:0 calc(24.64vw - 300px); -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat; }
   /* título + subtítulo centrados, apoyados justo encima de la prenda. En blanco
      sobre la foto (pedido de Carolina); mismos tamaños que el resto de los
      trabajos. Los servicios, en un gris oscuro propio (#4a463f): más oscuro que
@@ -424,11 +428,10 @@
   .df-title{ font-size:clamp(34px,4.6vw,64px); font-weight:500; line-height:1.02; letter-spacing:-.015em; }
   .df-sub{ margin-top:14px; font-size:clamp(13px,1.25vw,15px); color:rgba(255,255,255,.78); }
   .df-sub em{ font-style:normal; color:#fff; }
-  /* servicios: abajo a la izquierda, apoyados sobre el casco gris del barco
-     (con el recorte nuevo, la esquina de la pantalla cae sobre agua oscura y
-     ahí el gris oscuro no se lee). Anclados a la foto, no a la pantalla, para
-     que siempre caigan sobre el casco. */
-  .df-roles{ position:absolute; left:calc(var(--df-m) * 2); top:45.4%; transform:translateY(-100%); font-size:11.5px; letter-spacing:.06em; line-height:2.05; color:#2f2c27; }
+  /* servicios: abajo a la izquierda, sobre el casco del barco, anclados a la
+     foto. En blanco con algo de transparencia, para que no compitan con el
+     título y el subtítulo. */
+  .df-roles{ position:absolute; left:calc(var(--df-m) * 2); top:45.4%; transform:translateY(-100%); font-size:11.5px; letter-spacing:.06em; line-height:2.05; color:rgba(255,255,255,.72); }
 
   .df-gap{ width:100vw; }
 
@@ -782,7 +785,7 @@
 
     <div class="scatter-viewport">
       <button class="scatter-item dark"  data-project="1" id="p1"><span class="item-inner"><span class="ph"></span></span></button>
-      <button class="scatter-item light" data-project="2" id="p2"><span class="item-inner"><span class="ph"></span></span></button>
+      <button class="scatter-item light" data-project="2" id="p2"><span class="item-inner"><span class="ph" style="background-image:url(&quot;assets/dualidad-thumb.jpg&quot;); background-size:cover; background-position:center;"></span></span></button>
       <button class="scatter-item dark"  data-project="3" id="p3"><span class="item-inner"><span class="ph" style="background-image:url(&quot;assets/exprimir-thumb-bocetos.jpg&quot;); background-size:cover; background-position:center;"></span></span></button>
       <button class="scatter-item light" data-project="4" id="p4"><span class="item-inner"><span class="ph" style="background-image:url(&quot;assets/trabajo-04-thumb.jpg&quot;); background-size:cover; background-position:center;"></span></span></button>
       <button class="scatter-item dark"  data-project="5" id="p5"><span class="item-inner"><span class="ph" style="background-image:url(&quot;assets/7600-thumb-sax.jpg&quot;); background-size:cover; background-position:30% center;"></span></span></button>
@@ -906,7 +909,7 @@
         <div class="df-track work-track" id="dfTrack">
 
           <!-- 1. INICIAL -->
-          <div class="df-overscroll"><img src="assets/dualidad-hero.jpg" alt=""></div>
+          <div class="df-overscroll"><img class="df-os-soft" src="assets/dualidad-hero.jpg" alt=""><img class="df-os-sharp" src="assets/dualidad-hero.jpg" alt=""></div>
           <section class="df-part df-inicial" id="dfInicial">
             <img class="df-hero" src="assets/dualidad-hero.jpg" alt="Dualidad Fusionada">
             <div class="df-head">
@@ -927,7 +930,7 @@
             <p class="df-p3" id="dfP3">Dualidad Fusionada explora ese punto de encuentro. La colecci&oacute;n recupera elementos de ambos mundos para construir un lenguaje contempor&aacute;neo de indumentaria, donde lo resistente y lo liviano, lo utilitario y lo sofisticado, encuentran una forma de coexistir.</p>
           </section>
 
-          <div class="df-gap" style="height:115vh"></div>
+          <div class="df-gap" style="height:135vh"></div>
 
           <!-- 3. PROCESO: figurin centrado (mismo alto que el texto) + texto a la derecha -->
           <section class="df-part df-proceso" id="dfProceso">
@@ -2775,9 +2778,10 @@
   // aleatorio cada vez que se abre el trabajo, pero la distribución no: la
   // posición horizontal sigue la secuencia "áurea" (cada imagen se corre 0,618
   // del ancho respecto de la anterior), que reparte parejo en todo el ancho sin
-  // que se note un patrón. Las primeras y las últimas van solo a la derecha; las
-  // últimas pueden pisar el texto de proceso pero nunca los figurines. Cada
-  // tanto, al azar, algunas se desvanecen y vuelven a aparecer.
+  // que se note un patrón. Las primeras van solo a la derecha. Las que en algún
+  // momento pasan por un texto van casi todas por debajo de él. Ninguna toca
+  // nunca los figurines: la última termina de irse antes de que lleguen. Cada
+  // tanto, al azar, unas pocas se desvanecen despacio y vuelven a aparecer.
   const dfTrackEl   = document.getElementById('dfTrack');
   const dfBgEl      = document.getElementById('dfBg');
   const dfMoodBack  = document.getElementById('dfMoodBack');
@@ -2790,10 +2794,13 @@
   const DF_MOOD_SIZE   = 108;   // tamaño promedio de cada imagen (lado de un cuadrado de igual superficie, en px)
   const DF_MOOD_K      = 0.8;   // velocidad de las imágenes respecto del texto (1 = igual que el texto)
   const DF_FIRST_RIGHT = 5;     // las primeras en aparecer van del lado derecho (el texto está a la izquierda)
-  const DF_LAST_RIGHT  = 6;     // las últimas también, sin tocar nunca los figurines
   const DF_FIG_RATIO   = 647 / 1833;   // proporción (ancho/alto) del figurín
   const DF_MINIS       = 5;            // repeticiones en miniatura (prueba)
-  const DF_BLINK_FADE  = 1100;  // ms que tarda una imagen en desvanecerse o reaparecer
+  const DF_BLINK_FADE  = 2600;  // ms que tarda una imagen en desvanecerse o reaparecer
+  const DF_BLINKERS    = 0.3;   // proporción de imágenes que parpadean
+  const DF_FRONT_OVER_TEXT = 0.15;   // de las que pasan por un texto, cuántas van por encima
+  const DF_VIDEO_BLACK = 19.7;  // segundo en el que el video empieza su propio fundido a negro
+  const DF_VIDEO_PUSH  = 0.3;   // segundos antes del final en que llega el envión
   const DF_GLIDE_MS    = 1500;  // centrado del video y "envión" del final: misma duración y curva
 
   let dfSeed = 1;
@@ -2802,6 +2809,7 @@
   let dfVideoTop = 0, dfVideoBottom = 0;
   let dfVideoOn = false;
   let dfVideoSnapped = false;
+  let dfVideoPushed = false;
   let dfEdge = null;
   let dfGlide = null;           // { from, to, t0 } mientras el scroll se mueve solo
   let dfFigRects = [];          // figurín + miniaturas, en coordenadas del recorrido
@@ -2832,6 +2840,7 @@
     };
     const p1 = box(document.getElementById('dfP1'));
     const p2 = box(document.getElementById('dfP2'));
+    const p3 = box(document.getElementById('dfP3'));
     const pt = box(document.getElementById('dfProcesoText'));
     const vd = box(document.getElementById('dfVideo'));
     dfHeroBottom = box(document.getElementById('dfInicial')).b;
@@ -2856,12 +2865,13 @@
     const n = order.length;
     const K = DF_MOOD_K;
     // la primera "nace" a media pantalla, justo cuando el borde difuminado de la
-    // portada pasa por ahí; la última, un poco antes de que entre el proceso:
-    // mientras el proceso sube, las últimas se van por arriba, del lado derecho
+    // portada pasa por ahí; la última termina de irse por arriba justo antes de
+    // que el bloque del proceso llegue a ese lugar (así nunca toca los figurines)
+    const maxH = Math.max(...dfMoodImgs.map(el => DF_MOOD_SIZE / Math.sqrt(el.dataset.w / el.dataset.h)));
     const sStart = p1.t - vh * 1.3;
-    const sEnd   = Math.max(pt.t - vh * 1.25, sStart + vh * 0.5);
+    const sEnd   = Math.max(pt.t - (vh + maxH) / K - 40, sStart + vh * 0.5);
     const rightLo = Math.max(p1.r + vw * 0.03, vw * 0.55);
-    const figRight = Math.max(...dfFigRects.map(r => r.l + r.w)) + 30;
+    const texts = [p1, p2, p3, pt];
     const placed = [];
     dfMood = [];
     let golden = rnd();
@@ -2887,8 +2897,7 @@
         return false;
       };
 
-      const edgeGroup = i < DF_FIRST_RIGHT ? rightLo : (i >= n - DF_LAST_RIGHT ? Math.max(figRight, vw * 0.6) : null);
-      let lo = edgeGroup !== null ? edgeGroup : vw * 0.03;
+      const lo = i < DF_FIRST_RIGHT ? rightLo : vw * 0.03;
       const hi = Math.max(vw * 0.97 - w, lo);
       golden = (golden + 0.6180339887) % 1;
       const target = lo + golden * (hi - lo);
@@ -2912,16 +2921,25 @@
         }
         if(sc < bestScore){ bestScore = sc; bestX = x; }
       }
-      if(bestX === null) bestX = Math.max(figRight, vw * 0.6);   // último recurso: lejos de los figurines
+      if(bestX === null) bestX = vw * 0.97 - w;   // último recurso: pegada al borde derecho
 
-      const front = rnd() < 0.5;
+      // ¿pasa por algún texto? entonces casi siempre va por debajo
+      let overText = false;
+      for(let k = 0; k <= 16 && !overText; k++){
+        const s = sIn + (sOut - sIn) * k / 16;
+        const y = vh - (s - sIn) * K;
+        overText = texts.some(b => dfOverlap(bestX, y, w, h, b.l, b.t - s, b.w, b.h) > 0);
+      }
+      const front = rnd() < (overText ? DF_FRONT_OVER_TEXT : 0.5);
+      const blinks = rnd() < DF_BLINKERS;
       el.style.width  = w + 'px';
       el.style.height = h + 'px';
       el.style.visibility = 'hidden';
-      el.style.transition = 'opacity ' + DF_BLINK_FADE + 'ms ease';
+      el.style.transition = 'opacity ' + DF_BLINK_FADE + 'ms ease-in-out';
       el.style.opacity = '1';
       (front ? dfMoodFront : dfMoodBack).appendChild(el);
-      const m = { el, w, h, x: Math.round(bestX), sIn, sOut, hidden: false, nextBlink: now + 2500 + Math.random() * 9000 };
+      const m = { el, w, h, x: Math.round(bestX), sIn, sOut, hidden: false,
+                  nextBlink: blinks ? now + 4000 + Math.random() * 14000 : Infinity };
       placed.push(m);
       dfMood.push(m);
     });
@@ -2978,18 +2996,12 @@
   }
   function dfEase(t){ return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
 
-  if(dfVideo){
-    // al terminar, un envión sutil para seguir scrolleando
-    dfVideo.addEventListener('ended', () => {
-      if(workTrack !== dfTrackEl) return;
-      dfGlideTo(workTarget + window.innerHeight * 0.6);
-    });
-  }
 
   function dfSetup(){
     dfSeed = Math.floor(Math.random() * 1e9);
     dfVideoOn = false;
     dfVideoSnapped = false;
+    dfVideoPushed = false;
     dfGlide = null;
     dfEdge = null;
     dfFinals.forEach(f => { f.style.opacity = '0'; });
@@ -3035,37 +3047,51 @@
         if(now >= m.nextBlink){
           m.hidden = !m.hidden;
           m.el.style.opacity = m.hidden ? '0' : '1';
-          m.nextBlink = now + (m.hidden ? 1400 + Math.random() * 2600 : 5000 + Math.random() * 11000);
+          m.nextBlink = now + (m.hidden ? 2800 + Math.random() * 3000 : 12000 + Math.random() * 16000);
         }
       } else if(m.el.style.visibility !== 'hidden'){
         m.el.style.visibility = 'hidden';
       }
     });
 
-    // video: corre solo mientras se ve; el volumen acompaña cuánto se ve
+    // video: arranca al asomarse (el volumen sube con lo que se ve) y, una vez
+    // centrado, la música sigue a pleno hasta el final aunque la imagen ya se
+    // haya fundido con el fondo. La imagen se funde antes de que el propio
+    // video pase a negro; a 0,3s del final llega el envión hacia las fotos.
     const vt = dfVideoTop - workCurrent, vb = dfVideoBottom - workCurrent;
     if(dfVideo){
       const shown = Math.min(vb, vh) - Math.max(vt, 0);
       const frac = Math.min(Math.max(shown / (vb - vt), 0), 1);
+      const left = (dfVideo.duration || 99) - dfVideo.currentTime;
       if(frac > 0 && !dfVideoOn){
         dfVideoOn = true;
+        dfVideoPushed = false;
         try{ dfVideo.currentTime = 0; } catch(e){}
         dfVideo.muted = false;
         dfVideo.volume = 0;
         const p = dfVideo.play();
         if(p && p.catch) p.catch(() => { dfVideo.muted = true; const q = dfVideo.play(); if(q && q.catch) q.catch(() => {}); });
-      } else if(frac <= 0 && dfVideoOn){
+      } else if(frac <= 0 && dfVideoOn && !(dfVideoPushed && left > 0 && !dfVideo.ended)){
         dfVideoOn = false;
         dfVideo.pause();
         try{ dfVideo.currentTime = 0; } catch(e){}
       }
-      if(dfVideoOn) dfVideo.volume = Math.min(frac * 1.25, 1);
+      if(dfVideoOn){
+        dfVideo.volume = dfVideoSnapped ? 1 : Math.min(frac * 1.25, 1);
+        dfVideo.style.opacity = String(Math.min(Math.max((DF_VIDEO_BLACK - dfVideo.currentTime) / 1.1, 0), 1));
+        if(!dfVideoPushed && dfVideo.duration && left <= DF_VIDEO_PUSH){
+          dfVideoPushed = true;
+          dfGlideTo(workTarget + vh * 0.6);
+        }
+      } else {
+        dfVideo.style.opacity = '1';
+      }
 
       // al verse un 30%, se centra solo en la pantalla
       if(frac >= 0.3 && !dfVideoSnapped && !workLeaving){
         dfVideoSnapped = true;
         dfGlideTo((dfVideoTop + dfVideoBottom) / 2 - vh / 2);
-      } else if(frac <= 0 && dfVideoSnapped){
+      } else if(frac <= 0 && dfVideoSnapped && !dfVideoOn){
         dfVideoSnapped = false;
       }
     }

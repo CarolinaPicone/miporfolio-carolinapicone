@@ -58,7 +58,8 @@ Se dispara automáticamente cuando Carolina escribe **"traducción lista"** — 
 
 | Uso | Color |
 |---|---|
-| Fondo (siempre, en todas las secciones) | `#ffffff` (blanco puro) |
+| Fondo del sitio (home, Sobre mí, Contacto) y de los trabajos de diseño | `#ffffff` (blanco puro) |
+| Fondo de los trabajos que no son de diseño | `#000000` (negro) |
 | Texto principal / tinta | `#15140f` |
 | Texto secundario, títulos, etiquetas | `#8c8578` ("piedra") |
 | Líneas, bordes, divisores | `#e7e4dd` |
@@ -113,12 +114,18 @@ Todo en **Instrument Sans**. Los tamaños con `clamp()` escalan con el ancho de 
 
 **Excepciones ya pedidas por Carolina**
 
-- **Dualidad Fusionada:** título y subtítulo van **en blanco** sobre la foto de portada (subtítulo en blanco al 78%, categoría en blanco pleno). Los servicios van en un gris oscuro propio, `#2f2c27` (más oscuro que piedra, sin llegar al negro), para que se lean sobre el casco gris del barco.
-- **Fondos:** La Sombrerera y 7600 tienen fondo negro. En Dualidad Fusionada, el fondo pasa muy de a poco de blanco a `#f6f6f6` durante el concepto y queda así hasta el final.
+- **Dualidad Fusionada:** título y subtítulo van **en blanco** sobre la foto de portada (subtítulo en blanco al 78%, categoría en blanco pleno). Los servicios también van en blanco, pero con transparencia (blanco al 72%), para que queden un escalón por debajo del título y el subtítulo.
+- **Fondos:** ver la regla de fondos en "Estilo general". Dentro de esa regla, Dualidad Fusionada tiene un matiz propio: el fondo pasa muy de a poco de blanco a `#f6f6f6` durante el concepto y queda así hasta el final.
 
 ### Estilo general
 
-Editorial, minimalista, mucho espacio en blanco. Fondo blanco constante, sin excepciones. Texto de navegación y etiquetas en mayúsculas, tamaño chico, letter-spacing amplio. Nada "tecnológico" ni futurista — el criterio explícito fue evitar que se sintiera como una web de producto de software. El carácter distintivo del sitio pasa por el movimiento (scroll con peso/inercia, transiciones lentas y continuas) más que por recursos gráficos.
+Editorial, minimalista, mucho espacio en blanco.
+
+**Regla de fondos (se repite en todo trabajo nuevo):**
+- Home, "Sobre mí" y "Contacto": fondo blanco, siempre.
+- **Trabajos de diseño** (indumentaria, colecciones — hoy los tres primeros: 01, 02 Dualidad Fusionada y 03 Un Mundo para Exprimir): **fondo blanco**, texto en tinta/piedra (columna "trabajo claro" de la tabla de jerarquías).
+- **Trabajos que no son de diseño** (dirección de arte, dirección creativa, editoriales — hoy 04 La Sombrerera y 05 7600): **fondo negro**, a la inversa: texto en blanco / `#9a9488` / `#d9d5cc` (columna "trabajo oscuro"). Se agregan a `DARK_WORKS` en el código.
+ Texto de navegación y etiquetas en mayúsculas, tamaño chico, letter-spacing amplio. Nada "tecnológico" ni futurista — el criterio explícito fue evitar que se sintiera como una web de producto de software. El carácter distintivo del sitio pasa por el movimiento (scroll con peso/inercia, transiciones lentas y continuas) más que por recursos gráficos.
 
 ---
 
@@ -304,7 +311,7 @@ Todo vive en un **único `index.html`**, sin páginas separadas ni rutas — la 
 - **Metodología de trabajo que funciona bien con Carolina:** cuando algo no queda en el lugar exacto que imagina, suele mandar una captura de pantalla con una grilla o bloques de color marcando la posición exacta en píxeles — es el método más efectivo para ajustes finos de ubicación, más que las descripciones en palabras.
 - Cuando algo no funciona como se esperaba, prefiere que se le explique la causa técnica real (qué pasó y por qué), no solo que se corrija en silencio.
 - **Archivos que ya no se usan se borran:** todo lo que Carolina suba al repositorio (fotos, videos, carpetas con el material original) y que después ya no use la web —porque se convirtió a otro formato, se renombró con un nombre descriptivo o se descartó— se elimina directamente, sin preguntar. Pero **siempre se le informa** qué se borró y por qué.
-- Fondo blanco: **regla no negociable**, en todas las secciones, todo el tiempo.
+- Fondos: **regla no negociable** — blanco para el sitio y los trabajos de diseño, negro para los trabajos que no son de diseño (detalle en "Estilo general").
 
 ---
 
