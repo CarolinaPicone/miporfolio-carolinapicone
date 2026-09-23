@@ -76,6 +76,46 @@ No hay ningún color de acento (rojo, azul, etc.) en la interfaz — toda la pal
 
 *(sin definir)* — Se probaron y descartaron dos alternativas antes de llegar a la firma-imagen: la tipografía "Professor" (no disponible) y "Brittany Signature" de dafont (de uso solo personal, no comercial). Ninguna de las dos se usa en la versión actual.
 
+### Jerarquías tipográficas (valores reales del código — respetarlos a rajatabla)
+
+Todo en **Instrument Sans**. Los tamaños con `clamp()` escalan con el ancho de pantalla (mínimo, ideal, máximo). Salvo pedido puntual de Carolina, cualquier elemento nuevo usa uno de estos niveles, con estos colores.
+
+**Generales del sitio**
+
+| Elemento | Tamaño | Peso / estilo | Espaciado | Color |
+|---|---|---|---|---|
+| Menú (Trabajos / Sobre mí / Contacto) | 11.5px | 400, MAYÚSCULAS | letter-spacing .1em | tinta `#15140f` |
+| Selector ES/EN | 11.5px | activo 600 | .08em | inactivo piedra `#8c8578` · activo tinta |
+| Home — "Diseñadora de Indumentaria" | 11px | MAYÚSCULAS | .1em | tinta |
+| Home — rol rotativo | 13–15px `clamp(13px,1.3vw,15px)` | 400 | — | piedra |
+| Home — url | 11.5px | 400 | .04em | piedra |
+| Home / Contacto — ubicación y disponibilidad | 12px, interlineado 1.9 | 400; lugares en 600 | .04em | piedra; lugares en tinta |
+| Etiqueta "[ Scroll ]" | 11px | MAYÚSCULAS | .14em | tinta (home) / piedra (paneles) |
+| Sobre mí — títulos "01 — Universo" | 13–18px `clamp(13px,1.6vw,18px)` | MAYÚSCULAS | .09em | piedra |
+| Sobre mí — párrafos | 13–15px, interlineado 2 | 400 | — | tinta |
+| Sobre mí — servicios | 13–15px | MAYÚSCULAS | .08em | `#b3ada0` |
+| Copyright | 11px | MAYÚSCULAS | .06em | piedra |
+| Contacto — mail, web, redes | 13–15px, interlineado 1.8 | 400 | — | tinta |
+
+**Dentro de cada trabajo** (mismo esquema en todos)
+
+| Elemento | Tamaño | Peso / estilo | Espaciado | Color (trabajo claro) | Color (trabajo oscuro: Sombrerera, 7600) |
+|---|---|---|---|---|---|
+| Título del trabajo | 34–64px `clamp(34px,4.6vw,64px)`, interlineado 1.02 | 500 | -.015em | tinta | blanco |
+| Subtítulo (categoría + año) | 13–15px `clamp(13px,1.25vw,15px)` | 400; la categoría en `<em>` sin itálica | — | piedra; categoría en tinta | `#9a9488`; categoría en blanco (en 7600 el año va en blanco al 62%) |
+| Crédito ("Co-creado por…") | 12.5–14px, interlineado 1.7 | 400 | — | tinta | blanco |
+| Servicios / roles | 11.5px, interlineado 2.05 | 400 | .06em | piedra | `#9a9488` (7600: blanco al 62%) |
+| Textos de concepto y proceso | 12.5–14px `clamp(12.5px,1.05vw,14px)`, interlineado 1.78–1.85 | 400 | — | tinta | `#d9d5cc` |
+| Cita destacada (Sombrerera) | 15–22px, interlineado 1.65 | itálica 400 | -.005em | — | blanco |
+| Texto de ficha técnica (geometral de Exprimir) | 12–13.5px, interlineado 1.62 | 400 | — | tinta | — |
+| Pies de foto / créditos de foto | 11px | 400 | .04em | piedra | `#9a9488` |
+| Etiqueta "click" que sigue al cursor | 10.5px | 400 | .1em | piedra | piedra |
+
+**Excepciones ya pedidas por Carolina**
+
+- **Dualidad Fusionada:** título y subtítulo van **en blanco** sobre la foto de portada (subtítulo en blanco al 78%, categoría en blanco pleno). Los servicios van en un gris oscuro propio, `#2f2c27` (más oscuro que piedra, sin llegar al negro), para que se lean sobre el casco gris del barco.
+- **Fondos:** La Sombrerera y 7600 tienen fondo negro. En Dualidad Fusionada, el fondo pasa muy de a poco de blanco a `#f6f6f6` durante el concepto y queda así hasta el final.
+
 ### Estilo general
 
 Editorial, minimalista, mucho espacio en blanco. Fondo blanco constante, sin excepciones. Texto de navegación y etiquetas en mayúsculas, tamaño chico, letter-spacing amplio. Nada "tecnológico" ni futurista — el criterio explícito fue evitar que se sintiera como una web de producto de software. El carácter distintivo del sitio pasa por el movimiento (scroll con peso/inercia, transiciones lentas y continuas) más que por recursos gráficos.
