@@ -386,9 +386,15 @@
   /* =============== DUALIDAD FUSIONADA (proyecto 02) =============== */
   /* Tema claro (no entra en DARK_WORKS). El fondo no es del panel: es una capa
      propia (.df-bg) que viaja con el recorrido y pasa, muy de a poco, de blanco
-     a #f6f6f6 durante el concepto. Va POR DEBAJO de las imágenes del moodboard
+     a #ededec durante el concepto. Va POR DEBAJO de las imágenes del moodboard
      que pasan "por detrás" del texto, por eso no puede estar dentro del recorrido. */
-  .df{ --df-m: clamp(20px,4vw,56px); --df-bg:#f6f6f6; position:relative; }
+  .df{ --df-m: clamp(20px,4vw,56px); --df-bg:#ededec; position:relative; }
+  /* menú en blanco mientras está sobre la foto de portada; al pasar por la
+     prenda cambia a negro, despacio (y al revés si se vuelve hacia arriba) */
+  html.df-nav-light nav.links button{ color:#fff; }
+  html.df-nav-light .lang-toggle, html.df-nav-light .lang-toggle span.active{ color:#fff; }
+  .lang-toggle, .lang-toggle span{ transition:color .9s ease; }
+  html.work-open nav.links button{ transition:color .9s ease; }
   .df-bg{ position:absolute; left:0; top:0; width:100vw; z-index:0; pointer-events:none; will-change:transform; }
   .df-track{ position:relative; z-index:2; }
   .df-part{ width:100vw; position:relative; }
@@ -465,6 +471,12 @@
   .df-final{ width:100vw; opacity:0; }
   .df-final img{ width:100%; height:auto; display:block; }
   .df-final-1 img{ aspect-ratio:2400/1388; }
+  /* al "estirar" al final para volver al home, debajo de la última foto aparece
+     su propio pie reflejado y desenfocado (como en la portada; acá el corte
+     puede notarse un poco) */
+  .df-final-2{ position:relative; }
+  .df-underscroll{ position:absolute; left:0; top:100%; width:100%; height:300px; overflow:hidden; pointer-events:none; }
+  .df-underscroll img{ position:absolute; left:0; top:0; width:100%; height:auto; transform:scaleY(-1); filter:blur(9px); }
   .df-final-2 img{ aspect-ratio:1800/2400; }
 
   @media (max-width:900px){
@@ -880,29 +892,29 @@
           <img src="assets/dualidad-mood-11.jpg" data-w="987" data-h="1074" alt="">
           <img src="assets/dualidad-mood-12.jpg" data-w="965" data-h="1383" alt="">
           <img src="assets/dualidad-mood-13.jpg" data-w="979" data-h="1373" alt="">
-          <img src="assets/dualidad-mood-14.jpg" data-w="697" data-h="489" alt="">
-          <img src="assets/dualidad-mood-15.jpg" data-w="799" data-h="794" alt="">
-          <img src="assets/dualidad-mood-16.jpg" data-w="358" data-h="255" alt="">
-          <img src="assets/dualidad-mood-17.jpg" data-w="498" data-h="817" alt="">
+          <img src="assets/dualidad-mood-14.jpg" data-bw="1" data-w="697" data-h="489" alt="">
+          <img src="assets/dualidad-mood-15.jpg" data-bw="1" data-w="799" data-h="794" alt="">
+          <img src="assets/dualidad-mood-16.jpg" data-bw="1" data-w="358" data-h="255" alt="">
+          <img src="assets/dualidad-mood-17.jpg" data-bw="1" data-w="498" data-h="817" alt="">
           <img src="assets/dualidad-mood-18.jpg" data-w="1080" data-h="1315" alt="">
-          <img src="assets/dualidad-mood-19.jpg" data-w="621" data-h="466" alt="">
+          <img src="assets/dualidad-mood-19.jpg" data-bw="1" data-w="621" data-h="466" alt="">
           <img src="assets/dualidad-mood-20.jpg" data-w="540" data-h="374" alt="">
           <img src="assets/dualidad-mood-21.jpg" data-w="906" data-h="694" alt="">
           <img src="assets/dualidad-mood-22.jpg" data-w="564" data-h="364" alt="">
           <img src="assets/dualidad-mood-23.jpg" data-w="736" data-h="1308" alt="">
           <img src="assets/dualidad-mood-24.jpg" data-w="494" data-h="743" alt="">
-          <img src="assets/dualidad-mood-25.jpg" data-w="564" data-h="588" alt="">
-          <img src="assets/dualidad-mood-26.jpg" data-w="453" data-h="610" alt="">
-          <img src="assets/dualidad-mood-27.jpg" data-w="564" data-h="591" alt="">
+          <img src="assets/dualidad-mood-25.jpg" data-bw="1" data-w="564" data-h="588" alt="">
+          <img src="assets/dualidad-mood-26.jpg" data-bw="1" data-w="453" data-h="610" alt="">
+          <img src="assets/dualidad-mood-27.jpg" data-bw="1" data-w="564" data-h="591" alt="">
           <img src="assets/dualidad-mood-28.jpg" data-w="736" data-h="1104" alt="">
           <img src="assets/dualidad-mood-29.jpg" data-w="1170" data-h="2032" alt="">
-          <img src="assets/dualidad-mood-30.jpg" data-w="384" data-h="395" alt="">
-          <img src="assets/dualidad-mood-31.jpg" data-w="977" data-h="680" alt="">
-          <img src="assets/dualidad-mood-32.jpg" data-w="414" data-h="682" alt="">
+          <img src="assets/dualidad-mood-30.jpg" data-bw="1" data-w="384" data-h="395" alt="">
+          <img src="assets/dualidad-mood-31.jpg" data-bw="1" data-w="977" data-h="680" alt="">
+          <img src="assets/dualidad-mood-32.jpg" data-bw="1" data-w="414" data-h="682" alt="">
           <img src="assets/dualidad-mood-33.jpg" data-w="564" data-h="564" alt="">
           <img src="assets/dualidad-mood-34.jpg" data-w="1545" data-h="963" alt="">
-          <img src="assets/dualidad-mood-35.jpg" data-w="576" data-h="587" alt="">
-          <img src="assets/dualidad-mood-36.jpg" data-w="564" data-h="585" alt="">
+          <img src="assets/dualidad-mood-35.jpg" data-bw="1" data-w="576" data-h="587" alt="">
+          <img src="assets/dualidad-mood-36.jpg" data-bw="1" data-w="564" data-h="585" alt="">
           <img src="assets/dualidad-mood-37.jpg" data-w="600" data-h="573" alt="">
         </div>
 
@@ -958,6 +970,7 @@
           </section>
           <section class="df-final df-final-2">
             <img src="assets/dualidad-final-2.jpg" alt="Dualidad Fusionada">
+            <div class="df-underscroll"><img src="assets/dualidad-final-2.jpg" alt=""></div>
           </section>
 
         </div>
@@ -2770,7 +2783,7 @@
 
   // =============== 02 · DUALIDAD FUSIONADA ===============
   // Fondo: una capa propia (#dfBg) que viaja junto con el recorrido. Pasa de
-  // blanco a #f6f6f6 de forma lineal y muy larga: empieza con el primer párrafo
+  // blanco a #ededec de forma lineal y muy larga: empieza con el primer párrafo
   // y la mitad exacta del degradé cae en la mitad del segundo.
   // Moodboard: las imágenes suben un poco más lento que el texto (DF_MOOD_K),
   // para que no parezcan pegadas al fondo, sin inercia extra (sin "rebote").
@@ -2799,13 +2812,15 @@
   const DF_BLINK_FADE  = 2600;  // ms que tarda una imagen en desvanecerse o reaparecer
   const DF_BLINKERS    = 0.3;   // proporción de imágenes que parpadean
   const DF_FRONT_OVER_TEXT = 0.15;   // de las que pasan por un texto, cuántas van por encima
-  const DF_VIDEO_BLACK = 19.7;  // segundo en el que el video empieza su propio fundido a negro
+  const DF_VIDEO_FADE_A = 21.3; // se deja ver el texto final ("Náutica · Mar del Plata") y recién ahí...
+  const DF_VIDEO_FADE_B = 22.1; // ...la imagen se funde con el fondo, hasta este segundo
   const DF_VIDEO_PUSH  = 0.3;   // segundos antes del final en que llega el envión
   const DF_GLIDE_MS    = 1500;  // centrado del video y "envión" del final: misma duración y curva
 
   let dfSeed = 1;
   let dfMood = [];              // { el, w, h, x, sIn, sOut, nextBlink, hidden }
   let dfHeroBottom = 0;
+  let dfObjTop = 0;             // borde superior de la prenda de la portada, en el recorrido
   let dfVideoTop = 0, dfVideoBottom = 0;
   let dfVideoOn = false;
   let dfVideoSnapped = false;
@@ -2843,14 +2858,16 @@
     const p3 = box(document.getElementById('dfP3'));
     const pt = box(document.getElementById('dfProcesoText'));
     const vd = box(document.getElementById('dfVideo'));
-    dfHeroBottom = box(document.getElementById('dfInicial')).b;
+    const ini = box(document.getElementById('dfInicial'));
+    dfHeroBottom = ini.b;
+    dfObjTop = ini.t + ini.h * 0.28;   // la cintura del short está al 28% del alto visible de la foto
     dfVideoTop = vd.t; dfVideoBottom = vd.b;
 
     // ---- fondo ----
     const mid = p2.t + p2.h / 2;
     const gradA = p1.t, gradB = mid + (mid - p1.t);
     dfBgEl.style.height = (dfTrackEl.scrollHeight + vh) + 'px';
-    dfBgEl.style.background = `linear-gradient(to bottom, #fff 0px, #fff ${gradA}px, #f6f6f6 ${gradB}px, #f6f6f6 100%)`;
+    dfBgEl.style.background = `linear-gradient(to bottom, #fff 0px, #fff ${gradA}px, #ededec ${gradB}px, #ededec 100%)`;
 
     // ---- figurín + miniaturas (zona prohibida para las imágenes) ----
     dfFigRects = dfLayoutMinis(pt.h, vw).map(r => ({ l: r.l, t: r.t + pt.t, w: r.w, h: r.h }));
@@ -2872,6 +2889,10 @@
     const sEnd   = Math.max(pt.t - (vh + maxH) / K - 40, sStart + vh * 0.5);
     const rightLo = Math.max(p1.r + vw * 0.03, vw * 0.55);
     const texts = [p1, p2, p3, pt];
+    // "núcleo" de cada texto: el párrafo sin sus bordes laterales. Las fotos en
+    // blanco y negro pueden rozar los bordes, pero no quedarse sobre el centro
+    // del párrafo (ahí no dejarían leer por más que se scrollee)
+    const cores = texts.map(b => ({ l: b.l + b.w * 0.2, t: b.t, w: b.w * 0.6, h: b.h }));
     const placed = [];
     dfMood = [];
     let golden = rnd();
@@ -2898,6 +2919,7 @@
       };
 
       const lo = i < DF_FIRST_RIGHT ? rightLo : vw * 0.03;
+      const bw = el.dataset.bw === '1';
       const hi = Math.max(vw * 0.97 - w, lo);
       golden = (golden + 0.6180339887) % 1;
       const target = lo + golden * (hi - lo);
@@ -2905,7 +2927,7 @@
       // cerca del lugar que le toca, se prueban variantes y se queda con la que
       // menos se pisa con las otras imágenes; los figurines no se tocan nunca
       let bestX = null, bestScore = Infinity;
-      for(let c = 0; c < 30; c++){
+      for(let c = 0; c < 40; c++){
         const spread = c < 14 ? 0.1 : 1;   // si cerca no hay lugar, se busca en todo el ancho
         const x = Math.min(Math.max(target + (rnd() - 0.5) * vw * spread, lo), hi);
         if(hitsFig(x)) continue;
@@ -2913,6 +2935,10 @@
         for(let k = 0; k <= 12; k++){
           const s = sIn + (sOut - sIn) * k / 12;
           const y = vh - (s - sIn) * K;
+          if(bw) cores.forEach(c => {
+            const ct = c.t - s;
+            if(ct < vh * 0.9 && ct + c.h > vh * 0.08) sc += 25 * dfOverlap(x, y, w, h, c.l, ct, c.w, c.h);
+          });
           placed.forEach(q => {
             if(s < q.sIn || s > q.sOut) return;
             const qy = vh - (s - q.sIn) * K;
@@ -2955,7 +2981,7 @@
     fig.style.width = figW + 'px';
     const rects = [{ l: vw / 2 - figW / 2, t: 0, w: figW, h: H }];
     if(!dfMinis) return rects;
-    const src = fig.querySelector('img').getAttribute('src');
+    const src = 'assets/dualidad-figurin-01-mini.png';   // versión ya achicada con buena calidad
     if(dfMinis.children.length !== DF_MINIS){
       dfMinis.innerHTML = '';
       for(let i = 0; i < DF_MINIS; i++){
@@ -3026,6 +3052,8 @@
     }
 
     dfBgEl.style.transform = 'translateY(' + (-workCurrent) + 'px)';
+    // menú blanco sobre la foto, negro desde que pasa por la prenda
+    root.classList.toggle('df-nav-light', workCurrent + 38 < dfObjTop);
 
     // las imágenes solo se ven por debajo del borde de la portada: así "nacen"
     // desde ahí en vez de pasar por encima de la foto
@@ -3055,9 +3083,9 @@
     });
 
     // video: arranca al asomarse (el volumen sube con lo que se ve) y, una vez
-    // centrado, la música sigue a pleno hasta el final aunque la imagen ya se
-    // haya fundido con el fondo. La imagen se funde antes de que el propio
-    // video pase a negro; a 0,3s del final llega el envión hacia las fotos.
+    // centrado, la música sigue a pleno hasta el final. Se deja ver el texto
+    // final sobre negro y recién ahí la imagen se funde con el fondo; a 0,3s
+    // del final llega el envión hacia las fotos.
     const vt = dfVideoTop - workCurrent, vb = dfVideoBottom - workCurrent;
     if(dfVideo){
       const shown = Math.min(vb, vh) - Math.max(vt, 0);
@@ -3078,7 +3106,7 @@
       }
       if(dfVideoOn){
         dfVideo.volume = dfVideoSnapped ? 1 : Math.min(frac * 1.25, 1);
-        dfVideo.style.opacity = String(Math.min(Math.max((DF_VIDEO_BLACK - dfVideo.currentTime) / 1.1, 0), 1));
+        dfVideo.style.opacity = String(Math.min(Math.max((DF_VIDEO_FADE_B - dfVideo.currentTime) / (DF_VIDEO_FADE_B - DF_VIDEO_FADE_A), 0), 1));
         if(!dfVideoPushed && dfVideo.duration && left <= DF_VIDEO_PUSH){
           dfVideoPushed = true;
           dfGlideTo(workTarget + vh * 0.6);
@@ -3148,7 +3176,7 @@
   }
 
   function teardownWorkProject(){
-    root.classList.remove('work-open','work-dark','work-nav-hidden',
+    root.classList.remove('work-open','work-dark','work-nav-hidden','df-nav-light',
                           'smb-click-on','smb-lb-open','smb-vig-top','smb-vig-bottom');
     workPages.forEach(p => p.classList.remove('is-active'));
     finalParts.forEach(f => { f.style.opacity = ''; });
@@ -3173,7 +3201,10 @@
   function measureWork(){
     if(!workTrack) return;
     // 140px de más: hay que "pasarse" del final para que vuelva sola al home
-    workMax = Math.max(workTrack.scrollHeight - window.innerHeight, 0) + 140;
+    // Dualidad: se usa el alto real del recorrido, sin contar la franja de
+    // "estirado" que cuelga debajo de la última foto
+    const trackH = workTrack === dfTrackEl ? workTrack.offsetHeight : workTrack.scrollHeight;
+    workMax = Math.max(trackH - window.innerHeight, 0) + 140;
   }
   window.addEventListener('resize', () => { if(root.classList.contains('work-open')){ measureWork(); sizeAlbSlot(ALB_RATIO); drawExprArrow(); dfLayout(); } });
 
