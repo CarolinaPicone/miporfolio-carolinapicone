@@ -386,9 +386,9 @@
   /* =============== DUALIDAD FUSIONADA (proyecto 02) =============== */
   /* Tema claro (no entra en DARK_WORKS). El fondo no es del panel: es una capa
      propia (.df-bg) que viaja con el recorrido y pasa, muy de a poco, de blanco
-     a #ededec durante el concepto. Va POR DEBAJO de las imágenes del moodboard
+     a #f2f2f1 durante el concepto. Va POR DEBAJO de las imágenes del moodboard
      que pasan "por detrás" del texto, por eso no puede estar dentro del recorrido. */
-  .df{ --df-m: clamp(20px,4vw,56px); --df-bg:#ededec; position:relative; }
+  .df{ --df-m: clamp(20px,4vw,56px); --df-bg:#f2f2f1; position:relative; }
   /* menú en blanco mientras está sobre la foto de portada; al pasar por la
      prenda cambia a negro, despacio (y al revés si se vuelve hacia arriba) */
   html.df-nav-light nav.links button{ color:#fff; }
@@ -458,8 +458,15 @@
   .df-proceso .df-text{ margin-left:auto; margin-right:var(--df-m); width:min(50ch,29vw); }
   .df-figurin{ position:absolute; top:0; left:50%; height:100%; transform:translateX(-50%); }
   .df-figurin img{ height:100%; width:auto; display:block; }
+  /* sombra casi imperceptible: los blancos de los figurines (#f6f6f6) quedan
+     apenas despegados del fondo */
+  .df-figurin img, .df-mini img{ filter:drop-shadow(0 1px 2.5px rgba(40,36,30,.10)); }
   .df-minis{ position:absolute; left:0; top:0; width:100%; height:100%; pointer-events:none; }
-  .df-minis img{ position:absolute; display:block; height:auto; }
+  .df-mini{ position:absolute; pointer-events:auto; }
+  .df-mini img{ position:absolute; left:50%; top:0; height:100%; width:auto; transform:translateX(-50%); display:block; transition:opacity .6s ease; }
+  .df-mini .df-mini-b{ opacity:0; }
+  .df-mini:hover .df-mini-f{ opacity:0; }
+  .df-mini:hover .df-mini-b{ opacity:1; }
 
   /* ---- 4. VIDEO a todo el ancho ---- */
   /* bastante más chico que la pantalla y centrado; se centra solo en la
@@ -471,12 +478,10 @@
   .df-final{ width:100vw; opacity:0; }
   .df-final img{ width:100%; height:auto; display:block; }
   .df-final-1 img{ aspect-ratio:2400/1388; }
-  /* al "estirar" al final para volver al home, debajo de la última foto aparece
-     su propio pie reflejado y desenfocado (como en la portada; acá el corte
-     puede notarse un poco) */
+  /* al "estirar" al final para volver al home, debajo de la última foto se ve
+     blanco (no el gris del fondo) */
   .df-final-2{ position:relative; }
-  .df-underscroll{ position:absolute; left:0; top:100%; width:100%; height:300px; overflow:hidden; pointer-events:none; }
-  .df-underscroll img{ position:absolute; left:0; top:0; width:100%; height:auto; transform:scaleY(-1); filter:blur(9px); }
+  .df-underscroll{ position:absolute; left:0; top:100%; width:100%; height:300px; background:#fff; pointer-events:none; }
   .df-final-2 img{ aspect-ratio:1800/2400; }
 
   @media (max-width:900px){
@@ -970,7 +975,7 @@
           </section>
           <section class="df-final df-final-2">
             <img src="assets/dualidad-final-2.jpg" alt="Dualidad Fusionada">
-            <div class="df-underscroll"><img src="assets/dualidad-final-2.jpg" alt=""></div>
+            <div class="df-underscroll"></div>
           </section>
 
         </div>
@@ -2783,7 +2788,7 @@
 
   // =============== 02 · DUALIDAD FUSIONADA ===============
   // Fondo: una capa propia (#dfBg) que viaja junto con el recorrido. Pasa de
-  // blanco a #ededec de forma lineal y muy larga: empieza con el primer párrafo
+  // blanco a #f2f2f1 de forma lineal y muy larga: empieza con el primer párrafo
   // y la mitad exacta del degradé cae en la mitad del segundo.
   // Moodboard: las imágenes suben un poco más lento que el texto (DF_MOOD_K),
   // para que no parezcan pegadas al fondo, sin inercia extra (sin "rebote").
@@ -2791,8 +2796,8 @@
   // aleatorio cada vez que se abre el trabajo, pero la distribución no: la
   // posición horizontal sigue la secuencia "áurea" (cada imagen se corre 0,618
   // del ancho respecto de la anterior), que reparte parejo en todo el ancho sin
-  // que se note un patrón. Las primeras van solo a la derecha. Las que en algún
-  // momento pasan por un texto van casi todas por debajo de él. Ninguna toca
+  // que se note un patrón. Las primeras van solo a la derecha. Todas pasan por
+  // debajo de los textos. Ninguna toca
   // nunca los figurines: la última termina de irse antes de que lleguen. Cada
   // tanto, al azar, unas pocas se desvanecen despacio y vuelven a aparecer.
   const dfTrackEl   = document.getElementById('dfTrack');
@@ -2808,10 +2813,16 @@
   const DF_MOOD_K      = 0.8;   // velocidad de las imágenes respecto del texto (1 = igual que el texto)
   const DF_FIRST_RIGHT = 5;     // las primeras en aparecer van del lado derecho (el texto está a la izquierda)
   const DF_FIG_RATIO   = 647 / 1833;   // proporción (ancho/alto) del figurín
-  const DF_MINIS       = 5;            // repeticiones en miniatura (prueba)
+  // los otros cinco diseños: proporción (ancho/alto) del frente y de la espalda
+  const DF_DESIGNS = [
+    { n: '02', f: 218 / 1100, b: 219 / 1100 },
+    { n: '03', f: 299 / 1100, b: 301 / 1100 },
+    { n: '04', f: 224 / 1100, b: 224 / 1100 },
+    { n: '05', f: 301 / 1100, b: 302 / 1100 },
+    { n: '06', f: 237 / 1100, b: 238 / 1100 },
+  ];
   const DF_BLINK_FADE  = 2600;  // ms que tarda una imagen en desvanecerse o reaparecer
   const DF_BLINKERS    = 0.3;   // proporción de imágenes que parpadean
-  const DF_FRONT_OVER_TEXT = 0.15;   // de las que pasan por un texto, cuántas van por encima
   const DF_VIDEO_FADE_A = 21.3; // se deja ver el texto final ("Náutica · Mar del Plata") y recién ahí...
   const DF_VIDEO_FADE_B = 22.1; // ...la imagen se funde con el fondo, hasta este segundo
   const DF_VIDEO_PUSH  = 0.3;   // segundos antes del final en que llega el envión
@@ -2867,7 +2878,7 @@
     const mid = p2.t + p2.h / 2;
     const gradA = p1.t, gradB = mid + (mid - p1.t);
     dfBgEl.style.height = (dfTrackEl.scrollHeight + vh) + 'px';
-    dfBgEl.style.background = `linear-gradient(to bottom, #fff 0px, #fff ${gradA}px, #ededec ${gradB}px, #ededec 100%)`;
+    dfBgEl.style.background = `linear-gradient(to bottom, #fff 0px, #fff ${gradA}px, #f2f2f1 ${gradB}px, #f2f2f1 100%)`;
 
     // ---- figurín + miniaturas (zona prohibida para las imágenes) ----
     dfFigRects = dfLayoutMinis(pt.h, vw).map(r => ({ l: r.l, t: r.t + pt.t, w: r.w, h: r.h }));
@@ -2949,14 +2960,7 @@
       }
       if(bestX === null) bestX = vw * 0.97 - w;   // último recurso: pegada al borde derecho
 
-      // ¿pasa por algún texto? entonces casi siempre va por debajo
-      let overText = false;
-      for(let k = 0; k <= 16 && !overText; k++){
-        const s = sIn + (sOut - sIn) * k / 16;
-        const y = vh - (s - sIn) * K;
-        overText = texts.some(b => dfOverlap(bestX, y, w, h, b.l, b.t - s, b.w, b.h) > 0);
-      }
-      const front = rnd() < (overText ? DF_FRONT_OVER_TEXT : 0.5);
+      const front = false;   // todas pasan por debajo de los textos
       const blinks = rnd() < DF_BLINKERS;
       el.style.width  = w + 'px';
       el.style.height = h + 'px';
@@ -2971,46 +2975,58 @@
     });
   }
 
-  // figurín del mismo alto que el texto de proceso, centrado en la pantalla; las
-  // cinco miniaturas (del mismo tamaño entre sí) llenan ese mismo alto en dos
-  // filas —tres arriba, dos abajo, intercaladas— centradas en el espacio libre
-  // de la izquierda. Devuelve los rectángulos que ocupan (relativos a la sección).
+  // figurín del prototipo del mismo alto que el texto de proceso, centrado en la
+  // pantalla. A su izquierda, los otros cinco diseños de la colección, todos a la
+  // misma escala entre sí, llenando ese mismo alto en dos filas (tres arriba, dos
+  // abajo, centradas en el espacio libre). Se ven de frente; al pasar el cursor
+  // por uno, el frente se desvanece y aparece su espalda.
+  // Devuelve los rectángulos que ocupan (relativos a la sección).
   function dfLayoutMinis(H, vw){
     const fig = document.getElementById('dfFigurin');
     const figW = H * DF_FIG_RATIO;
     fig.style.width = figW + 'px';
     const rects = [{ l: vw / 2 - figW / 2, t: 0, w: figW, h: H }];
     if(!dfMinis) return rects;
-    const src = 'assets/dualidad-figurin-01-mini.png';   // versión ya achicada con buena calidad
-    if(dfMinis.children.length !== DF_MINIS){
+    if(dfMinis.children.length !== DF_DESIGNS.length){
       dfMinis.innerHTML = '';
-      for(let i = 0; i < DF_MINIS; i++){
-        const im = document.createElement('img');
-        im.src = src; im.alt = '';
-        dfMinis.appendChild(im);
-      }
+      DF_DESIGNS.forEach(d => {
+        const wrap = document.createElement('div');
+        wrap.className = 'df-mini';
+        wrap.innerHTML = '<img class="df-mini-f" src="assets/dualidad-figurin-' + d.n + '-frente.png" alt="Figurín ' + d.n + ' (frente)">' +
+                         '<img class="df-mini-b" src="assets/dualidad-figurin-' + d.n + '-espalda.png" alt="Figurín ' + d.n + ' (espalda)">';
+        dfMinis.appendChild(wrap);
+      });
     }
     const m = parseFloat(getComputedStyle(dfTrackEl.parentNode).getPropertyValue('--df-m')) || 40;
     const spaceL = m, spaceR = vw / 2 - figW / 2 - vw * 0.035;
     const spaceW = Math.max(spaceR - spaceL, 0);
     const gapY = H * 0.05;
-    let h = (H - gapY) / 2, w = h * DF_FIG_RATIO, gapX = w * 0.32;
-    const need = 3 * w + 2 * gapX;
-    if(need > spaceW){ const f = spaceW / need; h *= f; w *= f; gapX *= f; }
-    const blockW = 3 * w + 2 * gapX;
-    const x0 = spaceL + (spaceW - blockW) / 2;
+    let h = (H - gapY) / 2;
+    const rows = [DF_DESIGNS.slice(0, 3), DF_DESIGNS.slice(3)];
+    const slotR = d => Math.max(d.f, d.b);                 // ancho del lugar = el mayor entre frente y espalda
+    const avgR = DF_DESIGNS.reduce((a, d) => a + slotR(d), 0) / DF_DESIGNS.length;
+    const rowW = (row, hh) => row.reduce((a, d) => a + slotR(d) * hh, 0) + (row.length - 1) * avgR * hh * 0.3;
+    const widest = Math.max(...rows.map(r => rowW(r, h)));
+    if(widest > spaceW) h *= spaceW / widest;
+    const gapX = avgR * h * 0.3;
     const y0 = (H - (2 * h + gapY)) / 2;
-    const pos = [
-      [x0, y0], [x0 + w + gapX, y0], [x0 + 2 * (w + gapX), y0],
-      [x0 + (w + gapX) / 2, y0 + h + gapY], [x0 + (w + gapX) * 1.5, y0 + h + gapY]
-    ];
-    Array.from(dfMinis.children).forEach((im, i) => {
-      im.style.width = w + 'px';
-      im.style.height = h + 'px';
-      im.style.left = pos[i][0] + 'px';
-      im.style.top  = pos[i][1] + 'px';
+    let blockL = Infinity, blockR = -Infinity;
+    const wraps = Array.from(dfMinis.children);
+    let k = 0;
+    rows.forEach((row, ri) => {
+      let x = spaceL + (spaceW - rowW(row, h)) / 2;
+      row.forEach(d => {
+        const w = slotR(d) * h;
+        const el = wraps[k++];
+        el.style.left = x + 'px';
+        el.style.top = (y0 + ri * (h + gapY)) + 'px';
+        el.style.width = w + 'px';
+        el.style.height = h + 'px';
+        blockL = Math.min(blockL, x); blockR = Math.max(blockR, x + w);
+        x += w + gapX;
+      });
     });
-    rects.push({ l: x0, t: y0, w: blockW, h: 2 * h + gapY });
+    rects.push({ l: blockL, t: y0, w: blockR - blockL, h: 2 * h + gapY });
     return rects;
   }
 

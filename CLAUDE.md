@@ -115,7 +115,7 @@ Todo en **Instrument Sans**. Los tamaños con `clamp()` escalan con el ancho de 
 **Excepciones ya pedidas por Carolina**
 
 - **Dualidad Fusionada:** título y subtítulo van **en blanco** sobre la foto de portada (subtítulo en blanco al 78%, categoría en blanco pleno). Los servicios también van en blanco, pero con transparencia (blanco al 72%), para que queden un escalón por debajo del título y el subtítulo.
-- **Fondos:** ver la regla de fondos en "Estilo general". Dentro de esa regla, Dualidad Fusionada tiene un matiz propio: el fondo pasa muy de a poco de blanco a `#ededec` durante el concepto y queda así hasta el final (un gris apenas más oscuro que el primer `#f6f6f6`, para que los figurines blancos no se pierdan). El menú va en blanco mientras está sobre la foto de portada y pasa a tinta al cruzar la prenda.
+- **Fondos:** ver la regla de fondos en "Estilo general". Dentro de esa regla, Dualidad Fusionada tiene un matiz propio: el fondo pasa muy de a poco de blanco a `#f2f2f1` durante el concepto y queda así hasta el final (apenas más oscuro que el blanco de los figurines, `#f6f6f6`, para que no se pierdan; además llevan una sombra casi imperceptible). El menú va en blanco mientras está sobre la foto de portada y pasa a tinta al cruzar la prenda.
 
 ### Estilo general
 
