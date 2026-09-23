@@ -409,56 +409,63 @@
   .df-fade.on{ opacity:1; }
 
   /* ---- 1. INICIAL: la foto a todo el ancho, alto según su proporción ---- */
-  /* el pie de la foto se disuelve en el fondo: Carolina ya dejó la última franja
-     casi blanca, así que alcanza con un difuminado corto sobre esa zona clara */
-  .df-inicial{ width:100vw; position:relative; }
+  /* se recorta la parte de arriba de la foto (525px de sus 3386 de alto) para que
+     título y subtítulo queden a media pantalla o apenas más arriba. El recorte es
+     solo visual: el archivo está entero. El pie se disuelve en el fondo sobre la
+     franja casi blanca que dejó Carolina. */
+  .df-inicial{ width:100vw; position:relative; overflow:hidden; aspect-ratio:2841/2861; }
   .df-hero{
-    width:100%; height:auto; aspect-ratio:2841/3386; display:block;
+    width:100%; height:auto; aspect-ratio:2841/3386; display:block; margin-top:-18.48%;
     -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 77%, rgba(0,0,0,.86) 83%, rgba(0,0,0,.62) 88%, rgba(0,0,0,.36) 92.5%, rgba(0,0,0,.15) 96%, rgba(0,0,0,.04) 98.4%, transparent 99.4%);
     mask-image: linear-gradient(to bottom, #000 0%, #000 77%, rgba(0,0,0,.86) 83%, rgba(0,0,0,.62) 88%, rgba(0,0,0,.36) 92.5%, rgba(0,0,0,.15) 96%, rgba(0,0,0,.04) 98.4%, transparent 99.4%);
   }
-  /* título + subtítulo centrados, apoyados justo encima de la prenda (la
-     cintura del short está al 43% del alto de la foto, centrada en el ancho) */
-  .df-head{ position:absolute; left:49.7%; top:40.5%; transform:translate(-50%,-100%); text-align:center; color:#fff; white-space:nowrap; text-shadow:0 1px 22px rgba(10,25,45,.28); }
-  .df-title{ font-size:clamp(34px,4.6vw,64px); font-weight:500; line-height:1.02; letter-spacing:-.015em; }
-  .df-sub{ margin-top:14px; font-size:clamp(13px,1.25vw,15px); color:rgba(255,255,255,.78); }
-  .df-sub em{ font-style:normal; color:#fff; }
+  /* título + subtítulo centrados, apoyados justo encima de la prenda. Misma
+     tipografía, tamaños y colores que los otros trabajos claros (Exprimir):
+     título en tinta, subtítulo en piedra con la categoría en tinta, servicios
+     en piedra. */
+  .df-head{ position:absolute; left:49.7%; top:29.6%; transform:translate(-50%,-100%); text-align:center; white-space:nowrap; }
+  .df-title{ font-size:clamp(34px,4.6vw,64px); font-weight:500; line-height:1.02; letter-spacing:-.015em; color:var(--ink); }
+  .df-sub{ margin-top:14px; font-size:clamp(13px,1.25vw,15px); color:var(--stone); }
+  .df-sub em{ font-style:normal; color:var(--ink); }
   /* servicios: esquina inferior izquierda de la primera pantalla */
-  .df-roles{ position:absolute; left:calc(var(--df-m) * 2); top:100vh; transform:translateY(calc(-100% - 9vh)); font-size:11.5px; letter-spacing:.06em; line-height:2.05; color:#fff; text-shadow:0 1px 14px rgba(10,25,45,.35); }
+  .df-roles{ position:absolute; left:calc(var(--df-m) * 2); top:100vh; transform:translateY(calc(-100% - 9vh)); font-size:11.5px; letter-spacing:.06em; line-height:2.05; color:var(--stone); }
 
   .df-gap{ width:100vw; }
 
-  /* ---- 2. CONCEPTO: tres párrafos en zigzag ---- */
+  /* ---- 2. CONCEPTO: tres párrafos en zigzag, anchos (así quedan más cortos) ---- */
   .df-text p{ font-size:clamp(12.5px,1.05vw,14px); line-height:1.85; color:var(--ink); margin-bottom:1.25em; }
   .df-text p:last-child{ margin-bottom:0; }
-  .df-concept p{ width:min(46ch,38vw); }
+  .df-concept p{ width:min(84ch,54vw); }
   .df-p1{ margin-left:var(--df-m); }
   .df-p2{ margin-left:auto; margin-right:var(--df-m); }
   /* más adentro que el primero, sin llegar al centro */
   .df-p3{ margin-left:calc(var(--df-m) + 13vw); }
   .df-cgap{ height:42vh; }
 
-  /* ---- 3. PROCESO: figurín centrado en la pantalla, texto a la derecha ---- */
+  /* ---- 3. PROCESO: figurín centrado en la pantalla, texto a la derecha y, a
+     la izquierda, cinco repeticiones en miniatura (prueba) que ocupan el mismo
+     alto. Tamaños y posiciones los calcula el JS a partir del alto del texto. ---- */
   .df-proceso{ position:relative; }
   .df-proceso .df-text{ margin-left:auto; margin-right:var(--df-m); width:min(50ch,29vw); }
-  /* el figurín mide lo mismo que el texto (alto) y conserva su proporción */
   .df-figurin{ position:absolute; top:0; left:50%; height:100%; transform:translateX(-50%); }
   .df-figurin img{ height:100%; width:auto; display:block; }
-  .df-figurin-ph{ height:100%; aspect-ratio:1/2; background:#ecebe8; display:flex; align-items:center; justify-content:center; font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--stone); text-align:center; }
+  .df-minis{ position:absolute; left:0; top:0; width:100%; height:100%; pointer-events:none; }
+  .df-minis img{ position:absolute; display:block; height:auto; }
 
   /* ---- 4. VIDEO a todo el ancho ---- */
   .df-video{ width:100vw; position:relative; }
   .df-video video{ width:100%; height:auto; aspect-ratio:2044/1080; display:block; }
 
-  /* ---- 5. FINALES: las dos fotos una al lado de la otra, mismo alto ---- */
-  .df-finals{ width:100vw; display:flex; gap:10px; opacity:0; }
-  .df-finals img{ min-width:0; height:auto; display:block; }
-  .df-finals img:first-child{ flex:3601 1 0; aspect-ratio:3601/2083; }
-  .df-finals img:last-child{ flex:1562 1 0; aspect-ratio:3024/4032; }
+  /* ---- 5. FINALES: una abajo de la otra, cada una a todo el ancho y con su alto real ---- */
+  .df-final{ width:100vw; opacity:0; }
+  .df-final img{ width:100%; height:auto; display:block; }
+  .df-final-1 img{ aspect-ratio:2400/1388; }
+  .df-final-2 img{ aspect-ratio:1800/2400; }
 
   @media (max-width:900px){
     .df-concept p, .df-proceso .df-text{ width:auto; margin:0 var(--df-m); }
     .df-figurin{ position:static; transform:none; height:60vh; margin:0 auto 6vh; width:max-content; }
+    .df-minis{ display:none; }
     .df-head{ white-space:normal; width:90vw; }
   }
 
@@ -923,7 +930,8 @@
 
           <!-- 3. PROCESO: figurin centrado (mismo alto que el texto) + texto a la derecha -->
           <section class="df-part df-proceso" id="dfProceso">
-            <div class="df-figurin" id="dfFigurin"><div class="df-figurin-ph">[ Figur&iacute;n 01 ]</div></div>
+            <div class="df-minis" id="dfMinis"></div>
+            <div class="df-figurin" id="dfFigurin"><img src="assets/dualidad-figurin-01.png" alt="Figur&iacute;n"></div>
             <div class="df-text" id="dfProcesoText">
               <p>El desarrollo parti&oacute; de una investigaci&oacute;n sobre la historia y evoluci&oacute;n de las pr&aacute;cticas mar&iacute;timas de Mar del Plata, profundizando en las diferencias y conexiones entre el trabajo portuario y la navegaci&oacute;n recreativa. A partir de este recorrido se definieron los recursos que dar&iacute;an forma a la colecci&oacute;n y se desarrollaron seis propuestas, explorando distintas maneras de hacer convivir los c&oacute;digos de ambos universos.</p>
               <p>La investigaci&oacute;n se traslad&oacute; al dise&ntilde;o a trav&eacute;s de la exploraci&oacute;n de formas, materiales, texturas y recursos constructivos, buscando conservar el contraste entre ambas referencias incluso cuando se integraban dentro de una misma propuesta. El proceso se complet&oacute; con la materializaci&oacute;n de uno de los dise&ntilde;os y el desarrollo de sus fichas t&eacute;cnicas, incorporando las especificaciones necesarias para trasladar la propuesta conceptual a una resoluci&oacute;n concreta.</p>
@@ -941,8 +949,10 @@
           <div class="df-gap" style="height:50vh"></div>
 
           <!-- 5. FINALES -->
-          <section class="df-finals" id="dfFinals">
+          <section class="df-final df-final-1">
             <img src="assets/dualidad-final-1.jpg" alt="Dualidad Fusionada">
+          </section>
+          <section class="df-final df-final-2">
             <img src="assets/dualidad-final-2.jpg" alt="Dualidad Fusionada">
           </section>
 
@@ -2758,11 +2768,14 @@
   // Fondo: una capa propia (#dfBg) que viaja junto con el recorrido. Pasa de
   // blanco a #f6f6f6 de forma lineal y muy larga: empieza con el primer párrafo
   // y la mitad exacta del degradé cae en la mitad del segundo.
-  // Moodboard: cada imagen asoma por el pie de la pantalla y sube más lento que
-  // el texto (DF_MOOD_K) y con más inercia (DF_MOOD_LERP), así se sienten más
-  // "pesadas". El orden es aleatorio cada vez que se abre el trabajo; la
-  // posición horizontal de cada una se elige entre varias al azar, quedándose
-  // con la que menos tapa los párrafos y menos se amontona con las demás.
+  // Moodboard: cada imagen sube más lento que el texto (DF_MOOD_K) y con más
+  // inercia (DF_MOOD_LERP), así se sienten más "pesadas". Todas tienen más o
+  // menos la misma superficie. El orden de las fotos es aleatorio cada vez que
+  // se abre el trabajo, pero la distribución no: la posición horizontal sigue
+  // la secuencia "áurea" (cada imagen se corre 0,618 del ancho respecto de la
+  // anterior), que reparte parejo en todo el ancho sin que se note un patrón.
+  // Las primeras van solo a la derecha del texto del concepto y "nacen" por
+  // debajo del borde difuminado de la portada, así aparecen más arriba.
   const dfTrackEl   = document.getElementById('dfTrack');
   const dfBgEl      = document.getElementById('dfBg');
   const dfMoodBack  = document.getElementById('dfMoodBack');
@@ -2770,14 +2783,17 @@
   const dfFadeTop   = document.getElementById('dfFadeTop');
   const dfFadeBot   = document.getElementById('dfFadeBottom');
   const dfVideo     = document.getElementById('dfVideo');
-  const dfFinals    = document.getElementById('dfFinals');
+  const dfFinals    = Array.from(document.querySelectorAll('.df-final'));
+  const dfMinis     = document.getElementById('dfMinis');
   const dfMoodImgs  = Array.from(document.querySelectorAll('#dfMoodSrc img'));
 
   const DF_BG_TO      = 246;   // #f6f6f6
-  const DF_MOOD_SCALE = 0.1;   // tamaño de cada imagen: una décima parte de su tamaño original
+  const DF_MOOD_SIZE  = 85;    // tamaño promedio de cada imagen (lado de un cuadrado de igual superficie, en px)
   const DF_MOOD_K     = 0.6;   // velocidad de las imágenes respecto del texto (1 = igual que el texto)
   const DF_MOOD_LERP  = 0.035; // inercia propia de las imágenes (más chico = más pesado)
-  const DF_FIRST_RIGHT = 3;    // las primeras en aparecer van del lado derecho (el texto está a la izquierda)
+  const DF_FIRST_RIGHT = 5;    // las primeras en aparecer van del lado derecho (el texto está a la izquierda)
+  const DF_FIG_RATIO   = 647 / 1833;   // proporción (ancho/alto) del figurín
+  const DF_MINIS       = 5;            // repeticiones en miniatura (prueba)
 
   let dfSeed = 1;
   let dfMood = [];             // { el, w, h, x, sIn }
@@ -2787,6 +2803,7 @@
   let dfVideoTop = 0, dfVideoBottom = 0;
   let dfVideoOn = false;
   let dfTopC = '', dfBotC = '';
+  let dfEdge = null;
 
   // azar "con semilla": el mismo orden y las mismas posiciones si solo se
   // redimensiona la ventana; uno nuevo cada vez que se entra al trabajo
@@ -2833,6 +2850,9 @@
     dfBgEl.style.height = (dfTrackEl.scrollHeight + vh) + 'px';
     dfBgEl.style.background = `linear-gradient(to bottom, #fff 0px, #fff ${dfGradA}px, #f6f6f6 ${dfGradB}px, #f6f6f6 100%)`;
 
+    // ---- figurín + miniaturas ----
+    dfLayoutMinis(pt.h, vw);
+
     // ---- moodboard ----
     const rnd = dfRandom(dfSeed);
     const order = dfMoodImgs.slice();
@@ -2842,45 +2862,43 @@
     }
     const n = order.length;
     const K = DF_MOOD_K;
-    // la primera asoma por el pie cuando la mitad del primer párrafo está ahí;
-    // la última, un poco antes de que empiece a entrar el texto del proceso:
-    // mientras ese texto sube, las últimas se van yendo por arriba (se cruzan)
-    const sStart = p1.t + p1.h / 2 - vh;
+    // la primera "nace" a media pantalla, justo cuando el borde difuminado de la
+    // portada pasa por ahí; la última, un poco antes de que entre el texto del
+    // proceso: mientras ese texto sube, las últimas se van por arriba (se cruzan)
+    const sStart = p1.t - vh * 1.45;
     const sEnd   = Math.max(pt.t - vh * 1.3, sStart + vh * 0.5);
-    const texts  = [p1, p2, p3, pt, fg];
+    const rightLo = Math.max(p1.r + vw * 0.03, vw * 0.55);
     const placed = [];
     dfMood = [];
+    let golden = rnd();
 
     order.forEach((el, i) => {
-      const w = Math.max(Math.round(el.dataset.w * DF_MOOD_SCALE), 1);
-      const h = Math.max(Math.round(el.dataset.h * DF_MOOD_SCALE), 1);
-      const u = n > 1 ? (i + (rnd() - 0.5) * 0.8) / (n - 1) : 0;
+      const r = el.dataset.w / el.dataset.h;
+      const w = Math.round(DF_MOOD_SIZE * Math.sqrt(r));
+      const h = Math.round(DF_MOOD_SIZE / Math.sqrt(r));
+      const u = n > 1 ? (i + (rnd() - 0.5) * 0.7) / (n - 1) : 0;
       const sIn  = sStart + (sEnd - sStart) * Math.min(Math.max(u, 0), 1);
       const sOut = sIn + (vh + h) / K;
 
-      let lo = vw * 0.03, hi = vw * 0.97 - w;
-      if(i < DF_FIRST_RIGHT) lo = Math.max(p1.r + vw * 0.05, vw * 0.5);
-      if(hi < lo) hi = lo;
+      const first = i < DF_FIRST_RIGHT;
+      const lo = first ? rightLo : vw * 0.03;
+      const hi = Math.max(vw * 0.97 - w, lo);
+      golden = (golden + 0.6180339887) % 1;
+      const target = lo + golden * (hi - lo);
 
-      // se prueban varias posiciones y se queda con la que menos tapa. Tapar
-      // un párrafo cuenta mucho más cuando ese párrafo está en la zona de
-      // lectura (el centro de la pantalla) que cuando ya está entrando o saliendo.
-      let bestX = lo, bestScore = Infinity;
-      for(let c = 0; c < 40; c++){
-        const x = lo + rnd() * (hi - lo);
+      // cerca del lugar que le toca, se prueban algunas variantes y se queda con
+      // la que menos se pisa con las imágenes que ya están en pantalla
+      let bestX = target, bestScore = Infinity;
+      for(let c = 0; c < 14; c++){
+        const x = Math.min(Math.max(target + (rnd() - 0.5) * vw * (first ? 0.12 : 0.1), lo), hi);
         let sc = 0;
-        for(let k = 0; k <= 16; k++){
-          const s = sIn + (sOut - sIn) * k / 16;
+        for(let k = 0; k <= 12; k++){
+          const s = sIn + (sOut - sIn) * k / 12;
           const y = vh - (s - sIn) * K;
-          texts.forEach(b => {
-            const bt = b.t - s;
-            const reading = (bt < vh * 0.85 && bt + b.h > vh * 0.12) ? 3 : 1;
-            sc += reading * dfOverlap(x, y, w, h, b.l - 22, bt - 22, b.w + 44, b.h + 44);
-          });
           placed.forEach(q => {
             if(s < q.sIn || s > q.sOut) return;
             const qy = vh - (s - q.sIn) * K;
-            sc += 1.6 * dfOverlap(x, y, w, h, q.x - 36, qy - 36, q.w + 72, q.h + 72);
+            sc += dfOverlap(x, y, w, h, q.x - 40, qy - 40, q.w + 80, q.h + 80);
           });
         }
         if(sc < bestScore){ bestScore = sc; bestX = x; }
@@ -2897,14 +2915,54 @@
     });
   }
 
+  // figurín del mismo alto que el texto de proceso, centrado en la pantalla; las
+  // cinco miniaturas (del mismo tamaño entre sí) llenan ese mismo alto en dos
+  // filas —tres arriba, dos abajo, intercaladas— centradas en el espacio libre
+  // de la izquierda
+  function dfLayoutMinis(H, vw){
+    const fig = document.getElementById('dfFigurin');
+    const figW = H * DF_FIG_RATIO;
+    fig.style.width = figW + 'px';
+    if(!dfMinis) return;
+    const src = fig.querySelector('img').getAttribute('src');
+    if(dfMinis.children.length !== DF_MINIS){
+      dfMinis.innerHTML = '';
+      for(let i = 0; i < DF_MINIS; i++){
+        const im = document.createElement('img');
+        im.src = src; im.alt = '';
+        dfMinis.appendChild(im);
+      }
+    }
+    const m = parseFloat(getComputedStyle(dfTrackEl.parentNode).getPropertyValue('--df-m')) || 40;
+    const spaceL = m, spaceR = vw / 2 - figW / 2 - vw * 0.035;
+    const spaceW = Math.max(spaceR - spaceL, 0);
+    const gapY = H * 0.05;
+    let h = (H - gapY) / 2, w = h * DF_FIG_RATIO, gapX = w * 0.32;
+    const need = 3 * w + 2 * gapX;
+    if(need > spaceW){ const f = spaceW / need; h *= f; w *= f; gapX *= f; }
+    const blockW = 3 * w + 2 * gapX;
+    const x0 = spaceL + (spaceW - blockW) / 2;
+    const y0 = (H - (2 * h + gapY)) / 2;
+    const pos = [
+      [x0, y0], [x0 + w + gapX, y0], [x0 + 2 * (w + gapX), y0],
+      [x0 + (w + gapX) / 2, y0 + h + gapY], [x0 + (w + gapX) * 1.5, y0 + h + gapY]
+    ];
+    Array.from(dfMinis.children).forEach((im, i) => {
+      im.style.width = w + 'px';
+      im.style.height = h + 'px';
+      im.style.left = pos[i][0] + 'px';
+      im.style.top  = pos[i][1] + 'px';
+    });
+  }
+
   function dfSetup(){
     dfSeed = Math.floor(Math.random() * 1e9);
     dfMoodCur = 0;
     dfVideoOn = false;
-    dfTopC = ''; dfBotC = '';
+    dfTopC = ''; dfBotC = ''; dfEdge = null;
     dfFadeTop.classList.remove('on');
     dfFadeBot.classList.remove('on');
-    if(dfFinals) dfFinals.style.opacity = '0';
+    dfFinals.forEach(f => { f.style.opacity = '0'; });
     dfLayout();
     // las fotos pueden terminar de cargar después: se vuelve a medir
     setTimeout(() => { if(workTrack === dfTrackEl){ dfLayout(); measureWork(); } }, 300);
@@ -2923,6 +2981,17 @@
 
     // imágenes del moodboard, con su propio peso
     dfMoodCur += (workCurrent - dfMoodCur) * DF_MOOD_LERP;
+    // las imágenes solo se ven por debajo del borde difuminado de la portada:
+    // así "nacen" desde ahí en vez de pasar por encima de la foto
+    const edge = Math.round(dfHeroBottom - vh * 0.1 - workCurrent);
+    if(edge !== dfEdge){
+      dfEdge = edge;
+      const mask = edge > -vh * 0.2
+        ? 'linear-gradient(to bottom, transparent ' + edge + 'px, #000 ' + (edge + vh * 0.14) + 'px)'
+        : 'none';
+      dfMoodBack.style.webkitMaskImage = dfMoodFront.style.webkitMaskImage = mask;
+      dfMoodBack.style.maskImage = dfMoodFront.style.maskImage = mask;
+    }
     dfMood.forEach(m => {
       const y = vh - (dfMoodCur - m.sIn) * DF_MOOD_K;
       if(y < vh + 2 && y + m.h > -2){
@@ -2963,10 +3032,10 @@
     }
 
     // fotos finales: aparecen de a poco al entrar
-    if(dfFinals){
-      const top = dfFinals.offsetTop - workCurrent;
-      dfFinals.style.opacity = String(Math.min(Math.max((vh * 1.05 - top) / (vh * 0.8), 0), 1));
-    }
+    dfFinals.forEach(f => {
+      const top = f.offsetTop - workCurrent;
+      f.style.opacity = String(Math.min(Math.max((vh * 1.05 - top) / (vh * 0.8), 0), 1));
+    });
   }
 
   function setupWorkProject(id){

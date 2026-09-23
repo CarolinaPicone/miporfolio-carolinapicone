@@ -263,6 +263,7 @@ Todo vive en un **único `index.html`**, sin páginas separadas ni rutas — la 
 - **Proyectos a incluir** (según el brief inicial de Carolina, no necesariamente en este orden): *"Nada es Plano"* (proyecto de graduación), *"Dualidad Fusionada"* (puerto de trabajo vs. universo náutico recreativo de Mar del Plata), un proyecto de indumentaria infantil (deliberadamente discreto, va último — no representa su estética pero muestra versatilidad técnica), dirección artística de un cortometraje, dirección creativa de la producción visual de un álbum musical.
 - **Metodología de trabajo que funciona bien con Carolina:** cuando algo no queda en el lugar exacto que imagina, suele mandar una captura de pantalla con una grilla o bloques de color marcando la posición exacta en píxeles — es el método más efectivo para ajustes finos de ubicación, más que las descripciones en palabras.
 - Cuando algo no funciona como se esperaba, prefiere que se le explique la causa técnica real (qué pasó y por qué), no solo que se corrija en silencio.
+- **Archivos que ya no se usan se borran:** todo lo que Carolina suba al repositorio (fotos, videos, carpetas con el material original) y que después ya no use la web —porque se convirtió a otro formato, se renombró con un nombre descriptivo o se descartó— se elimina directamente, sin preguntar. Pero **siempre se le informa** qué se borró y por qué.
 - Fondo blanco: **regla no negociable**, en todas las secciones, todo el tiempo.
 
 ---
