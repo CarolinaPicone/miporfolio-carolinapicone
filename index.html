@@ -386,9 +386,9 @@
   /* =============== DUALIDAD FUSIONADA (proyecto 02) =============== */
   /* Tema claro (no entra en DARK_WORKS). El fondo no es del panel: es una capa
      propia (.df-bg) que viaja con el recorrido y pasa, muy de a poco, de blanco
-     a #f2f2f1 durante el concepto. Va POR DEBAJO de las imágenes del moodboard
+     a #f4f4f3 durante el concepto. Va POR DEBAJO de las imágenes del moodboard
      que pasan "por detrás" del texto, por eso no puede estar dentro del recorrido. */
-  .df{ --df-m: clamp(20px,4vw,56px); --df-bg:#f2f2f1; position:relative; }
+  .df{ --df-m: clamp(20px,4vw,56px); --df-bg:#f4f4f3; position:relative; }
   /* menú en blanco mientras está sobre la foto de portada; al pasar por la
      prenda cambia a negro, despacio (y al revés si se vuelve hacia arriba) */
   html.df-nav-light nav.links button{ color:#fff; }
@@ -463,7 +463,7 @@
   .df-figurin img, .df-mini img{ filter:drop-shadow(0 1px 2.5px rgba(40,36,30,.10)); }
   .df-minis{ position:absolute; left:0; top:0; width:100%; height:100%; pointer-events:none; }
   .df-mini{ position:absolute; pointer-events:auto; }
-  .df-mini img{ position:absolute; left:50%; top:0; height:100%; width:auto; transform:translateX(-50%); display:block; transition:opacity .6s ease; }
+  .df-mini img{ position:absolute; left:50%; top:0; height:100%; width:auto; transform:translateX(-50%); display:block; transition:opacity 1.5s ease-in-out; }
   .df-mini .df-mini-b{ opacity:0; }
   .df-mini:hover .df-mini-f{ opacity:0; }
   .df-mini:hover .df-mini-b{ opacity:1; }
@@ -940,7 +940,7 @@
 
           <!-- 2. CONCEPTO: tres parrafos en zigzag (izquierda / derecha / izquierda mas adentro) -->
           <section class="df-part df-concept df-text" id="dfConcept">
-            <p class="df-p1" id="dfP1">Como trabajo final de segundo a&ntilde;o, el proyecto parti&oacute; de una consigna vinculada con Mar del Plata. Desde una cercan&iacute;a personal con el universo de la navegaci&oacute;n recreativa, surgi&oacute; el inter&eacute;s por tomar su dimensi&oacute;n mar&iacute;tima como punto de partida y explorar la proximidad entre dos formas de habitar un mismo entorno. La investigaci&oacute;n profundiz&oacute; entonces en una convivencia particular: un mismo mar habitado desde la funcionalidad del trabajo y desde el ocio de la navegaci&oacute;n recreativa, dos universos que se diferencian en sus pr&aacute;cticas, materiales y c&oacute;digos, pero que forman parte de un mismo paisaje.</p>
+            <p class="df-p1" id="dfP1">Como trabajo final de segundo a&ntilde;o, el proyecto parti&oacute; de una consigna vinculada con Mar del Plata. Desde una cercan&iacute;a personal con el universo de la navegaci&oacute;n, surgi&oacute; el inter&eacute;s por tomar su dimensi&oacute;n mar&iacute;tima como punto de partida y explorar la proximidad entre dos formas de habitar un mismo entorno. La investigaci&oacute;n profundiz&oacute; entonces en una convivencia particular: un mismo mar habitado desde la funcionalidad del trabajo y desde el ocio de la navegaci&oacute;n recreativa, dos universos que se diferencian en sus pr&aacute;cticas, materiales y c&oacute;digos, pero que forman parte de un mismo paisaje.</p>
             <div class="df-cgap"></div>
             <p class="df-p2" id="dfP2">Entre ambos aparecen formas de habitar el mar profundamente distintas. Mientras uno responde a las exigencias del entorno a trav&eacute;s de la resistencia, la protecci&oacute;n y la practicidad, el otro construye una relaci&oacute;n m&aacute;s asociada al disfrute, donde la funcionalidad convive con la est&eacute;tica, la liviandad y el cuidado por los detalles. Sus diferencias no solo se encuentran en las prendas, sino tambi&eacute;n en las embarcaciones, los materiales y las formas de movimiento que caracterizan cada universo.</p>
             <div class="df-cgap"></div>
@@ -954,7 +954,7 @@
             <div class="df-minis" id="dfMinis"></div>
             <div class="df-figurin" id="dfFigurin"><img src="assets/dualidad-figurin-01.png" alt="Figur&iacute;n"></div>
             <div class="df-text" id="dfProcesoText">
-              <p>El desarrollo parti&oacute; de una investigaci&oacute;n sobre la historia y evoluci&oacute;n de las pr&aacute;cticas mar&iacute;timas de Mar del Plata, profundizando en las diferencias y conexiones entre el trabajo portuario y la navegaci&oacute;n recreativa. A partir de este recorrido se definieron los recursos que dar&iacute;an forma a la colecci&oacute;n y se desarrollaron seis propuestas, explorando distintas maneras de hacer convivir los c&oacute;digos de ambos universos.</p>
+              <p>A partir de la investigaci&oacute;n, que profundiz&oacute; en las diferencias y conexiones entre ambos mundos, se definieron los recursos que dar&iacute;an forma a la colecci&oacute;n y se desarrollaron seis propuestas, explorando distintas maneras de hacer convivir sus c&oacute;digos.</p>
               <p>La investigaci&oacute;n se traslad&oacute; al dise&ntilde;o a trav&eacute;s de la exploraci&oacute;n de formas, materiales, texturas y recursos constructivos, buscando conservar el contraste entre ambas referencias incluso cuando se integraban dentro de una misma propuesta. El proceso se complet&oacute; con la materializaci&oacute;n de uno de los dise&ntilde;os y el desarrollo de sus fichas t&eacute;cnicas, incorporando las especificaciones necesarias para trasladar la propuesta conceptual a una resoluci&oacute;n concreta.</p>
               <p>En el conjunto final, el blanco atraviesa ambas prendas y las re&uacute;ne visualmente dentro de un mismo universo, mientras que sus materialidades y texturas mantienen una diferencia marcada. De esta manera, una apariencia limpia y unificada convive con contrastes que remiten a las distintas formas de habitar el paisaje mar&iacute;timo que dio origen a la colecci&oacute;n.</p>
             </div>
@@ -2788,7 +2788,7 @@
 
   // =============== 02 · DUALIDAD FUSIONADA ===============
   // Fondo: una capa propia (#dfBg) que viaja junto con el recorrido. Pasa de
-  // blanco a #f2f2f1 de forma lineal y muy larga: empieza con el primer párrafo
+  // blanco a #f4f4f3 de forma lineal y muy larga: empieza con el primer párrafo
   // y la mitad exacta del degradé cae en la mitad del segundo.
   // Moodboard: las imágenes suben un poco más lento que el texto (DF_MOOD_K),
   // para que no parezcan pegadas al fondo, sin inercia extra (sin "rebote").
@@ -2878,7 +2878,7 @@
     const mid = p2.t + p2.h / 2;
     const gradA = p1.t, gradB = mid + (mid - p1.t);
     dfBgEl.style.height = (dfTrackEl.scrollHeight + vh) + 'px';
-    dfBgEl.style.background = `linear-gradient(to bottom, #fff 0px, #fff ${gradA}px, #f2f2f1 ${gradB}px, #f2f2f1 100%)`;
+    dfBgEl.style.background = `linear-gradient(to bottom, #fff 0px, #fff ${gradA}px, #f4f4f3 ${gradB}px, #f4f4f3 100%)`;
 
     // ---- figurín + miniaturas (zona prohibida para las imágenes) ----
     dfFigRects = dfLayoutMinis(pt.h, vw).map(r => ({ l: r.l, t: r.t + pt.t, w: r.w, h: r.h }));
@@ -2900,10 +2900,10 @@
     const sEnd   = Math.max(pt.t - (vh + maxH) / K - 40, sStart + vh * 0.5);
     const rightLo = Math.max(p1.r + vw * 0.03, vw * 0.55);
     const texts = [p1, p2, p3, pt];
-    // "núcleo" de cada texto: el párrafo sin sus bordes laterales. Las fotos en
-    // blanco y negro pueden rozar los bordes, pero no quedarse sobre el centro
-    // del párrafo (ahí no dejarían leer por más que se scrollee)
-    const cores = texts.map(b => ({ l: b.l + b.w * 0.2, t: b.t, w: b.w * 0.6, h: b.h }));
+    // "núcleo" de cada texto: el párrafo sin una franja fina en sus bordes. Las
+    // imágenes pueden rozar esos bordes, pero no meterse en el texto (las de
+    // blanco y negro, que son las que más tapan, todavía menos)
+    const cores = texts.map(b => ({ l: b.l + b.w * 0.06, t: b.t + 8, w: b.w * 0.88, h: b.h - 16 }));
     const placed = [];
     dfMood = [];
     let golden = rnd();
@@ -2946,14 +2946,16 @@
         for(let k = 0; k <= 12; k++){
           const s = sIn + (sOut - sIn) * k / 12;
           const y = vh - (s - sIn) * K;
-          if(bw) cores.forEach(c => {
+          cores.forEach(c => {
             const ct = c.t - s;
-            if(ct < vh * 0.9 && ct + c.h > vh * 0.08) sc += 25 * dfOverlap(x, y, w, h, c.l, ct, c.w, c.h);
+            const reading = ct < vh * 0.9 && ct + c.h > vh * 0.08;
+            sc += (reading ? (bw ? 40 : 30) : 8) * dfOverlap(x, y, w, h, c.l, ct, c.w, c.h);
           });
+          // más juntas: se pueden pisar apenas entre ellas (hasta ~14px por lado)
           placed.forEach(q => {
             if(s < q.sIn || s > q.sOut) return;
             const qy = vh - (s - q.sIn) * K;
-            sc += dfOverlap(x, y, w, h, q.x - 40, qy - 40, q.w + 80, q.h + 80);
+            sc += dfOverlap(x, y, w, h, q.x + 14, qy + 14, q.w - 28, q.h - 28);
           });
         }
         if(sc < bestScore){ bestScore = sc; bestX = x; }
@@ -3000,15 +3002,15 @@
     const m = parseFloat(getComputedStyle(dfTrackEl.parentNode).getPropertyValue('--df-m')) || 40;
     const spaceL = m, spaceR = vw / 2 - figW / 2 - vw * 0.035;
     const spaceW = Math.max(spaceR - spaceL, 0);
-    const gapY = H * 0.05;
+    const gapY = H * 0.09;
     let h = (H - gapY) / 2;
     const rows = [DF_DESIGNS.slice(0, 3), DF_DESIGNS.slice(3)];
     const slotR = d => Math.max(d.f, d.b);                 // ancho del lugar = el mayor entre frente y espalda
     const avgR = DF_DESIGNS.reduce((a, d) => a + slotR(d), 0) / DF_DESIGNS.length;
-    const rowW = (row, hh) => row.reduce((a, d) => a + slotR(d) * hh, 0) + (row.length - 1) * avgR * hh * 0.3;
+    const rowW = (row, hh) => row.reduce((a, d) => a + slotR(d) * hh, 0) + (row.length - 1) * avgR * hh * 0.6;
     const widest = Math.max(...rows.map(r => rowW(r, h)));
     if(widest > spaceW) h *= spaceW / widest;
-    const gapX = avgR * h * 0.3;
+    const gapX = avgR * h * 0.6;
     const y0 = (H - (2 * h + gapY)) / 2;
     let blockL = Infinity, blockR = -Infinity;
     const wraps = Array.from(dfMinis.children);
