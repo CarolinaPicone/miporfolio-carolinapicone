@@ -466,18 +466,23 @@
   .df-mini{ position:absolute; pointer-events:auto; cursor:pointer; }
   .df-mini.is-zoomed{ visibility:hidden; }
 
-  /* figurín ampliado: al hacer click en uno de la fila, crece hasta el lugar y
-     el tamaño del figurín central; todo lo demás se desenfoca. Otro click, en
-     cualquier parte, lo devuelve a su lugar. */
+  /* figurín ampliado: al hacer click en uno de la fila, crece hasta el tamaño
+     del figurín central y se centra en la pantalla, con su espalda al lado;
+     todo lo demás se desenfoca. Otro click, en cualquier parte, lo devuelve. */
   .df-track, .df-mood{ transition:filter .7s ease; }
   html.df-zoom-open .df-track, html.df-zoom-open .df-mood{ filter:blur(14px); }
+  /* el figurín central se aparta mientras hay uno ampliado (si no, se ve
+     desenfocado justo entre el frente y la espalda) */
+  .df-figurin{ transition:opacity .5s ease; }
+  html.df-zoom-open .df-figurin{ opacity:0; }
   .df-zoom{ position:fixed; inset:0; z-index:6; display:none; cursor:pointer; }
   .df-zoom.on{ display:block; }
   .df-zoom-fig{ position:fixed; left:0; top:0; transform-origin:0 0; }
-  .df-zoom-fig img{ position:absolute; left:50%; top:0; height:100%; width:auto; transform:translateX(-50%); display:block; filter:drop-shadow(0 1px 2.5px rgba(40,36,30,.10)); }
-  .df-zoom-fig .df-mini-b{ opacity:0; }
-  .df-zoom-fig:hover .df-mini-f{ opacity:0; }
-  .df-zoom-fig:hover .df-mini-b{ opacity:1; }
+  /* ampliado: frente y espalda juntos, uno al lado del otro, centrados en la
+     pantalla (sin el cambio al pasar el cursor) */
+  .df-zoom-fig img{ position:absolute; top:0; height:100%; width:auto; display:block; filter:drop-shadow(0 1px 2.5px rgba(40,36,30,.10)); }
+  .df-zoom-fig .df-zoom-b{ opacity:0; transition:opacity .6s ease; }
+  .df-zoom.show .df-zoom-b{ opacity:1; transition-delay:.2s; }
   .df-mini img{ position:absolute; left:50%; top:0; height:100%; width:auto; transform:translateX(-50%); display:block; }
   .df-mini .df-mini-b{ opacity:0; }
   .df-mini:hover .df-mini-f{ opacity:0; }
@@ -997,7 +1002,7 @@
           </section>
 
         </div>
-        <div class="df-zoom" id="dfZoom"><div class="df-zoom-fig" id="dfZoomFig"><img class="df-mini-f" alt=""><img class="df-mini-b" alt=""></div></div>
+        <div class="df-zoom" id="dfZoom"><div class="df-zoom-fig" id="dfZoomFig"><img class="df-zoom-f" alt=""><img class="df-zoom-b" alt=""></div></div>
       </div>
 
       <!-- ===== 03 - Un Mundo para Exprimir ===== -->
@@ -3083,34 +3088,41 @@
   let dfZoomSrc = null;          // la miniatura que se amplió
   let dfZoomTimer = null;
 
-  // transform que lleva el recuadro ampliado (ubicado en el lugar del figurín
-  // central) hasta donde está la miniatura en pantalla
+  // transform que lleva el recuadro ampliado (frente + espalda) hasta donde está
+  // la miniatura en pantalla: el frente coincide exactamente con la miniatura
+  let dfZoomD = null, dfZoomH = 0;
+  const DF_ZOOM_GAP = 0.08;      // separación entre frente y espalda (proporción del alto)
   function dfZoomFromMini(mini){
-    const a = mini.getBoundingClientRect(), b = dfZoomFig.getBoundingClientRect();
-    const k = a.height / b.height;
-    return 'translate(' + (a.left + a.width / 2 - k * b.width / 2) + 'px,' + a.top + 'px) scale(' + k + ')';
+    const a = mini.getBoundingClientRect();
+    const k = a.height / dfZoomH;
+    const frontLeft = a.left + (a.width - dfZoomD.f * a.height) / 2;
+    return 'translate(' + frontLeft + 'px,' + a.top + 'px) scale(' + k + ')';
   }
   function dfZoomOpen(mini, d){
     if(dfZoomSrc || workTrack !== dfTrackEl) return;
     const main = document.querySelector('#dfFigurin img').getBoundingClientRect();
-    const r = Math.max(d.f, d.b), h = main.height, w = r * h;
+    const h = main.height, wf = d.f * h, wb = d.b * h, gap = DF_ZOOM_GAP * h;
+    const W = wf + gap + wb;
+    dfZoomD = d; dfZoomH = h;
     const imgs = dfZoomFig.querySelectorAll('img');
     imgs[0].src = 'assets/dualidad-figurin-' + d.n + '-frente-grande.png';
     imgs[1].src = 'assets/dualidad-figurin-' + d.n + '-espalda-grande.png';
-    // posición final: la del figurín central (mismo alto, centrado en su eje)
-    dfZoomFig.style.left = '0px'; dfZoomFig.style.top = '0px';
-    dfZoomFig.style.width = w + 'px'; dfZoomFig.style.height = h + 'px';
+    imgs[0].style.left = '0px';               imgs[0].style.width = wf + 'px';
+    imgs[1].style.left = (wf + gap) + 'px';   imgs[1].style.width = wb + 'px';
+    dfZoomFig.style.width = W + 'px'; dfZoomFig.style.height = h + 'px';
     dfZoom.classList.add('on');
-    const endT = 'translate(' + (main.left + main.width / 2 - w / 2) + 'px,' + main.top + 'px)';
+    // posición final: centrado en la pantalla, del alto del figurín central
+    const endT = 'translate(' + ((window.innerWidth - W) / 2) + 'px,' + ((window.innerHeight - h) / 2) + 'px)';
     dfZoomFig.style.transition = 'none';
-    dfZoomFig.style.transform = endT;
     dfZoomFig.style.transform = dfZoomFromMini(mini);
     void dfZoomFig.offsetWidth;
     dfZoomFig.style.transition = 'transform ' + DF_ZOOM_MS + 'ms cubic-bezier(.22,1,.36,1)';
     dfZoomFig.style.transform = endT;
+    dfZoom.classList.add('show');
     mini.classList.add('is-zoomed');
     root.classList.add('df-zoom-open');
     dfZoomSrc = mini;
+    dfGlide = null;
     lbOpen = true;                 // mientras está abierto no se scrollea
   }
   function dfZoomClose(instant){
@@ -3118,22 +3130,18 @@
     const mini = dfZoomSrc;
     clearTimeout(dfZoomTimer);
     root.classList.remove('df-zoom-open');
+    dfZoom.classList.remove('show');
     const done = () => {
       dfZoom.classList.remove('on');
       mini.classList.remove('is-zoomed');
       dfZoomSrc = null;
       lbOpen = false;
+      dfLastWheel = performance.now();
     };
     if(instant){ done(); return; }
-    // vuelve a su lugar en la fila
-    const cur = dfZoomFig.style.transform;
-    dfZoomFig.style.transition = 'none';
-    dfZoomFig.style.transform = 'none';
-    const back = dfZoomFromMini(mini);
-    dfZoomFig.style.transform = cur;
-    void dfZoomFig.offsetWidth;
+    // vuelve a su lugar en la fila (la espalda se desvanece en el camino)
     dfZoomFig.style.transition = 'transform ' + DF_ZOOM_MS + 'ms cubic-bezier(.22,1,.36,1)';
-    dfZoomFig.style.transform = back;
+    dfZoomFig.style.transform = dfZoomFromMini(mini);
     dfZoomTimer = setTimeout(done, DF_ZOOM_MS);
   }
   if(dfZoom) dfZoom.addEventListener('click', () => dfZoomClose(false));
@@ -3141,9 +3149,18 @@
   // el scroll se mueve solo hasta "to" (centrado del video / envión del final).
   // Mientras dura, la rueda no suma: si no, el propio impulso del trackpad lo
   // cortaría apenas empieza.
-  function dfGlideTo(to){
-    dfGlide = { from: workTarget, to: Math.min(Math.max(to, 0), workMax - 150), t0: performance.now() };
+  function dfGlideTo(to, soft){
+    dfGlide = { from: workTarget, to: Math.min(Math.max(to, 0), workMax - 150), t0: performance.now(), soft: !!soft };
   }
+  // si se frena el scroll un segundo con el bloque del proceso cerca del centro,
+  // se acomoda solo, muy suave (y cualquier movimiento de la rueda lo cancela)
+  let dfLastWheel = 0;
+  let dfProcSnapped = false;
+  window.addEventListener('wheel', () => {
+    dfLastWheel = performance.now();
+    if(dfGlide && dfGlide.soft) dfGlide = null;
+    dfProcSnapped = false;
+  }, { passive:true, capture:true });
   function dfEase(t){ return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
 
 
@@ -3153,6 +3170,7 @@
     dfVideoSnapped = false;
     dfVideoPushed = false;
     dfGlide = null;
+    dfProcSnapped = false;
     dfEdge = null;
     dfFinals.forEach(f => { f.style.opacity = '0'; });
     dfLayout();
@@ -3177,6 +3195,15 @@
     }
 
     dfBgEl.style.transform = 'translateY(' + (-workCurrent) + 'px)';
+    if(!dfGlide && !dfProcSnapped && !dfZoomSrc && !workLeaving && now - dfLastWheel > 1000){
+      const proc = document.getElementById('dfProceso');
+      const target = proc.offsetTop + proc.offsetHeight / 2 - vh / 2;
+      const off = target - workCurrent;
+      if(Math.abs(off) > 3 && Math.abs(off) < vh * 0.35 && Math.abs(workTarget - workCurrent) < 2){
+        dfProcSnapped = true;
+        dfGlideTo(target, true);
+      }
+    }
     // menú blanco sobre la foto, negro desde que pasa por la prenda
     root.classList.toggle('df-nav-light', workCurrent + 38 < dfObjTop);
 
@@ -3338,7 +3365,7 @@
     if(!workTrack || workLeaving) return;
     e.preventDefault();
     if(lbOpen) return;
-    if(dfGlide) return;   // Dualidad: el scroll se está moviendo solo (centrado / envión)
+    if(dfGlide && !dfGlide.soft) return;   // Dualidad: el scroll se está moviendo solo (centrado del video / envión)
     workTarget += e.deltaY;
     if(workTarget < -90){
       workLeaving = true;
