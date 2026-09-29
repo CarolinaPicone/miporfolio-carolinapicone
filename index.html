@@ -463,7 +463,7 @@
   .df-figurin img, .df-mini img{ filter:drop-shadow(0 1px 2.5px rgba(40,36,30,.10)); }
   .df-minis{ position:absolute; left:0; top:0; width:100%; height:100%; pointer-events:none; }
   .df-mini{ position:absolute; pointer-events:auto; }
-  .df-mini img{ position:absolute; left:50%; top:0; height:100%; width:auto; transform:translateX(-50%); display:block; transition:opacity 1.5s ease-in-out; }
+  .df-mini img{ position:absolute; left:50%; top:0; height:100%; width:auto; transform:translateX(-50%); display:block; }
   .df-mini .df-mini-b{ opacity:0; }
   .df-mini:hover .df-mini-f{ opacity:0; }
   .df-mini:hover .df-mini-b{ opacity:1; }
@@ -2904,63 +2904,79 @@
     // imágenes pueden rozar esos bordes, pero no meterse en el texto (las de
     // blanco y negro, que son las que más tapan, todavía menos)
     const cores = texts.map(b => ({ l: b.l + b.w * 0.06, t: b.t + 8, w: b.w * 0.88, h: b.h - 16 }));
+    // Todas las imágenes suben a la misma velocidad, así que entre ellas forman
+    // una "lámina" rígida: la distancia entre dos imágenes no cambia nunca. Se
+    // reparten sobre esa lámina con el método del "mejor candidato": para cada
+    // imagen se prueban muchas posiciones al azar y se queda con la que queda
+    // más lejos de todas las ya ubicadas (y no se mete en los textos ni toca
+    // los figurines). Resultado: espaciado parejo, sin huecos ni amontonamientos,
+    // pero sin grilla visible. La lámina va de Ya a Yb (coordenada = pantalla + scroll·K).
+    const Ya = vh + sStart * K, Yb = vh + sEnd * K;
+    // al principio solo del lado derecho; el límite izquierdo se va abriendo de
+    // a poco hasta ocupar todo el ancho (sin un corte que se note)
+    const openUntil = Ya + (Yb - Ya) * (DF_FIRST_RIGHT * 2.2) / n;
+    const loAt = (Y) => {
+      const t = Math.min(Math.max((Y - Ya) / (openUntil - Ya), 0), 1);
+      const e = t * t * (3 - 2 * t);
+      return rightLo + (vw * 0.03 - rightLo) * e;
+    };
     const placed = [];
     dfMood = [];
-    let golden = rnd();
     const now = performance.now();
 
     order.forEach((el, i) => {
       const r = el.dataset.w / el.dataset.h;
       const w = Math.round(DF_MOOD_SIZE * Math.sqrt(r));
       const h = Math.round(DF_MOOD_SIZE / Math.sqrt(r));
-      const u = n > 1 ? (i + (rnd() - 0.5) * 0.7) / (n - 1) : 0;
-      const sIn  = sStart + (sEnd - sStart) * Math.min(Math.max(u, 0), 1);
-      const sOut = sIn + (vh + h) / K;
-
-      // ¿llega a cruzarse con los figurines en algún momento de su recorrido?
-      const hitsFig = (x) => {
-        for(let k = 0; k <= 24; k++){
-          const s = sIn + (sOut - sIn) * k / 24;
-          const y = vh - (s - sIn) * K;
-          for(const f of dfFigRects){
-            if(dfOverlap(x, y, w, h, f.l - 24, f.t - s - 24, f.w + 48, f.h + 48) > 0) return true;
-          }
-        }
-        return false;
-      };
-
-      const lo = i < DF_FIRST_RIGHT ? rightLo : vw * 0.03;
       const bw = el.dataset.bw === '1';
-      const hi = Math.max(vw * 0.97 - w, lo);
-      golden = (golden + 0.6180339887) % 1;
-      const target = lo + golden * (hi - lo);
 
-      // cerca del lugar que le toca, se prueban variantes y se queda con la que
-      // menos se pisa con las otras imágenes; los figurines no se tocan nunca
-      let bestX = null, bestScore = Infinity;
-      for(let c = 0; c < 40; c++){
-        const spread = c < 14 ? 0.1 : 1;   // si cerca no hay lugar, se busca en todo el ancho
-        const x = Math.min(Math.max(target + (rnd() - 0.5) * vw * spread, lo), hi);
-        if(hitsFig(x)) continue;
-        let sc = 0;
+      let best = null, bestScore = -Infinity;
+      for(let c = 0; c < 90; c++){
+        const Y = Ya + rnd() * (Yb - Ya);
+        const lo = loAt(Y);
+        const x = lo + rnd() * Math.max(vw * 0.97 - w - lo, 0);
+        const sIn = (Y - vh) / K, sOut = sIn + (vh + h) / K;
+
+        // figurines: nunca
+        let hitFig = false;
+        for(let k = 0; k <= 24 && !hitFig; k++){
+          const sc = sIn + (sOut - sIn) * k / 24, y = Y - sc * K;
+          hitFig = dfFigRects.some(f => dfOverlap(x, y, w, h, f.l - 24, f.t - sc - 24, f.w + 48, f.h + 48) > 0);
+        }
+        if(hitFig) continue;
+
+        // textos: pueden rozar el borde, no meterse
+        let pen = 0;
         for(let k = 0; k <= 12; k++){
-          const s = sIn + (sOut - sIn) * k / 12;
-          const y = vh - (s - sIn) * K;
-          cores.forEach(c => {
-            const ct = c.t - s;
-            const reading = ct < vh * 0.9 && ct + c.h > vh * 0.08;
-            sc += (reading ? (bw ? 40 : 30) : 8) * dfOverlap(x, y, w, h, c.l, ct, c.w, c.h);
-          });
-          // más juntas: se pueden pisar apenas entre ellas (hasta ~14px por lado)
-          placed.forEach(q => {
-            if(s < q.sIn || s > q.sOut) return;
-            const qy = vh - (s - q.sIn) * K;
-            sc += dfOverlap(x, y, w, h, q.x + 14, qy + 14, q.w - 28, q.h - 28);
+          const sc = sIn + (sOut - sIn) * k / 12, y = Y - sc * K;
+          cores.forEach(cr => {
+            const ct = cr.t - sc;
+            const reading = ct < vh * 0.9 && ct + cr.h > vh * 0.08;
+            pen += (reading ? (bw ? 40 : 30) : 8) * dfOverlap(x, y, w, h, cr.l, ct, cr.w, cr.h);
           });
         }
-        if(sc < bestScore){ bestScore = sc; bestX = x; }
+
+        // separación con las demás: distancia entre bordes (negativa si se pisan)
+        let gap = Infinity;
+        placed.forEach(q => {
+          // la distancia en horizontal cuenta un poco menos: así se evitan
+          // "filas" de imágenes a la misma altura y quedan escalonadas
+          const dx = Math.max(q.x - (x + w), x - (q.x + q.w)) * 0.65;
+          const dy = Math.max(q.Y - (Y + h), Y - (q.Y + q.h));
+          const d = (dx > 0 && dy > 0) ? Math.hypot(dx, dy) : Math.max(dx, dy);
+          if(d < gap) gap = d;
+        });
+        if(gap === Infinity) gap = vw;
+        // los bordes de la lámina cuentan como un "vecino reflejado": así no se
+        // alinean imágenes pegadas al principio/final ni a los márgenes
+        gap = Math.min(gap, 2 * (Y - Ya) + 30, 2 * (Yb - (Y + h)) + 30,
+                       2 * (x - lo) + 30, 2 * (vw * 0.97 - (x + w)) + 30);
+        const score = gap - pen / 300;
+        if(score > bestScore){ bestScore = score; best = { x, Y, sIn, sOut }; }
       }
-      if(bestX === null) bestX = vw * 0.97 - w;   // último recurso: pegada al borde derecho
+      if(!best){ const Y = Ya + (Yb - Ya) * (i + 0.5) / n; best = { x: vw * 0.97 - w, Y, sIn: (Y - vh) / K, sOut: (Y - vh) / K + (vh + h) / K }; }
+      const { sIn, sOut } = best;
+      const bestX = best.x;
 
       const front = false;   // todas pasan por debajo de los textos
       const blinks = rnd() < DF_BLINKERS;
@@ -2970,7 +2986,7 @@
       el.style.transition = 'opacity ' + DF_BLINK_FADE + 'ms ease-in-out';
       el.style.opacity = '1';
       (front ? dfMoodFront : dfMoodBack).appendChild(el);
-      const m = { el, w, h, x: Math.round(bestX), sIn, sOut, hidden: false,
+      const m = { el, w, h, x: Math.round(bestX), Y: best.Y, sIn, sOut, hidden: false,
                   nextBlink: blinks ? now + 4000 + Math.random() * 14000 : Infinity };
       placed.push(m);
       dfMood.push(m);
@@ -2979,9 +2995,8 @@
 
   // figurín del prototipo del mismo alto que el texto de proceso, centrado en la
   // pantalla. A su izquierda, los otros cinco diseños de la colección, todos a la
-  // misma escala entre sí, llenando ese mismo alto en dos filas (tres arriba, dos
-  // abajo, centradas en el espacio libre). Se ven de frente; al pasar el cursor
-  // por uno, el frente se desvanece y aparece su espalda.
+  // misma escala entre sí, en una sola fila. Se ven de frente; al pasar el
+  // cursor por uno, el frente cambia de golpe por su espalda.
   // Devuelve los rectángulos que ocupan (relativos a la sección).
   function dfLayoutMinis(H, vw){
     const fig = document.getElementById('dfFigurin');
@@ -2999,36 +3014,29 @@
         dfMinis.appendChild(wrap);
       });
     }
+    // una sola fila, ocupando todo el ancho libre a la izquierda del figurín
+    // central; la separación entre diseños es la que tenían en la fila de
+    // arriba de la versión anterior (en px). Apoyados sobre la misma línea de
+    // piso que el figurín del prototipo.
     const m = parseFloat(getComputedStyle(dfTrackEl.parentNode).getPropertyValue('--df-m')) || 40;
     const spaceL = m, spaceR = vw / 2 - figW / 2 - vw * 0.035;
     const spaceW = Math.max(spaceR - spaceL, 0);
-    const gapY = H * 0.09;
-    let h = (H - gapY) / 2;
-    const rows = [DF_DESIGNS.slice(0, 3), DF_DESIGNS.slice(3)];
     const slotR = d => Math.max(d.f, d.b);                 // ancho del lugar = el mayor entre frente y espalda
     const avgR = DF_DESIGNS.reduce((a, d) => a + slotR(d), 0) / DF_DESIGNS.length;
-    const rowW = (row, hh) => row.reduce((a, d) => a + slotR(d) * hh, 0) + (row.length - 1) * avgR * hh * 0.6;
-    const widest = Math.max(...rows.map(r => rowW(r, h)));
-    if(widest > spaceW) h *= spaceW / widest;
-    const gapX = avgR * h * 0.6;
-    const y0 = (H - (2 * h + gapY)) / 2;
-    let blockL = Infinity, blockR = -Infinity;
-    const wraps = Array.from(dfMinis.children);
-    let k = 0;
-    rows.forEach((row, ri) => {
-      let x = spaceL + (spaceW - rowW(row, h)) / 2;
-      row.forEach(d => {
-        const w = slotR(d) * h;
-        const el = wraps[k++];
-        el.style.left = x + 'px';
-        el.style.top = (y0 + ri * (h + gapY)) + 'px';
-        el.style.width = w + 'px';
-        el.style.height = h + 'px';
-        blockL = Math.min(blockL, x); blockR = Math.max(blockR, x + w);
-        x += w + gapX;
-      });
+    const gapX = avgR * ((H - H * 0.09) / 2) * 0.6;        // la separación de antes, fija
+    const sumR = DF_DESIGNS.reduce((a, d) => a + slotR(d), 0);
+    const h = Math.min(H, (spaceW - gapX * (DF_DESIGNS.length - 1)) / sumR);
+    const y0 = H - h;
+    let x = spaceL;
+    Array.from(dfMinis.children).forEach((el, k) => {
+      const w = slotR(DF_DESIGNS[k]) * h;
+      el.style.left = x + 'px';
+      el.style.top = y0 + 'px';
+      el.style.width = w + 'px';
+      el.style.height = h + 'px';
+      x += w + gapX;
     });
-    rects.push({ l: blockL, t: y0, w: blockR - blockL, h: 2 * h + gapY });
+    rects.push({ l: spaceL, t: y0, w: x - gapX - spaceL, h: h });
     return rects;
   }
 
