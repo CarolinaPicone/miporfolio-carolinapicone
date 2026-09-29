@@ -17,16 +17,15 @@ Carolina trabaja este portfolio en **chats separados por proyecto**, dentro de u
 
 Carolina cierra cada trabajo con una secuencia fija, disparada por palabras exactas suyas — **no** es a criterio de Claude detectar "si parece que terminó":
 
-1. Cuando Carolina escribe **"listo."** → Claude le pregunta para confirmar si quiere pasar a la traducción al inglés de ese trabajo (no arranca la traducción todavía, solo confirma).
-2. Si Carolina confirma que sí → Claude hace la traducción (ver "Traducción al inglés" más abajo) y espera su revisión.
-3. Cuando Carolina escribe **"traducción lista"** → Claude, **automáticamente y sin volver a preguntar**, arma y entrega los dos archivos finales (ver "Entrega de archivos" más abajo).
+1. Cuando Carolina escribe **"listo"** (con o sin punto) → Claude hace **directamente** la traducción al inglés de ese trabajo, **sin preguntar antes** (ver "Traducción al inglés" más abajo), y espera su revisión.
+2. Cuando Carolina escribe **"traducción lista"** → Claude, **automáticamente y sin volver a preguntar**, arma y entrega los dos archivos finales (ver "Entrega de archivos" más abajo).
 
-Si Carolina dice "listo." pero después decide no traducir todavía, o quiere seguir hacienda cambios, la secuencia se pausa ahí — no hay que forzar los pasos siguientes.
+Si después de "listo" Carolina quiere seguir haciendo cambios, la secuencia se pausa ahí — no hay que forzar los pasos siguientes.
 
 ### Traducción al inglés
 
 - El sitio es bilingüe (selector ES/EN), pero las traducciones se van completando **de a un trabajo por vez, en el mismo chat donde se armó ese contenido** — no todas juntas al final en un chat aparte.
-- Se dispara cuando Carolina escribe **"listo."** y confirma que sí (ver secuencia arriba): ahí Claude ofrece una primera versión en inglés del texto en español de esa sección.
+- Se dispara apenas Carolina escribe **"listo"** (ver secuencia arriba), sin pedirle confirmación: Claude ofrece una primera versión en inglés del texto en español de esa sección, y ya la carga en la web (botón ES/EN) para que pueda verla en contexto.
 - Carolina revisa y ajusta esa versión a su gusto — no se da por definitiva sin que ella la lea, porque son decisiones de tono que le pertenecen a ella (no solo corrección idiomática).
 - Cuando Carolina termina de revisar, escribe **"traducción lista"**, que dispara automáticamente la entrega de archivos (siguiente paso).
 
