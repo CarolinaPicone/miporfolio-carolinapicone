@@ -481,8 +481,10 @@
   /* ampliado: frente y espalda juntos, uno al lado del otro, centrados en la
      pantalla (sin el cambio al pasar el cursor) */
   .df-zoom-fig img{ position:absolute; top:0; height:100%; width:auto; display:block; filter:drop-shadow(0 1px 2.5px rgba(40,36,30,.10)); }
-  .df-zoom-fig .df-zoom-b{ opacity:0; transition:opacity .6s ease; }
-  .df-zoom.show .df-zoom-b{ opacity:1; transition-delay:.2s; }
+  /* al cerrar, la espalda acompaña todo el regreso: se desvanece despacio al
+     principio y termina de irse justo cuando el frente llega a la fila */
+  .df-zoom-fig .df-zoom-b{ opacity:0; transition:opacity .75s cubic-bezier(.6,0,.9,.35); }
+  .df-zoom.show .df-zoom-b{ opacity:1; transition:opacity .6s ease .2s; }
   .df-mini img{ position:absolute; left:50%; top:0; height:100%; width:auto; transform:translateX(-50%); display:block; }
   .df-mini .df-mini-b{ opacity:0; }
   .df-mini:hover .df-mini-f{ opacity:0; }
