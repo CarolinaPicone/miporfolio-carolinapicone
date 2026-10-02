@@ -72,6 +72,10 @@
 
   #home{ position:relative; }
   .home-sticky{ position:sticky; top:0; height:100vh; overflow:hidden; background:var(--white); }
+  /* esfera de trabajos: se agarra con la mano (abierta / cerrada al arrastrar) */
+  .home-sticky{ cursor:grab; touch-action:none; user-select:none; -webkit-user-select:none; }
+  .home-sticky .scatter-item{ cursor:grab; }
+  html.home-grabbing, html.home-grabbing *{ cursor:grabbing !important; }
 
   .home-copy{ position:absolute; left:clamp(20px,4vw,56px); top:var(--nav-h); z-index:20; max-width:560px; }
   .name-variants{ position:relative; }
@@ -96,7 +100,7 @@
   .home-info .scroll-tag{ letter-spacing:.14em; color:var(--ink); font-size:11px; margin-bottom:14px; }
   .home-info b{ color:var(--ink); font-weight:600; }
 
-  .scatter-viewport{ position:absolute; inset:0; overflow:hidden; }
+  .scatter-viewport{ position:absolute; inset:0; overflow:hidden; z-index:1; }   /* siempre por debajo de los textos (z-index 20) */
   .scatter-item{ position:absolute; top:0; left:0; width:380px; height:304px; overflow:visible; cursor:pointer; display:block; border:none; padding:0; background:none; will-change:transform; }
   .item-inner{ width:100%; height:100%; display:block; overflow:hidden; border-radius:6px; transition: transform .2s ease; }
   .scatter-item:hover .item-inner{ transform: scale(1.1); }
@@ -817,7 +821,6 @@
     </div>
 
     <div class="home-info rv rv-right" style="animation-delay:300ms">
-      <div class="scroll-tag">[ Scroll ]</div>
       <div>Based in <b>Mar del Plata, Argentina</b></div>
       <div>Available <b>Worldwide</b></div>
     </div>
@@ -1296,66 +1299,166 @@
 <div id="clickReveal"></div>
 
 <script>
-  // ---- Trabajos: setup (definido antes para poder animar la entrada apenas termina la intro) ----
+  // ---- Trabajos del home: esfera que se gira arrastrando con el mouse ----
+  // Los trabajos están repartidos sobre una esfera invisible, grande, centrada
+  // en la pantalla. Se ven siempre de frente (como tarjetas), y la profundidad
+  // se nota en el tamaño (los de atrás, más chicos) y en la transparencia (los
+  // de atrás, más traslúcidos, pero nunca invisibles). Se "agarra" siempre la
+  // cara delantera: arrastrar a la derecha lleva lo de adelante a la derecha.
+  // El giro sigue al mouse con algo de peso y, al soltar, sigue un poco por
+  // inercia hasta frenar. La ruedita del mouse no hace nada acá.
   const homeSection = document.getElementById('home');
+  const homeSticky  = document.querySelector('.home-sticky');
   const items = [1,2,3,4,5].map(n => document.getElementById('p'+n));
   const N = items.length;
-  const D = 0.45;
-  const step = (1 - D) / (N - 1);
-  const starts = items.map((_, i) => i * step);
-  const laneOffset = [20, 60, 20, -20, 100];
-  const laneExtraY = [0, 0, 0, 0, 0];
-  const offsetG = starts[0] + D/2 + 0.04; // trabajo 1 un poco más avanzado; asoma la esquina del 3er trabajo
 
-  function layoutHome(){
-    const EXTRA = window.innerHeight * 3.2;
-    homeSection.style.height = (window.innerHeight + EXTRA) + 'px';
+  const SPH_SENS     = 0.75;   // cuánto gira por cada px arrastrado (1 = la cara delantera sigue exacto al mouse)
+  const SPH_FOLLOW   = 0.14;   // peso al arrastrar: qué parte del movimiento pendiente se aplica por cuadro
+  const SPH_FRICTION = 0.935;  // inercia al soltar (más cerca de 1 = sigue girando más tiempo)
+  const SPH_OPAC_MIN = 0.22;   // transparencia de lo que queda más atrás (nunca desaparece)
+  const SPH_INTRO_MS = 1700;   // entrada: llega girando y frena
+  const SPH_INTRO_A  = 1.9;    // cuánto gira en la entrada (radianes)
+
+  // puntos repartidos parejo sobre la esfera (espiral de Fibonacci)
+  const sphPts = items.map((_, i) => {
+    const y = 1 - (i + 0.5) * 2 / N;
+    const r = Math.sqrt(1 - y * y);
+    const phi = i * Math.PI * (3 - Math.sqrt(5));
+    return [Math.cos(phi) * r, y, Math.sin(phi) * r];
+  });
+
+  // orientación de la esfera: matriz de rotación 3x3 (x a la derecha, y hacia
+  // abajo, z hacia quien mira)
+  function sphRot(ax, ay, az, t){
+    const c = Math.cos(t), s = Math.sin(t), k = 1 - c;
+    return [
+      c + ax*ax*k,     ax*ay*k - az*s,  ax*az*k + ay*s,
+      ay*ax*k + az*s,  c + ay*ay*k,     ay*az*k - ax*s,
+      az*ax*k - ay*s,  az*ay*k + ax*s,  c + az*az*k
+    ];
   }
-  layoutHome();
-  window.addEventListener('resize', layoutHome);
+  function sphMul(A, B){
+    const C = new Array(9);
+    for(let r = 0; r < 3; r++) for(let c = 0; c < 3; c++)
+      C[r*3+c] = A[r*3]*B[c] + A[r*3+1]*B[3+c] + A[r*3+2]*B[6+c];
+    return C;
+  }
+  // posición de reposo: un poco inclinada para que no quede ningún trabajo
+  // tapando a otro justo en el centro
+  let sphM = sphMul(sphRot(1, 0, 0, -0.42), sphRot(0, 1, 0, 0.55));
 
-  let currentG = offsetG;
-  function renderItems(g){
+  let sphPendX = 0, sphPendY = 0;   // arrastre todavía no aplicado (px)
+  let sphVelX = 0, sphVelY = 0;     // inercia después de soltar (px por cuadro)
+  let sphIntroT0 = -1;
+  let sphDragging = false, sphMoved = 0, sphLastX = 0, sphLastY = 0;
+  let sphRecent = [];               // últimos movimientos, para calcular la inercia
+  let sphSuppressClick = false;
+
+  function sphRadius(){ return Math.min(Math.max(window.innerWidth * 0.44, 420), 820); }
+
+  function sphApply(dx, dy){
+    const d = Math.hypot(dx, dy);
+    if(d < 0.001) return;
+    const R = sphRadius();
+    // eje perpendicular al arrastre: lo de adelante va hacia donde va el mouse
+    sphM = sphMul(sphRot(-dy / d, dx / d, 0, d / R * SPH_SENS), sphM);
+  }
+
+  function easeOutCubic(x){ return 1 - Math.pow(1 - x, 3); }
+
+  function renderItems(){
     const vw = window.innerWidth, vh = window.innerHeight;
+    const R = sphRadius(), D = R * 3;
+    let M = sphM;
+    if(sphIntroT0 >= 0){
+      const t = Math.min((performance.now() - sphIntroT0) / SPH_INTRO_MS, 1);
+      const extra = SPH_INTRO_A * (1 - easeOutCubic(t));
+      if(extra > 0) M = sphMul(sphRot(0, 1, 0, -extra), sphM);
+      if(t >= 1) sphIntroT0 = -1;
+    }
     items.forEach((item, i) => {
-      const p = Math.min(Math.max((g - starts[i]) / D, 0), 1);
+      const [px, py, pz] = sphPts[i];
+      const x = (M[0]*px + M[1]*py + M[2]*pz) * R;
+      const y = (M[3]*px + M[4]*py + M[5]*pz) * R;
+      const z = (M[6]*px + M[7]*py + M[8]*pz) * R;
+      const f = (D - R) / (D - z);          // adelante = tamaño actual; atrás, la mitad
       const w = item.offsetWidth, h = item.offsetHeight;
-      const x = -w + p * (vw + w) + laneOffset[i];
-      const y = vh - p * (vh + h) + laneOffset[i] + laneExtraY[i];
-      item.style.transform = `translate(${x}px, ${y}px)`;
+      const sx = vw / 2 + x * f - w / 2, sy = vh / 2 + y * f - h / 2;
+      const depth = (z / R + 1) / 2;         // 0 = atrás de todo, 1 = adelante de todo
+      item.style.transform = 'translate(' + sx.toFixed(1) + 'px,' + sy.toFixed(1) + 'px) scale(' + f.toFixed(4) + ')';
+      item.style.opacity = (SPH_OPAC_MIN + (1 - SPH_OPAC_MIN) * Math.pow(depth, 1.3)).toFixed(3);
+      item.style.zIndex = String(Math.round(depth * 100));
     });
   }
 
-  function scrollTargetG(){
-    const total = homeSection.offsetHeight - window.innerHeight;
-    const rect = homeSection.getBoundingClientRect();
-    const scrolled = -rect.top;
-    const raw = total <= 0 ? 0 : Math.min(Math.max(scrolled / total, 0), 1);
-    return offsetG + raw * (1 - offsetG);
-  }
   function loop(){
-    const targetG = scrollTargetG();
-    currentG += (targetG - currentG) * 0.022;
-    renderItems(currentG);
+    const homeVisible = !(typeof panel !== 'undefined' && panel.classList.contains('open'));
+    if(homeVisible){
+      // arrastre con peso: se aplica de a poco lo que falta
+      const ax = sphPendX * SPH_FOLLOW, ay = sphPendY * SPH_FOLLOW;
+      sphPendX -= ax; sphPendY -= ay;
+      // inercia al soltar
+      let ix = 0, iy = 0;
+      if(!sphDragging){
+        ix = sphVelX; iy = sphVelY;
+        sphVelX *= SPH_FRICTION; sphVelY *= SPH_FRICTION;
+        if(Math.abs(sphVelX) < 0.01) sphVelX = 0;
+        if(Math.abs(sphVelY) < 0.01) sphVelY = 0;
+      }
+      sphApply(ax + ix, ay + iy);
+      renderItems();
+    }
     requestAnimationFrame(loop);
   }
 
-  // Antes de la intro: todos los trabajos arrancan totalmente afuera (esquina superior derecha)
-  renderItems(1.05);
-
-  function easeOutCubic(x){ return 1 - Math.pow(1 - x, 3); }
-  function startIntroReverse(){
-    const INTRO_START_G = 1.05;
-    const INTRO_T = 1450; // misma duración aprox. que la aparición escalonada del home
-    const t0 = performance.now();
-    function step(now){
-      const t = Math.min((now - t0) / INTRO_T, 1);
-      currentG = INTRO_START_G + (offsetG - INTRO_START_G) * easeOutCubic(t);
-      renderItems(currentG);
-      if(t < 1){ requestAnimationFrame(step); }
-      else { requestAnimationFrame(loop); }
+  // ---- arrastre (mouse o dedo) ----
+  homeSticky.addEventListener('pointerdown', (e) => {
+    if(e.button !== 0) return;
+    sphDragging = true; sphMoved = 0;
+    sphLastX = e.clientX; sphLastY = e.clientY;
+    sphVelX = sphVelY = 0; sphRecent = [];
+    document.documentElement.classList.add('home-grabbing');
+  });
+  window.addEventListener('pointermove', (e) => {
+    if(!sphDragging) return;
+    const dx = e.clientX - sphLastX, dy = e.clientY - sphLastY;
+    sphLastX = e.clientX; sphLastY = e.clientY;
+    sphMoved += Math.abs(dx) + Math.abs(dy);
+    sphPendX += dx; sphPendY += dy;
+    const now = performance.now();
+    sphRecent.push({ t: now, dx, dy });
+    while(sphRecent.length && now - sphRecent[0].t > 100) sphRecent.shift();
+  });
+  window.addEventListener('pointerup', () => {
+    if(!sphDragging) return;
+    sphDragging = false;
+    document.documentElement.classList.remove('home-grabbing');
+    // inercia: el promedio de lo último que se movió, repartido por cuadro
+    const now = performance.now();
+    const rec = sphRecent.filter(r => now - r.t < 100);
+    if(rec.length){
+      const sx = rec.reduce((a, r) => a + r.dx, 0), sy = rec.reduce((a, r) => a + r.dy, 0);
+      const frames = Math.max(100 / 16.7, 1);
+      sphVelX = sx / frames * 0.6; sphVelY = sy / frames * 0.6;
     }
-    requestAnimationFrame(step);
+    // si fue un arrastre (y no un click), el click no abre el trabajo
+    sphSuppressClick = sphMoved > 6;
+  });
+  window.addEventListener('click', (e) => {
+    if(sphSuppressClick){ sphSuppressClick = false; e.stopPropagation(); e.preventDefault(); }
+  }, true);
+
+  function layoutHome(){ homeSection.style.height = window.innerHeight + 'px'; }
+  layoutHome();
+  window.addEventListener('resize', layoutHome);
+
+  // antes de la intro: los trabajos ocultos; la entrada los trae girando
+  items.forEach(it => { it.style.opacity = '0'; });
+  let sphLoopOn = false;
+  function startIntroReverse(){
+    sphIntroT0 = performance.now();
+    sphPendX = sphPendY = sphVelX = sphVelY = 0;
+    if(!sphLoopOn){ sphLoopOn = true; requestAnimationFrame(loop); }
   }
 
   // ---- Firma en una línea: se ajusta para terminar a la altura de la "b" de Trabajos ----

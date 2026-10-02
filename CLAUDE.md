@@ -117,7 +117,7 @@ Editorial, minimalista, mucho espacio en blanco.
   #loader                     → intro
   .site
     header (nav)              → Trabajos / Sobre mí / Contacto / ES-EN
-    #home                     → firma, rol rotativo, los 5 "trabajos" dispersos
+    #home                     → firma, rol rotativo, los 5 "trabajos" en la esfera
   #panel                      → contiene las 3 "placas" internas, todas en el mismo archivo:
     .panel-page[data-page="about"]
     .panel-page[data-page="contact"]
@@ -207,19 +207,18 @@ html.revealed .rv-scale, .panel.open .rv-scale{ animation: fromScale .7s cubic-b
 
 Se disparan agregando la clase `revealed` al `<html>` (home) o al abrir un panel (`.panel.open`).
 
-### 3.4 Trabajos del home (recorrido diagonal disperso)
+### 3.4 Trabajos del home (esfera que se gira arrastrando)
 
-- 5 elementos recorren individualmente una diagonal de **esquina inferior izquierda a superior derecha**, atados al scroll.
-- Fórmula de posición por trabajo (`p` = progreso individual, 0 a 1, según su ventana de tiempo dentro del scroll total):
-  ```
-  x = -w + p·(vw+w) + laneOffset[i]
-  y = vh - p·(vh+h) + laneOffset[i] + laneExtraY[i]
-  ```
-- 5 "carriles" fijos (`laneOffset`) para que nunca se superpongan, dentro de un corredor diagonal acotado (definido a partir de una captura de referencia con líneas rojas).
-- El scroll tiene **peso/inercia**: se suaviza con un lerp — `currentG += (targetG - currentG) * 0.022`. Cuanto más chico el factor, más "pesado" se siente.
-- Al terminar la intro, los trabajos hacen una **entrada en reversa**: arrancan ya "recorridos" (fuera de pantalla, arriba a la derecha) y retroceden con `easeOutCubic` durante 1450ms hasta frenar con el primer trabajo cerca del centro.
-- No hay tope de scroll — los trabajos simplemente van desapareciendo a medida que avanzás.
-- Puntas de los recuadros levemente redondeadas (`border-radius:6px`); al pasar el cursor, se agrandan levemente (`scale(1.1)`, transición de 0.2s).
+- Los 5 trabajos están repartidos sobre una **esfera invisible, grande, centrada en la pantalla** (puntos parejos con espiral de Fibonacci). Referencia: el home de gionatannese.com.
+- Se ven siempre **de frente**, como tarjetas (no se tuercen con la esfera). La profundidad se nota en el **tamaño** (adelante = tamaño actual de los recuadros, 380×304; atrás, la mitad) y en la **transparencia** (los de atrás son más traslúcidos, mínimo 22% de opacidad: nunca desaparecen).
+- Al ser grande, algunos trabajos pueden quedar cortados por el borde de la pantalla; está bien.
+- **Siempre pasan por debajo de los textos del home.**
+- **Se gira arrastrando** (mouse o dedo). El cursor es una mano abierta (`grab`) y se cierra al arrastrar (`grabbing`). Se "agarra" siempre la cara delantera: arrastrar a la derecha lleva lo de adelante a la derecha.
+- **Peso:** el giro sigue al mouse con algo de demora (`SPH_FOLLOW = 0.14`, `SPH_SENS = 0.75`) y al soltar sigue un poco por inercia hasta frenar (`SPH_FRICTION = 0.935`). Cuando nadie la toca, queda **quieta**.
+- **La ruedita del mouse no hace nada** en el home (ya no hay scroll; se sacó la etiqueta "[ Scroll ]", el resto de los textos quedó en su lugar).
+- **Click** (sin arrastrar) en un trabajo → lo abre. Si hubo arrastre, el click no abre nada.
+- Al pasar el cursor por un trabajo, se agranda apenas (`scale(1.1)`, 0.2s). Puntas levemente redondeadas (`border-radius:6px`).
+- **Entrada** (después de la intro y al volver al home): la esfera llega girando y frena hasta su posición de reposo (1700ms, `easeOutCubic`).
 
 ### 3.5 "Sobre mí"
 
@@ -264,7 +263,7 @@ Zoom: el logo se agranda con `scale()` hasta que una banda vertical específica 
 
 Todo vive en un **único `index.html`**, sin páginas separadas ni rutas — la navegación es 100% interna vía JavaScript, mostrando/ocultando "placas" (`.panel-page`) superpuestas.
 
-1. **Home** — firma (una línea o dos líneas, alternando cada 15s para poder comparar), rol rotativo ("Dirección creativa", "Diseño de indumentaria", etc.), url, info de ubicación/disponibilidad (siempre en inglés), y los 5 "trabajos" dispersos en diagonal.
+1. **Home** — firma (una línea o dos líneas, alternando cada 15s para poder comparar), rol rotativo ("Dirección creativa", "Diseño de indumentaria", etc.), url, info de ubicación/disponibilidad (siempre en inglés), y los 5 "trabajos" sobre una esfera que se gira arrastrando con el mouse (ver 3.4).
 2. **Trabajos** (dentro del home) — cada uno de los 5 recuadros es clickeable y abre una placa individual. *(sin definir)* — hoy el contenido es un placeholder ("Funcionó"); falta diseñar cómo se ve el interior de cada proyecto.
 3. **Sobre mí** — logo centrado + 4 bloques numerados (01 Universo, 02 Curiosidad, 03 Intención, 04 Forma) + lista de servicios + copyright.
 4. **Contacto** — logo ampliado (zoom) + email/web, redes, ubicación/disponibilidad + copyright.
