@@ -140,10 +140,10 @@ Editorial, minimalista, mucho espacio en blanco.
 
 ### 3.1 Intro (loader)
 
-- La web arranca con una **pantalla negra** y "carolinapicone.com" en el centro (12px, letter-spacing .08em, color piedra `#8c8578`). Es un botón: hay que hacer click.
-- Al hacer click: el texto se **funde** (0.8s) y no vuelve a aparecer; la pantalla pasa de a poco (0.8s) al **color exacto del logo, `#312b2a`**.
-- Ahí arranca un **zoom al revés**: lo que se veía era el logo ampliadísimo (el punto más grueso de su trazo); se retrae hasta quedar centrado sobre fondo blanco, del mismo tamaño que en "Sobre mí" (`clamp(70px, 7.5vw, 110px)` de ancho). Misma duración y curva que el zoom de "Contacto": 4200ms, `cubic-bezier(.165,.84,.44,1)` (la escala se interpola en forma logarítmica para que el alejamiento se vea parejo).
-- El logo queda **2 segundos** y todo se funde (0.8s) para dar paso al home y su entrada.
+- La web arranca con una **pantalla negra** (`#000`) y "carolinapicone.com" en el centro (12px, letter-spacing .08em, color piedra `#8c8578`). Es un botón: hay que hacer click.
+- Al hacer click: el texto se **funde** (0.8s) y no vuelve a aparecer.
+- Arranca un **zoom al revés**: lo que se veía negro era el logo ampliadísimo (el punto más grueso de su trazo); se retrae hasta quedar centrado sobre fondo blanco, del mismo tamaño que en "Sobre mí" (`clamp(70px, 7.5vw, 110px)` de ancho). **En la intro el logo va en negro puro** (solo acá), para que no haya cambio de color entre la pantalla negra y el logo. Misma duración y curva que el zoom de "Contacto": 4200ms, `cubic-bezier(.165,.84,.44,1)` (la escala se interpola en forma logarítmica para que el alejamiento se vea parejo).
+- El logo queda **1 segundo** y todo se funde (0.8s) para dar paso al home y su entrada.
 - Técnica: el logo se dibuja en un `<canvas>` (no con `transform: scale`), porque parte de un zoom de cientos de veces y así no pierde calidad ni se traba.
 - *(sin definir)* — la ubicación final de "carolinapicone.com" se va a pulir más adelante.
 
@@ -196,6 +196,8 @@ html.revealed .rv-scale, .panel.open .rv-scale{ animation: fromScale .7s cubic-b
 
 Se disparan agregando la clase `revealed` al `<html>` (home) o al abrir un panel (`.panel.open`).
 
+**Entrada del home** (cada bloque distinto, en tiempo y en tipo de movimiento): menú desde arriba (0ms) · ES/EN fundido (250ms) · firma que se "escribe" de izquierda a derecha con un barrido (`rv-sig`, 1.3s, desde 350ms) · "Based in…" (800ms) y "Available…" (1000ms) desde la derecha, por separado · "Diseñadora de Indumentaria" desde la izquierda (1150ms) · rol rotativo desde abajo (1450ms) · url con un fundido largo (`rv-fade-slow`, 1.4s, desde 1750ms).
+
 ### 3.4 Trabajos del home (esfera que se gira arrastrando)
 
 - Los 5 trabajos están repartidos sobre una **esfera invisible centrada en la pantalla** (puntos con espiral de Fibonacci; radio `37vw`, entre 340 y 660px). Referencia: el home de gionatannese.com.
@@ -203,11 +205,11 @@ Se disparan agregando la clase `revealed` al `<html>` (home) o al abrir un panel
 - Algunos trabajos pueden quedar cortados por el borde de la pantalla; está bien.
 - **Siempre pasan por debajo de los textos del home.**
 - **Se gira arrastrando** (mouse o dedo). El cursor es una mano abierta (`grab`) y se cierra al arrastrar (`grabbing`). Se "agarra" siempre la cara delantera: arrastrar a la derecha lleva lo de adelante a la derecha.
-- **Sensibilidad:** liviana, sigue bien al mouse (`SPH_SENS = 1`, `SPH_FOLLOW = 0.35`); al soltar sigue un poco por inercia hasta frenar (`SPH_FRICTION = 0.945`). Cuando nadie la toca, queda **quieta**.
+- **Sensibilidad:** liviana, sigue bien al mouse pero con un mínimo de peso (`SPH_SENS = 1`, `SPH_FOLLOW = 0.22`); al soltar sigue un poco por inercia hasta frenar (`SPH_FRICTION = 0.945`). Cuando nadie la toca, queda **quieta**.
 - **La ruedita del mouse no hace nada** en el home (ya no hay scroll; se sacó la etiqueta "[ Scroll ]", el resto de los textos quedó en su lugar).
 - **Al pasar el cursor**, solo se eleva (`scale(1.1)`) el trabajo que está **adelante** (casi sin fundido).
 - **Click** (sin arrastrar): en el de adelante → abre el trabajo; en uno que está más atrás → la esfera gira (950ms) y lo trae **al centro**. Si hubo arrastre, el click no hace nada.
-- **Entrada** (después de la intro y al volver al home): cada vez queda **un trabajo distinto al azar en el centro**. El giro alrededor de ese centro se elige para que los demás queden lo más despejados posible (menos superpuestos y menos cortados). La esfera llega girando y frena en esa posición (1700ms, `easeOutCubic`).
+- **Entrada** (después de la intro y al volver al home): cada vez queda **un trabajo distinto al azar en el centro**. El giro alrededor de ese centro se elige para que los demás queden lo más despejados posible (menos superpuestos y menos cortados). La esfera llega girando **en diagonal** (entre horizontal y vertical) y frena en esa posición (1700ms, `easeOutCubic`).
 
 ### 3.5 "Sobre mí"
 
