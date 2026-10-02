@@ -45,7 +45,7 @@ No hay ningún color de acento (rojo, azul, etc.) en la interfaz — toda la pal
 ### Tipografías
 
 - **Instrument Sans** (Google Fonts) — única tipografía tipeada del sitio. Se usa para absolutamente todo el texto: menú, párrafos de "Sobre mí" y "Contacto", servicios, info de ubicación/disponibilidad, etc. Pesos cargados: 400, 500, 600 e itálica 400.
-- **Firma manuscrita** (imagen, no es una fuente) — el nombre "Carolina Picone" en el loader y en el home. Existen dos variantes: una línea (nombre completo) y dos líneas ("Carolina" / "Picone", mismo tamaño de letra real, no de caja).
+- **Firma manuscrita** (imagen, no es una fuente) — el nombre "Carolina Picone" en el home. Existen dos variantes: una línea (nombre completo) y dos líneas ("Carolina" / "Picone", mismo tamaño de letra real, no de caja).
 - **Logo/isotipo** (imagen, no es una fuente) — usado en "Sobre mí" y "Contacto", con efecto de giro y grosor 3D.
 
 *(sin definir)* — Se probaron y descartaron dos alternativas antes de llegar a la firma-imagen: la tipografía "Professor" (no disponible) y "Brittany Signature" de dafont (de uso solo personal, no comercial). Ninguna de las dos se usa en la versión actual.
@@ -140,23 +140,12 @@ Editorial, minimalista, mucho espacio en blanco.
 
 ### 3.1 Intro (loader)
 
-Firma + URL aparecen con un barrido de opacidad de **izquierda a derecha, a velocidad constante** (no acelera ni desacelera). Se sostiene un momento y se desvanece.
-
-- Aparición: 2.3s (`linear`)
-- Sostenido: 0.8s
-- Desvanecido: 0.8s
-
-Técnica: un `div.reveal-cover` con un gradiente (transparente → blanco) que se desliza con `transform: translateX()`, revelando el contenido a medida que se corre.
-
-```css
-.reveal-cover{
-  position:absolute; top:0; left:-13%; width:113%; height:100%;
-  background: linear-gradient(90deg, transparent 0%, var(--white) 13.3%, var(--white) 100%);
-  transform: translateX(0%);
-  transition: transform 2.3s linear;
-}
-.loader-inner.show .reveal-cover{ transform: translateX(100%); }
-```
+- La web arranca con una **pantalla negra** y "carolinapicone.com" en el centro (12px, letter-spacing .08em, color piedra `#8c8578`). Es un botón: hay que hacer click.
+- Al hacer click: el texto se **funde** (0.8s) y no vuelve a aparecer; la pantalla pasa de a poco (0.8s) al **color exacto del logo, `#312b2a`**.
+- Ahí arranca un **zoom al revés**: lo que se veía era el logo ampliadísimo (el punto más grueso de su trazo); se retrae hasta quedar centrado sobre fondo blanco, del mismo tamaño que en "Sobre mí" (`clamp(70px, 7.5vw, 110px)` de ancho). Misma duración y curva que el zoom de "Contacto": 4200ms, `cubic-bezier(.165,.84,.44,1)` (la escala se interpola en forma logarítmica para que el alejamiento se vea parejo).
+- El logo queda **2 segundos** y todo se funde (0.8s) para dar paso al home y su entrada.
+- Técnica: el logo se dibuja en un `<canvas>` (no con `transform: scale`), porque parte de un zoom de cientos de veces y así no pierde calidad ni se traba.
+- *(sin definir)* — la ubicación final de "carolinapicone.com" se va a pulir más adelante.
 
 ### 3.2 Transición entre secciones (la más usada — se dispara en cada click de navegación)
 
@@ -209,16 +198,16 @@ Se disparan agregando la clase `revealed` al `<html>` (home) o al abrir un panel
 
 ### 3.4 Trabajos del home (esfera que se gira arrastrando)
 
-- Los 5 trabajos están repartidos sobre una **esfera invisible, grande, centrada en la pantalla** (puntos parejos con espiral de Fibonacci). Referencia: el home de gionatannese.com.
-- Se ven siempre **de frente**, como tarjetas (no se tuercen con la esfera). La profundidad se nota en el **tamaño** (adelante = tamaño actual de los recuadros, 380×304; atrás, la mitad) y en la **transparencia** (los de atrás son más traslúcidos, mínimo 22% de opacidad: nunca desaparecen).
-- Al ser grande, algunos trabajos pueden quedar cortados por el borde de la pantalla; está bien.
+- Los 5 trabajos están repartidos sobre una **esfera invisible centrada en la pantalla** (puntos con espiral de Fibonacci; radio `37vw`, entre 340 y 660px). Referencia: el home de gionatannese.com.
+- Se ven siempre **de frente**, como tarjetas (no se tuercen con la esfera). La profundidad se nota en el **tamaño** (adelante = tamaño actual de los recuadros, 380×304; atrás, la mitad) y en un **fundido en blanco** (los de atrás se van lavando hacia el blanco, hasta un 72%; **no** se vuelven transparentes, así no se ve lo que queda detrás de cada uno, y nunca desaparecen).
+- Algunos trabajos pueden quedar cortados por el borde de la pantalla; está bien.
 - **Siempre pasan por debajo de los textos del home.**
 - **Se gira arrastrando** (mouse o dedo). El cursor es una mano abierta (`grab`) y se cierra al arrastrar (`grabbing`). Se "agarra" siempre la cara delantera: arrastrar a la derecha lleva lo de adelante a la derecha.
-- **Peso:** el giro sigue al mouse con algo de demora (`SPH_FOLLOW = 0.14`, `SPH_SENS = 0.75`) y al soltar sigue un poco por inercia hasta frenar (`SPH_FRICTION = 0.935`). Cuando nadie la toca, queda **quieta**.
+- **Sensibilidad:** liviana, sigue bien al mouse (`SPH_SENS = 1`, `SPH_FOLLOW = 0.35`); al soltar sigue un poco por inercia hasta frenar (`SPH_FRICTION = 0.945`). Cuando nadie la toca, queda **quieta**.
 - **La ruedita del mouse no hace nada** en el home (ya no hay scroll; se sacó la etiqueta "[ Scroll ]", el resto de los textos quedó en su lugar).
-- **Click** (sin arrastrar) en un trabajo → lo abre. Si hubo arrastre, el click no abre nada.
-- Al pasar el cursor por un trabajo, se agranda apenas (`scale(1.1)`, 0.2s). Puntas levemente redondeadas (`border-radius:6px`).
-- **Entrada** (después de la intro y al volver al home): la esfera llega girando y frena hasta su posición de reposo (1700ms, `easeOutCubic`).
+- **Al pasar el cursor**, solo se eleva (`scale(1.1)`) el trabajo que está **adelante** (casi sin fundido).
+- **Click** (sin arrastrar): en el de adelante → abre el trabajo; en uno que está más atrás → la esfera gira (950ms) y lo trae **al centro**. Si hubo arrastre, el click no hace nada.
+- **Entrada** (después de la intro y al volver al home): cada vez queda **un trabajo distinto al azar en el centro**. El giro alrededor de ese centro se elige para que los demás queden lo más despejados posible (menos superpuestos y menos cortados). La esfera llega girando y frena en esa posición (1700ms, `easeOutCubic`).
 
 ### 3.5 "Sobre mí"
 

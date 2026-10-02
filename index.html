@@ -29,20 +29,23 @@
   button{ font-family:var(--font-body); }
 
   /* =============== LOADER =============== */
-  #loader{ position:fixed; inset:0; z-index:1000; background:var(--white); display:flex; align-items:center; justify-content:center; }
+  /* Pantalla negra con "carolinapicone.com" en el centro. Al hacer click en el
+     texto: se funde, la pantalla pasa al color exacto del logo (#312b2a) y
+     arranca un zoom al revés: lo que se veía era el logo ampliadísimo, que se
+     retrae hasta quedar chico y centrado sobre blanco (mismo tamaño que en
+     "Sobre mí"). Queda dos segundos y se funde con el home. El logo se dibuja
+     en un canvas: así puede partir de un zoom enorme sin perder calidad. */
+  #loader{ position:fixed; inset:0; z-index:1000; background:#000; display:flex; align-items:center; justify-content:center;
+           transition: background-color .8s ease; }
+  #loader.to-logo{ background:#312b2a; }
   #loader.fade-out{ transition: opacity .8s ease; opacity:0; pointer-events:none; }
-  .loader-inner{ position:relative; display:inline-block; text-align:center; }
-  .reveal-cover{
-    position:absolute; top:0; left:-13%; width:113%; height:100%;
-    background: linear-gradient(90deg, transparent 0%, var(--white) 13.3%, var(--white) 100%);
-    transform: translateX(0%);
-    transition: transform 2.3s linear;
-    pointer-events:none;
-  }
-  .loader-inner.show .reveal-cover{ transform: translateX(100%); }
-  .loader-signature{ width: clamp(260px, 30vw, 420px); height:auto; display:block; margin:0 auto; }
-  .loader-url{ margin-top:24px; font-size:12px; letter-spacing:.08em; color:var(--stone); }
-
+  .loader-url{ position:relative; z-index:2; font-size:12px; letter-spacing:.08em; color:var(--stone);
+               background:none; border:none; padding:12px 16px; cursor:pointer; font-family:var(--font-body);
+               transition:opacity .8s ease, color .3s ease; }
+  .loader-url:hover{ color:#b3ada0; }
+  .loader-url.gone{ opacity:0; pointer-events:none; }
+  #loaderCanvas{ position:absolute; inset:0; width:100%; height:100%; display:none; z-index:1; }
+  #loaderCanvas.on{ display:block; }
 
   /* Entradas del home: distintas por tipo de elemento */
   .rv{ opacity:0; }
@@ -103,7 +106,11 @@
   .scatter-viewport{ position:absolute; inset:0; overflow:hidden; z-index:1; }   /* siempre por debajo de los textos (z-index 20) */
   .scatter-item{ position:absolute; top:0; left:0; width:380px; height:304px; overflow:visible; cursor:pointer; display:block; border:none; padding:0; background:none; will-change:transform; }
   .item-inner{ width:100%; height:100%; display:block; overflow:hidden; border-radius:6px; transition: transform .2s ease; }
-  .scatter-item:hover .item-inner{ transform: scale(1.1); }
+  .scatter-item.is-front:hover .item-inner{ transform: scale(1.1); }   /* solo se eleva el que está adelante */
+  /* lo que queda atrás en la esfera se funde en blanco (no se vuelve transparente:
+     así no se ve lo que queda detrás de cada trabajo) */
+  .item-inner{ position:relative; }
+  .item-inner::after{ content:''; position:absolute; inset:0; background:#fff; opacity:var(--fade, 0); pointer-events:none; }
   .item-inner .ph{ width:100%; height:100%; display:block; }
   .scatter-item.dark .ph{ background:var(--dark-block); }
   .scatter-item.light .ph{ background: repeating-linear-gradient(135deg, #e9e6de 0px, #e9e6de 1px, transparent 1px, transparent 13px), var(--light-block); }
@@ -774,11 +781,8 @@
 <body class="loading">
 
 <div id="loader">
-  <div class="loader-inner" id="loaderInner">
-    <img class="loader-signature" src="assets/firma-loader.png" alt="Carolina Picone">
-    <div class="loader-url">carolinapicone.com</div>
-    <div class="reveal-cover"></div>
-  </div>
+  <canvas id="loaderCanvas"></canvas>
+  <button type="button" class="loader-url" id="loaderUrl">carolinapicone.com</button>
 </div>
 
 <div class="site">
@@ -1303,7 +1307,7 @@
   // Los trabajos están repartidos sobre una esfera invisible, grande, centrada
   // en la pantalla. Se ven siempre de frente (como tarjetas), y la profundidad
   // se nota en el tamaño (los de atrás, más chicos) y en la transparencia (los
-  // de atrás, más traslúcidos, pero nunca invisibles). Se "agarra" siempre la
+  // de atrás, fundidos en blanco, pero nunca invisibles). Se "agarra" siempre la
   // cara delantera: arrastrar a la derecha lleva lo de adelante a la derecha.
   // El giro sigue al mouse con algo de peso y, al soltar, sigue un poco por
   // inercia hasta frenar. La ruedita del mouse no hace nada acá.
@@ -1312,10 +1316,12 @@
   const items = [1,2,3,4,5].map(n => document.getElementById('p'+n));
   const N = items.length;
 
-  const SPH_SENS     = 0.75;   // cuánto gira por cada px arrastrado (1 = la cara delantera sigue exacto al mouse)
-  const SPH_FOLLOW   = 0.14;   // peso al arrastrar: qué parte del movimiento pendiente se aplica por cuadro
-  const SPH_FRICTION = 0.935;  // inercia al soltar (más cerca de 1 = sigue girando más tiempo)
-  const SPH_OPAC_MIN = 0.22;   // transparencia de lo que queda más atrás (nunca desaparece)
+  const SPH_SENS     = 1.0;    // cuánto gira por cada px arrastrado (1 = la cara delantera sigue exacto al mouse)
+  const SPH_FOLLOW   = 0.35;   // peso al arrastrar: qué parte del movimiento pendiente se aplica por cuadro
+  const SPH_FRICTION = 0.945;  // inercia al soltar (más cerca de 1 = sigue girando más tiempo)
+  const SPH_FADE_MAX = 0.72;   // cuánto se funde en blanco lo que queda más atrás (nunca desaparece)
+  const SPH_FRONT    = 0.82;   // desde esta profundidad (0 atrás, 1 adelante) un trabajo cuenta como "de frente"
+  const SPH_FOCUS_MS = 950;    // giro para traer al frente un trabajo clickeado
   const SPH_INTRO_MS = 1700;   // entrada: llega girando y frena
   const SPH_INTRO_A  = 1.9;    // cuánto gira en la entrada (radianes)
 
@@ -1353,8 +1359,62 @@
   let sphDragging = false, sphMoved = 0, sphLastX = 0, sphLastY = 0;
   let sphRecent = [];               // últimos movimientos, para calcular la inercia
   let sphSuppressClick = false;
+  const sphDepth = items.map(() => 0);
+  let sphFocus = null;              // { ax, ay, az, angle, done, t0 } mientras gira solo hacia un trabajo
 
-  function sphRadius(){ return Math.min(Math.max(window.innerWidth * 0.44, 420), 820); }
+  // matriz que lleva el punto i justo al frente (centro de la pantalla)
+  function sphFrontRot(v){
+    const ax = v[1], ay = -v[0];                // v × (0,0,1)
+    const len = Math.hypot(ax, ay);
+    const ang = Math.acos(Math.min(Math.max(v[2], -1), 1));
+    if(len < 1e-6) return v[2] > 0 ? null : { ax: 0, ay: 1, az: 0, ang: Math.PI };
+    return { ax: ax / len, ay: ay / len, az: 0, ang };
+  }
+  // orientación de reposo con el trabajo i en el centro: se prueban giros
+  // alrededor del centro y se elige el que deja a los demás más despejados
+  // (menos superposición entre recuadros y menos cortados por el borde)
+  function sphRestFor(i){
+    const r = sphFrontRot(sphPts[i]);
+    const base = r ? sphRot(r.ax, r.ay, r.az, r.ang) : [1,0,0, 0,1,0, 0,0,1];
+    const vw = window.innerWidth, vh = window.innerHeight, R = sphRadius(), D = R * 3;
+    const w0 = items[0].offsetWidth || 380, h0 = items[0].offsetHeight || 304;
+    let best = base, bestCost = Infinity;
+    for(let k = 0; k < 48; k++){
+      const M = sphMul(sphRot(0, 0, 1, k / 48 * Math.PI * 2), base);
+      const rects = sphPts.map(p => {
+        const x = (M[0]*p[0] + M[1]*p[1] + M[2]*p[2]) * R, y = (M[3]*p[0] + M[4]*p[1] + M[5]*p[2]) * R, z = (M[6]*p[0] + M[7]*p[1] + M[8]*p[2]) * R;
+        const f = (D - R) / (D - z), w = w0 * f, h = h0 * f;
+        return { l: vw / 2 + x * f - w / 2, t: vh / 2 + y * f - h / 2, w, h };
+      });
+      let cost = 0;
+      for(let a = 0; a < rects.length; a++){
+        const A = rects[a];
+        for(let b = a + 1; b < rects.length; b++){
+          const B = rects[b];
+          const ow = Math.min(A.l + A.w, B.l + B.w) - Math.max(A.l, B.l);
+          const oh = Math.min(A.t + A.h, B.t + B.h) - Math.max(A.t, B.t);
+          if(ow > 0 && oh > 0) cost += ow * oh;
+        }
+        const vis = Math.max(0, Math.min(A.l + A.w, vw) - Math.max(A.l, 0)) * Math.max(0, Math.min(A.t + A.h, vh) - Math.max(A.t, 0));
+        cost += (A.w * A.h - vis) * 0.5;
+      }
+      cost *= 1 + Math.random() * 0.05;   // un poco de azar entre posiciones parecidas
+      if(cost < bestCost){ bestCost = cost; best = M; }
+    }
+    return best;
+  }
+
+  // click en un trabajo que no está adelante: la esfera gira y lo trae al centro
+  function sphBringToFront(i){
+    const p = sphPts[i], M = sphM;
+    const v = [M[0]*p[0] + M[1]*p[1] + M[2]*p[2], M[3]*p[0] + M[4]*p[1] + M[5]*p[2], M[6]*p[0] + M[7]*p[1] + M[8]*p[2]];
+    const r = sphFrontRot(v);
+    if(!r) return;
+    sphPendX = sphPendY = sphVelX = sphVelY = 0;
+    sphFocus = { ax: r.ax, ay: r.ay, az: r.az, angle: r.ang, done: 0, t0: performance.now() };
+  }
+
+  function sphRadius(){ return Math.min(Math.max(window.innerWidth * 0.37, 340), 660); }
 
   function sphApply(dx, dy){
     const d = Math.hypot(dx, dy);
@@ -1386,8 +1446,11 @@
       const sx = vw / 2 + x * f - w / 2, sy = vh / 2 + y * f - h / 2;
       const depth = (z / R + 1) / 2;         // 0 = atrás de todo, 1 = adelante de todo
       item.style.transform = 'translate(' + sx.toFixed(1) + 'px,' + sy.toFixed(1) + 'px) scale(' + f.toFixed(4) + ')';
-      item.style.opacity = (SPH_OPAC_MIN + (1 - SPH_OPAC_MIN) * Math.pow(depth, 1.3)).toFixed(3);
+      item.style.opacity = '1';
+      item.style.setProperty('--fade', (SPH_FADE_MAX * Math.pow(1 - depth, 1.3)).toFixed(3));
       item.style.zIndex = String(Math.round(depth * 100));
+      item.classList.toggle('is-front', depth >= SPH_FRONT);
+      sphDepth[i] = depth;
     });
   }
 
@@ -1406,6 +1469,14 @@
         if(Math.abs(sphVelY) < 0.01) sphVelY = 0;
       }
       sphApply(ax + ix, ay + iy);
+      if(sphFocus){
+        const t = Math.min((performance.now() - sphFocus.t0) / SPH_FOCUS_MS, 1);
+        const e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        const target = sphFocus.angle * e;
+        sphM = sphMul(sphRot(sphFocus.ax, sphFocus.ay, sphFocus.az, target - sphFocus.done), sphM);
+        sphFocus.done = target;
+        if(t >= 1) sphFocus = null;
+      }
       renderItems();
     }
     requestAnimationFrame(loop);
@@ -1414,7 +1485,7 @@
   // ---- arrastre (mouse o dedo) ----
   homeSticky.addEventListener('pointerdown', (e) => {
     if(e.button !== 0) return;
-    sphDragging = true; sphMoved = 0;
+    sphDragging = true; sphMoved = 0; sphFocus = null;
     sphLastX = e.clientX; sphLastY = e.clientY;
     sphVelX = sphVelY = 0; sphRecent = [];
     document.documentElement.classList.add('home-grabbing');
@@ -1456,6 +1527,11 @@
   items.forEach(it => { it.style.opacity = '0'; });
   let sphLoopOn = false;
   function startIntroReverse(){
+    // cada vez que se entra, queda un trabajo distinto (al azar) en el centro,
+    // con un leve giro al azar para que la disposición del resto cambie
+    const pick = Math.floor(Math.random() * N);
+    sphM = sphRestFor(pick);
+    sphFocus = null;
     sphIntroT0 = performance.now();
     sphPendX = sphPendY = sphVelX = sphVelY = 0;
     if(!sphLoopOn){ sphLoopOn = true; requestAnimationFrame(loop); }
@@ -1911,18 +1987,89 @@
     });
   }
 
-  // ---- Loader ----
+  // ---- Loader: click en "carolinapicone.com" → zoom al revés del logo ----
   const loader = document.getElementById('loader');
-  const loaderInner = document.getElementById('loaderInner');
-  window.addEventListener('load', () => {
-    requestAnimationFrame(() => loaderInner.classList.add('show'));
-    setTimeout(() => { loader.classList.add('fade-out'); }, 3100);   // 2.3s barrido + .8s sostenido
+  const loaderUrl = document.getElementById('loaderUrl');
+  const loaderCanvas = document.getElementById('loaderCanvas');
+  const LOGO_COLOR = '#312b2a';              // color exacto del logo
+  const LZ_MS = 4200;                        // misma duración y curva que el zoom de "Contacto"
+  const LZ_HOLD = 2000;                      // cuánto queda el logo quieto antes de pasar al home
+  const LZ_P0 = { x: 664, y: 1716, r: 48 };  // punto más grueso del trazo (px del archivo): desde ahí arranca
+  const logoImg = new Image();
+  logoImg.src = 'assets/logo.png';
+
+  // cubic-bezier(.165,.84,.44,1), igual que el zoom de Contacto
+  function lzEase(x){
+    const p1x = .165, p1y = .84, p2x = .44, p2y = 1;
+    let t = x;
+    for(let i = 0; i < 8; i++){
+      const bx = 3*(1-t)*(1-t)*t*p1x + 3*(1-t)*t*t*p2x + t*t*t - x;
+      const dx = 3*(1-t)*(1-t)*p1x + 6*(1-t)*t*(p2x-p1x) + 3*t*t*(1-p2x);
+      if(Math.abs(dx) < 1e-6) break;
+      t = Math.min(Math.max(t - bx / dx, 0), 1);
+    }
+    return 3*(1-t)*(1-t)*t*p1y + 3*(1-t)*t*t*p2y + t*t*t;
+  }
+
+  function finishLoader(){
+    loader.classList.add('fade-out');
     setTimeout(() => {
       loader.style.display = 'none';
       document.documentElement.classList.remove('loading');
       document.documentElement.classList.add('revealed');
       startIntroReverse();
-    }, 3900); // + .8s desvanecido
+    }, 800);
+  }
+
+  function playLogoZoom(){
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const ctx = loaderCanvas.getContext('2d');
+    const W = logoImg.naturalWidth, H = logoImg.naturalHeight;
+    const t0 = performance.now();
+    function frame(now){
+      const vw = window.innerWidth, vh = window.innerHeight;
+      if(loaderCanvas.width !== Math.round(vw * dpr)){ loaderCanvas.width = Math.round(vw * dpr); loaderCanvas.height = Math.round(vh * dpr); }
+      // escala inicial: la pantalla entera cae adentro del trazo; final: el
+      // ancho del logo de "Sobre mí" (clamp(70px, 7.5vw, 110px))
+      const k0 = Math.hypot(vw, vh) / 2 / (LZ_P0.r * 0.85);
+      const k1 = Math.min(Math.max(vw * 0.075, 70), 110) / W;
+      const u = lzEase(Math.min((now - t0) / LZ_MS, 1));
+      const k = Math.exp(Math.log(k0) + (Math.log(k1) - Math.log(k0)) * u);
+      // el punto de partida queda en el centro; a medida que se aleja, el logo
+      // se va corriendo hasta quedar centrado (sin saltos)
+      const g = (k0 / k - 1) / (k0 / k1 - 1);
+      const ox = vw / 2 + (LZ_P0.x - W / 2) * k * g;
+      const oy = vh / 2 + (LZ_P0.y - H / 2) * k * g;
+      const left = ox - LZ_P0.x * k, top = oy - LZ_P0.y * k;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, vw, vh);
+      // solo la parte visible del archivo (con zooms enormes no se dibuja de más)
+      const sx = Math.max(0, -left / k), sy = Math.max(0, -top / k);
+      const ex = Math.min(W, (vw - left) / k), ey = Math.min(H, (vh - top) / k);
+      if(ex > sx && ey > sy){
+        ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(logoImg, sx, sy, ex - sx, ey - sy, left + sx * k, top + sy * k, (ex - sx) * k, (ey - sy) * k);
+      }
+      if(now - t0 < LZ_MS) requestAnimationFrame(frame);
+      else setTimeout(finishLoader, LZ_HOLD);
+    }
+    loaderCanvas.classList.add('on');
+    requestAnimationFrame(frame);
+  }
+
+  let loaderStarted = false;
+  loaderUrl.addEventListener('click', () => {
+    if(loaderStarted) return;
+    loaderStarted = true;
+    loaderUrl.classList.add('gone');            // el texto se funde
+    setTimeout(() => {
+      loader.classList.add('to-logo');           // la pantalla pasa al color del logo
+      setTimeout(() => {
+        const go = () => playLogoZoom();
+        if(logoImg.complete && logoImg.naturalWidth) go(); else logoImg.addEventListener('load', go, { once:true });
+      }, 820);
+    }, 500);
   });
 
   // ---- Idioma ----
@@ -3684,7 +3831,10 @@
   }
   requestAnimationFrame(workLoop);
 
-  items.forEach(it => it.addEventListener('click', (e) => {
+  // click en un trabajo: si está adelante se abre; si está más atrás, la
+  // esfera gira y lo trae al centro
+  items.forEach((it, i) => it.addEventListener('click', (e) => {
+    if(!it.classList.contains('is-front')){ sphBringToFront(i); return; }
     const id = it.dataset.project;
     sectionTransition(() => openPanel('work', id));
   }));
