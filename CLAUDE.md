@@ -5,51 +5,25 @@
 
 ---
 
-## 0. Flujo de trabajo de archivos (leer primero, en todo chat nuevo)
+## 0. Flujo de trabajo (leer primero, en todo chat nuevo)
 
-Carolina trabaja este portfolio en **chats separados por proyecto**, dentro de un mismo Proyecto de Claude. Este documento y el `index.html` liviano viven en la Base de Conocimiento del Proyecto. Reglas fijas para cualquier chat que continúe este trabajo:
+El portfolio vive en **GitHub**, en el repositorio `CarolinaPicone/miporfolio-carolinapicone`. Ahí están el `index.html`, la carpeta `assets/` con todas las fotos y videos, y este documento. GitHub es la única fuente de verdad: ya **no** se entregan archivos sueltos ni `.zip`, y no hace falta subir nada a la Base de Conocimiento de un Proyecto de Claude.
 
-- **El `index.html` que está en la Base de Conocimiento es siempre "liviano"**: tiene todo el código, estructura, animaciones y lógica funcionando, pero las imágenes/videos están referenciados por archivo (`src="assets/nombre-del-archivo.jpg"`), **no** embebidos como base64 adentro del HTML. Esto es intencional — embeber archivos pesados como base64 hace que el archivo no entre en la capacidad de la Base de Conocimiento (ver por qué, más abajo).
-- **Durante el trabajo en el chat**, Carolina va a subir las fotos/videos del proyecto puntual que esté armando ese día, para poder ver la web funcionando de verdad con esas imágenes puestas (visualización real, no placeholders). Está bien y es lo esperado que en el archivo de trabajo del chat las imágenes SÍ estén embebidas o accesibles para poder previsualizar — el paso de "aligerar" pasa recién al final.
-- **Carolina NO sabe programar ni tiene conocimientos técnicos.** Cualquier instrucción sobre archivos tiene que ser en pasos simples, sin asumir que entiende de código, carpetas de proyecto, rutas relativas, etc.
+- **Carolina NO sabe programar ni tiene conocimientos técnicos.** Cualquier explicación sobre archivos, ramas o GitHub tiene que ser en pasos simples, sin asumir que entiende de código, carpetas de proyecto, rutas, etc.
+- **Ramas:** cada chat trabaja en su propia rama (un "borrador"); `main` es la versión definitiva. Durante el trabajo, Claude sube los cambios a su rama. Cuando una sección queda terminada, Claude pasa ese trabajo a `main`, con el visto bueno de Carolina.
+- **Material que sube Carolina:** sube las fotos y videos del trabajo de ese día (a `main` o a la rama del chat, por ejemplo en una carpeta tipo `assets/02-Nombre del trabajo/`). Claude los convierte a lo que use la web, con **nombres descriptivos y prolijos** (ej. `sombrerera-hero.jpg`, no el nombre original de la cámara), y los guarda en `assets/`.
+- **Las imágenes y videos nunca van embebidos** dentro del `index.html` (nada de base64): siempre referenciados por archivo (`src="assets/nombre-del-archivo.jpg"`).
+- **Para reemplazar una foto por una versión editada**, alcanza con subir el archivo nuevo con **el mismo nombre exacto** que usa la web (ej. `dualidad-hero.jpg`) en `assets/`: el código sigue pidiendo ese nombre y muestra la versión nueva.
+- **Vista previa:** para que Carolina vea los cambios mientras se trabaja, Claude publica una vista previa privada de la web completa (un Artifact) y la actualiza con cada ronda de correcciones.
 
-### Regla obligatoria: secuencia exacta de cierre, con palabras clave
+### Palabra clave de cierre: "listo"
 
-Carolina cierra cada trabajo con una secuencia fija, disparada por palabras exactas suyas — **no** es a criterio de Claude detectar "si parece que terminó":
-
-1. Cuando Carolina escribe **"listo"** (con o sin punto) → Claude hace **directamente** la traducción al inglés de ese trabajo, **sin preguntar antes** (ver "Traducción al inglés" más abajo), y espera su revisión.
-2. Cuando Carolina escribe **"traducción lista"** → Claude, **automáticamente y sin volver a preguntar**, arma y entrega los dos archivos finales (ver "Entrega de archivos" más abajo).
-
-Si después de "listo" Carolina quiere seguir haciendo cambios, la secuencia se pausa ahí — no hay que forzar los pasos siguientes.
+Cuando Carolina escribe **"listo"** (con o sin punto) → Claude hace **directamente** la traducción al inglés de ese trabajo, **sin preguntar antes**, y la carga en la web (botón ES/EN) para que pueda verla en contexto. Si después Carolina quiere seguir haciendo cambios, se sigue trabajando normalmente.
 
 ### Traducción al inglés
 
 - El sitio es bilingüe (selector ES/EN), pero las traducciones se van completando **de a un trabajo por vez, en el mismo chat donde se armó ese contenido** — no todas juntas al final en un chat aparte.
-- Se dispara apenas Carolina escribe **"listo"** (ver secuencia arriba), sin pedirle confirmación: Claude ofrece una primera versión en inglés del texto en español de esa sección, y ya la carga en la web (botón ES/EN) para que pueda verla en contexto.
-- Carolina revisa y ajusta esa versión a su gusto — no se da por definitiva sin que ella la lea, porque son decisiones de tono que le pertenecen a ella (no solo corrección idiomática).
-- Cuando Carolina termina de revisar, escribe **"traducción lista"**, que dispara automáticamente la entrega de archivos (siguiente paso).
-
-### Entrega de archivos
-
-Se dispara automáticamente cuando Carolina escribe **"traducción lista"** — en ese momento Claude entrega, sin necesidad de preguntar de nuevo, los dos archivos finales:
-
-1. Un **`.zip`** que contenga el `index.html` liviano (imágenes/videos ya extraídos y referenciados por ruta, no embebidos) + una carpeta `assets/` con únicamente los archivos nuevos de ESE proyecto (fotos/videos que subió en ESE chat), con nombres de archivo descriptivos y prolijos (ej: `sombrerera-hero.jpg`, no el nombre original de la foto tal cual se la subió).
-2. El **`index.html` liviano suelto** también aparte (mismo contenido que el de adentro del zip), para subir directo a la Base de Conocimiento sin tener que descomprimir nada.
-
-### Por qué se hace así (contexto técnico, por si hace falta explicarlo de nuevo)
-
-- La Base de Conocimiento de Claude **no acepta imágenes ni videos como archivos propios** — solo documentos de texto (HTML, PDF, DOCX, TXT, etc.).
-- Cuando una imagen/video se embebe como base64 adentro de un HTML, ese texto codificado pesa muchísimo en términos de "capacidad de lectura" de Claude (mucho más que su peso en MB), y hace que el archivo no entre en el límite manejable de la Base de Conocimiento, aunque el archivo en sí pese poco en MB.
-- Por eso la separación código/medios no es opcional ni cosmética: es lo que permite que el `index.html` siempre pueda subirse sin problema a la Base de Conocimiento.
-
-### Cómo maneja Carolina esto en su compu (para su propia referencia, no requiere saber programar)
-
-- Tiene **una carpeta `assets` maestra en su computadora**, que va creciendo a medida que termina cada proyecto — hoy tiene las fotos/videos de "La Sombrerera", después va a sumar las de cada trabajo nuevo.
-- Cada vez que termina un proyecto y recibe el zip: el `assets` del zip nuevo trae **solo** los archivos de ESE proyecto puntual (el chat no conoce ni tiene los de proyectos anteriores). Carolina **arrastra/suma** esos archivos nuevos dentro de su carpeta `assets` maestra (no reemplaza nada, solo agrega).
-- El `index.html`, en cambio, **se reemplaza completo** cada vez — el nuevo que entrega el chat ya incluye todas las referencias anteriores más las nuevas, así que no hay que "sumarlo", solo reemplazar el archivo viejo por el nuevo en la Base de Conocimiento.
-- El nombre de archivo que usa el código (ej. `sombrerera-hero.jpg`) **no es el nombre original** que tenía la foto en la cámara/celular de Carolina — es un nombre nuevo, descriptivo, que le puso el chat al armar el código. Para reemplazar una foto por una versión editada más adelante, Carolina tiene que renombrar su archivo nuevo con **ese mismo nombre exacto** y reemplazar el archivo viejo en la carpeta `assets` — así el código (que sigue pidiendo ese nombre de archivo) automáticamente muestra la versión nueva, sin tocar ni entender el código.
-
----
+- Claude ofrece una primera versión en inglés; Carolina la revisa y la ajusta a su gusto (son decisiones de tono que le pertenecen a ella, no solo corrección idiomática). Sus correcciones se cargan tal cual.
 
 ## 1. Identidad visual
 
@@ -131,7 +105,7 @@ Editorial, minimalista, mucho espacio en blanco.
 ## 2. Stack técnico
 
 - **HTML + CSS + JavaScript puro**, un único archivo (`index.html`). Sin frameworks (no React, no Vue) y sin librerías de animación (no GSAP, no Framer Motion) — todo el movimiento está resuelto a mano con `@keyframes`/`transition` de CSS y bucles `requestAnimationFrame` en JS para lo que depende del scroll.
-- Todas las imágenes (firma en sus variantes, logo) están **embebidas en el propio HTML como `data:` URI en base64**, para que el archivo funcione solo, sin depender de otros archivos sueltos.
+- Todas las imágenes y videos (firma, logo, fotos, videos) están en la carpeta `assets/` y el HTML los referencia por nombre de archivo; nada va embebido en base64.
 - Única dependencia externa: Google Fonts (Instrument Sans), vía `<link>` en el `<head>`.
 - Sin proceso de build, sin `npm`, sin dependencias.
 
