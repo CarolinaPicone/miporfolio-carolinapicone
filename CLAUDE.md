@@ -64,7 +64,7 @@ Todo en **Instrument Sans**. Los tamaños con `clamp()` escalan con el ancho de 
 | Home — rol rotativo | 13–15px `clamp(13px,1.3vw,15px)` | 400 | — | piedra |
 | Home — url | 11.5px | 400 | .04em | piedra |
 | Home / Contacto — ubicación y disponibilidad | 12px, interlineado 1.9 | 400; lugares en 600 | .04em | piedra; lugares en tinta |
-| Etiqueta "[ Scroll ]" | 11px | MAYÚSCULAS | .14em | tinta (home) / piedra (paneles) |
+| Etiqueta "[ Scroll ]" (hoy solo queda en 7600) | 11px | MAYÚSCULAS | .14em | piedra |
 | Sobre mí — títulos "01 — Universo" | 13–18px `clamp(13px,1.6vw,18px)` | MAYÚSCULAS | .09em | piedra |
 | Sobre mí — párrafos | 13–15px, interlineado 2 | 400 | — | tinta |
 | Sobre mí — servicios | 13–15px | MAYÚSCULAS | .08em | `#b3ada0` |
@@ -140,9 +140,10 @@ Editorial, minimalista, mucho espacio en blanco.
 
 ### 3.1 Intro (loader)
 
-- La web arranca con una **pantalla negra** (`#000`) y "carolinapicone.com" en el centro (12px, letter-spacing .08em, color piedra `#8c8578`). Es un botón: hay que hacer click.
+- La web arranca con una **pantalla negra** (`#000`) y "carolinapicone.com" en el centro (12px, letter-spacing .08em, en blanco apagado por un velo negro al 62%). Es un botón: hay que hacer click.
+- **El cursor "ilumina" el texto**: mismo efecto que el texto conceptual de La Sombrerera (un velo negro con un agujero difuminado que sigue al mouse), pero con un aura más chica (radio 70px, contra 190px en Sombrerera) porque es una sola frase. Cerca del cursor el texto se ve blanco.
 - Al hacer click: el texto se **funde** (0.8s) y no vuelve a aparecer.
-- Arranca un **zoom al revés**: lo que se veía negro era el logo ampliadísimo (el punto más grueso de su trazo); se retrae hasta quedar centrado sobre fondo blanco, del mismo tamaño que en "Sobre mí" (`clamp(70px, 7.5vw, 110px)` de ancho). **En la intro el logo va en negro puro** (solo acá), para que no haya cambio de color entre la pantalla negra y el logo. Misma duración y curva que el zoom de "Contacto": 4200ms, `cubic-bezier(.165,.84,.44,1)` (la escala se interpola en forma logarítmica para que el alejamiento se vea parejo).
+- Arranca un **zoom al revés**: lo que se veía negro era el logo ampliadísimo (desde el **centro del logo**: el punto del trazo más cercano a su centro); se retrae hasta quedar centrado sobre fondo blanco, del mismo tamaño que en "Sobre mí" (`clamp(70px, 7.5vw, 110px)` de ancho). **En la intro el logo va en negro puro** (solo acá), para que no haya cambio de color entre la pantalla negra y el logo. Misma curva que el zoom de "Contacto", `cubic-bezier(.165,.84,.44,1)`, pero un poco más rápido: 3600ms (Contacto usa 4200ms) (la escala se interpola en forma logarítmica para que el alejamiento se vea parejo).
 - El logo queda **1 segundo** y todo se funde (0.8s) para dar paso al home y su entrada.
 - Técnica: el logo se dibuja en un `<canvas>` (no con `transform: scale`), porque parte de un zoom de cientos de veces y así no pierde calidad ni se traba.
 - *(sin definir)* — la ubicación final de "carolinapicone.com" se va a pulir más adelante.
@@ -196,11 +197,11 @@ html.revealed .rv-scale, .panel.open .rv-scale{ animation: fromScale .7s cubic-b
 
 Se disparan agregando la clase `revealed` al `<html>` (home) o al abrir un panel (`.panel.open`).
 
-**Entrada del home** (cada bloque distinto, en tiempo y en tipo de movimiento): menú desde arriba (0ms) · ES/EN fundido (250ms) · firma que se "escribe" de izquierda a derecha con un barrido (`rv-sig`, 1.3s, desde 350ms) · "Based in…" (800ms) y "Available…" (1000ms) desde la derecha, por separado · "Diseñadora de Indumentaria" desde la izquierda (1150ms) · rol rotativo desde abajo (1450ms) · url con un fundido largo (`rv-fade-slow`, 1.4s, desde 1750ms).
+**Entrada del home** (cada bloque distinto, en tiempo y en tipo de movimiento): menú desde arriba (0ms) · ES/EN fundido (250ms) · firma con una leve escala desde abajo (`rv-scale`, 450ms; se probó que se "escribiera" con un barrido y se descartó) · "Based in…" (800ms) y "Available…" (1000ms) desde la derecha, por separado · "Diseñadora de Indumentaria" desde la izquierda (1150ms) · rol rotativo desde abajo (1450ms) · url con un fundido largo (`rv-fade-slow`, 1.4s, desde 1750ms).
 
 ### 3.4 Trabajos del home (esfera que se gira arrastrando)
 
-- Los 5 trabajos están repartidos sobre una **esfera invisible centrada en la pantalla** (puntos con espiral de Fibonacci; radio `37vw`, entre 340 y 660px). Referencia: el home de gionatannese.com.
+- Los 5 trabajos están repartidos sobre una **esfera invisible centrada en la pantalla** (puntos con espiral de Fibonacci; radio `32vw`, entre 300 y 570px). Referencia: el home de gionatannese.com.
 - Se ven siempre **de frente**, como tarjetas (no se tuercen con la esfera). La profundidad se nota en el **tamaño** (adelante = tamaño actual de los recuadros, 380×304; atrás, la mitad) y en un **fundido en blanco** (los de atrás se van lavando hacia el blanco, hasta un 72%; **no** se vuelven transparentes, así no se ve lo que queda detrás de cada uno, y nunca desaparecen).
 - Algunos trabajos pueden quedar cortados por el borde de la pantalla; está bien.
 - **Siempre pasan por debajo de los textos del home.**
@@ -235,6 +236,15 @@ Zoom: el logo se agranda con `scale()` hasta que una banda vertical específica 
 - El contenido (tres bloques: email/web · Instagram/LinkedIn · ubicación/disponibilidad) aparece recién a los 3.3s, cada uno con una entrada distinta y sutil (fundido / deslizamiento / ascenso).
 - Si estando ya en Contacto se vuelve a clickear "Contacto", el logo hace un **pequeño rebote** (escala a 0.985, 280ms) en vez de reiniciar toda la entrada.
 - Scrollear (para cualquier lado) devuelve al home con la misma transición de fundido, con un estirado casi imperceptible (10px, contra los 46px que usa el resto del sitio).
+- Sin etiqueta "[ Scroll ]" (se sacó).
+
+### 3.7 Salir de un trabajo estirando (arriba o abajo)
+
+- El scroll normal **frena en un tope**, arriba y abajo, y ahí se queda: recorrer el trabajo de ida y vuelta nunca saca a nadie sin querer.
+- **Tope de arriba:** el principio del trabajo. **Tope de abajo:** donde termina la última foto (La Sombrerera y Dualidad Fusionada), el video final (7600) y, en Un Mundo para Exprimir, cuando las tres fotos finales quedan centradas en la pantalla.
+- Para salir al home hay que hacer **un movimiento más** con la ruedita estando en el tope (después de una pausa; el envión del scroll que venía no cuenta) y **sostenerlo un poco menos de un segundo** (800ms). Mientras se sostiene, el trabajo se va estirando (hasta 90px arriba, 140px abajo); al cumplirse el tiempo, se va al home con el fundido.
+- Si se suelta antes (más de 320ms sin mover la ruedita), el estirado vuelve suave al tope.
+- Constantes en el código: `PULL_HOLD`, `PULL_GAP`, `PULL_LET_GO`, `PULL_TOP`, `PULL_BOTTOM`.
 
 ---
 

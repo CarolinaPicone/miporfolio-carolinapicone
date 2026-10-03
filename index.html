@@ -29,20 +29,28 @@
   button{ font-family:var(--font-body); }
 
   /* =============== LOADER =============== */
-  /* Pantalla negra con "carolinapicone.com" en el centro. Al hacer click en el
-     texto: se funde y arranca un zoom al revés: lo que se veía negro era el
-     logo (en negro, solo en la intro) ampliadísimo, que se retrae hasta quedar
+  /* Pantalla negra con "carolinapicone.com" en el centro (el cursor lo
+     ilumina). Al hacer click en el texto: se funde y arranca un zoom al revés:
+     lo que se veía negro era el logo (en negro, solo en la intro) ampliadísimo
+     desde el centro de su trazo, que se retrae hasta quedar
      chico y centrado sobre blanco (mismo tamaño que en "Sobre mí"). Queda un
      segundo y se funde con el home. El logo se dibuja en un canvas: así puede
      partir de un zoom enorme sin perder calidad. */
   #loader{ position:fixed; inset:0; z-index:1000; background:#000; display:flex; align-items:center; justify-content:center;
            transition: background-color .8s ease; }
   #loader.fade-out{ transition: opacity .8s ease; opacity:0; pointer-events:none; }
-  .loader-url{ position:relative; z-index:2; font-size:12px; letter-spacing:.08em; color:var(--stone);
+  .loader-url{ position:relative; z-index:2; font-size:12px; letter-spacing:.08em; color:#fff;
                background:none; border:none; padding:12px 16px; cursor:pointer; font-family:var(--font-body);
-               transition:opacity .8s ease, color .3s ease; }
-  .loader-url:hover{ color:#b3ada0; }
+               transition:opacity .8s ease; }
   .loader-url.gone{ opacity:0; pointer-events:none; }
+  /* mismo efecto que el texto conceptual de La Sombrerera: un velo negro
+     apaga el texto y el cursor lo "ilumina". El aura es más chica (70px)
+     porque acá es una sola frase */
+  .loader-veil{ position:absolute; inset:0; z-index:3; pointer-events:none; background:#000; opacity:.62;
+    -webkit-mask-image: radial-gradient(circle 70px at var(--lv-mx,-500px) var(--lv-my,-500px), transparent 0%, rgba(0,0,0,.45) 55%, #000 100%);
+    mask-image: radial-gradient(circle 70px at var(--lv-mx,-500px) var(--lv-my,-500px), transparent 0%, rgba(0,0,0,.45) 55%, #000 100%);
+    transition:opacity .8s ease; }
+  .loader-veil.gone{ opacity:0; }
   #loaderCanvas{ position:absolute; inset:0; width:100%; height:100%; display:none; z-index:1; }
   #loaderCanvas.on{ display:block; }
 
@@ -57,9 +65,7 @@
   @keyframes fadeIn{ to{opacity:1;} }
   /* entradas propias del home: la firma se "escribe" de izquierda a derecha y
      la url aparece con un fundido largo */
-  html.revealed .rv-sig{ animation: sigWrite 1.3s cubic-bezier(.65,0,.35,1) forwards; }
   html.revealed .rv-fade-slow{ animation: fadeIn 1.4s ease forwards; }
-  @keyframes sigWrite{ from{ opacity:1; clip-path:inset(0 100% 0 0); } to{ opacity:1; clip-path:inset(0 0 0 0); } }
   @keyframes fromDown{ from{opacity:0; transform:translateY(-10px);} to{opacity:1; transform:translateY(0);} }
   @keyframes fromUp{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
   @keyframes fromLeft{ from{opacity:0; transform:translateX(-14px);} to{opacity:1; transform:translateX(0);} }
@@ -126,7 +132,6 @@
 
   .panel{ position:fixed; inset:0; background:var(--white); z-index:150; opacity:0; pointer-events:none; overflow-y:auto; overscroll-behavior:contain; }
   .panel.open{ opacity:1; pointer-events:auto; }
-  .panel-hint{ position:fixed; left:clamp(20px,4vw,56px); bottom:28px; z-index:310; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--stone); pointer-events:none; }
   .panel-inner{ }
   .panel-spacer{ height:60vh; }
   .panel-content{ min-height:100vh; display:flex; align-items:center; justify-content:center; }
@@ -150,8 +155,6 @@
   html.work-dark .lang-toggle{ color:#6b665d; }
   html.work-dark .lang-toggle span.active{ color:#fff; }
   html.work-open .panel{ overflow:hidden; }
-  html.work-open .panel-hint{ display:none; }          /* sin "[ Scroll ]" dentro de un trabajo */
-  html.about-open .panel-hint{ display:none; }          /* tampoco dentro de "Sobre mí" */
   html.work-open header{ transition:opacity .7s ease; }
   html.work-nav-hidden header{ opacity:0; pointer-events:none; }
   html.work-open, html.work-open .panel{ cursor:default; }
@@ -787,6 +790,7 @@
 <div id="loader">
   <canvas id="loaderCanvas"></canvas>
   <button type="button" class="loader-url" id="loaderUrl">carolinapicone.com</button>
+  <div class="loader-veil" id="loaderVeil"></div>
 </div>
 
 <div class="site">
@@ -807,7 +811,7 @@
   <div class="home-sticky">
 
     <div class="home-copy">
-      <div class="name-variants rv rv-sig" id="nameVariants" style="animation-delay:350ms">
+      <div class="name-variants rv rv-scale" id="nameVariants" style="animation-delay:450ms">
         <div class="variant v-active" data-variant="1"><img class="sig-h" id="sigVariant1" src="assets/firma-variante1.png" alt="Carolina Picone"></div>
         <div class="variant" data-variant="2">
           <img class="sig-h" src="assets/firma-carolina.png" alt="Carolina">
@@ -847,7 +851,6 @@
 </div>
 
 <div class="panel" id="panel">
-  <div class="panel-hint">[ Scroll ]</div>
   <div class="panel-inner" id="panelInner">
 
     <div class="panel-page" data-page="about">
@@ -1418,7 +1421,7 @@
     sphFocus = { ax: r.ax, ay: r.ay, az: r.az, angle: r.ang, done: 0, t0: performance.now() };
   }
 
-  function sphRadius(){ return Math.min(Math.max(window.innerWidth * 0.37, 340), 660); }
+  function sphRadius(){ return Math.min(Math.max(window.innerWidth * 0.32, 300), 570); }
 
   function sphApply(dx, dy){
     const d = Math.hypot(dx, dy);
@@ -1999,9 +2002,16 @@
   const loader = document.getElementById('loader');
   const loaderUrl = document.getElementById('loaderUrl');
   const loaderCanvas = document.getElementById('loaderCanvas');
-  const LZ_MS = 4200;                        // misma duración y curva que el zoom de "Contacto"
+  const loaderVeil = document.getElementById('loaderVeil');
+  const LZ_MS = 3600;                        // misma curva que el zoom de "Contacto", un poco más rápido
   const LZ_HOLD = 1000;                      // cuánto queda el logo quieto antes de pasar al home
-  const LZ_P0 = { x: 664, y: 1716, r: 48 };  // punto más grueso del trazo (px del archivo): desde ahí arranca
+  const LZ_P0 = { x: 660, y: 904, r: 35 };   // punto del trazo en el centro del logo (px del archivo): desde ahí arranca
+  // el cursor "ilumina" el texto (como en La Sombrerera)
+  function loaderAura(e){
+    loaderVeil.style.setProperty('--lv-mx', e.clientX + 'px');
+    loaderVeil.style.setProperty('--lv-my', e.clientY + 'px');
+  }
+  window.addEventListener('mousemove', loaderAura);
   const logoImg = new Image();
   logoImg.src = 'assets/logo.png';
   // en la intro el logo va en negro puro (igual que la pantalla de arranque),
@@ -2084,6 +2094,8 @@
     if(loaderStarted) return;
     loaderStarted = true;
     loaderUrl.classList.add('gone');            // el texto se funde
+    loaderVeil.classList.add('gone');
+    window.removeEventListener('mousemove', loaderAura);
     setTimeout(() => {
       const go = () => playLogoZoom();
       if(logoImg.complete && logoImg.naturalWidth) go(); else logoImg.addEventListener('load', go, { once:true });
@@ -2307,8 +2319,17 @@
   let workTrack     = null;
   let workCurrent   = 0;
   let workTarget    = 0;
-  let workMax       = 0;
+  let workMax       = 0;      // tope de abajo del scroll normal
   let workLeaving   = false;
+  // salir al home estirando: en el tope (arriba o abajo) hay que hacer un
+  // movimiento más con la ruedita y sostenerlo un poco menos de un segundo
+  const PULL_HOLD   = 800;     // ms que hay que sostener el estirado
+  const PULL_GAP    = 220;     // pausa mínima antes del movimiento que empieza a estirar
+  const PULL_LET_GO = 320;     // sin ruedita durante este tiempo = se soltó
+  const PULL_TOP    = 90;      // cuánto se estira (px) arriba
+  const PULL_BOTTOM = 140;     // y abajo
+  let workPull      = null;    // { dir, t0, last } mientras se estira
+  let workLastWheel = 0;
   let procesoPart   = null;
   let conceptPart   = null;
   let finalParts    = [];
@@ -3422,7 +3443,7 @@
   // Mientras dura, la rueda no suma: si no, el propio impulso del trackpad lo
   // cortaría apenas empieza.
   function dfGlideTo(to, soft){
-    dfGlide = { from: workTarget, to: Math.min(Math.max(to, 0), workMax - 150), t0: performance.now(), soft: !!soft };
+    dfGlide = { from: workTarget, to: Math.min(Math.max(to, 0), workMax), t0: performance.now(), soft: !!soft };
   }
   // si se frena el scroll un segundo con el bloque del proceso cerca del centro,
   // se acomoda solo, muy suave (y cualquier movimiento de la rueda lo cancela)
@@ -3575,7 +3596,7 @@
     vigProcesoPart = workTrack.querySelector('.work-proceso');
     vigConceptPart = workTrack.querySelector('.work-concept');
 
-    workCurrent = 0; workTarget = 0; workLeaving = false;
+    workCurrent = 0; workTarget = 0; workLeaving = false; workPull = null;
     workTrack.style.transform = 'translateY(0px)';
     measureWork();
     if(procesoPart) startMedia();
@@ -3619,16 +3640,23 @@
     lbOpen = false;
     procesoPart = null; conceptPart = null; finalParts = [];
     vigProcesoPart = null; vigConceptPart = null;
-    workTrack = null; workLeaving = false;
+    workTrack = null; workLeaving = false; workPull = null;
   }
 
   function measureWork(){
     if(!workTrack) return;
-    // 140px de más: hay que "pasarse" del final para que vuelva sola al home
+    // el "tope" de abajo: hasta donde llega el scroll normal. En Sombrerera,
+    // Dualidad y 7600 es el final de la última foto / el video; en Exprimir,
+    // cuando las fotos finales quedan centradas en la pantalla.
     // Dualidad: se usa el alto real del recorrido, sin contar la franja de
     // "estirado" que cuelga debajo de la última foto
+    const vh = window.innerHeight;
     const trackH = workTrack === dfTrackEl ? workTrack.offsetHeight : workTrack.scrollHeight;
-    workMax = Math.max(trackH - window.innerHeight, 0) + 140;
+    workMax = Math.max(trackH - vh, 0);
+    if(workTrack === exprTrackEl){
+      const fin = workTrack.querySelector('.expr-finals');
+      if(fin) workMax = Math.max(fin.offsetTop + fin.offsetHeight / 2 - vh / 2, 0);
+    }
   }
   window.addEventListener('resize', () => { if(root.classList.contains('work-open')){ measureWork(); sizeAlbSlot(ALB_RATIO); drawExprArrow(); dfLayout(); } });
 
@@ -3638,14 +3666,29 @@
     e.preventDefault();
     if(lbOpen) return;
     if(dfGlide && !dfGlide.soft) return;   // Dualidad: el scroll se está moviendo solo (centrado del video / envión)
-    workTarget += e.deltaY;
-    if(workTarget < -90){
-      workLeaving = true;
-      sectionTransition(goHome, root.classList.contains('work-dark'));
+    const now = performance.now();
+    const gap = now - workLastWheel;
+    workLastWheel = now;
+    const dir = e.deltaY > 0 ? 1 : (e.deltaY < 0 ? -1 : 0);
+    if(!dir) return;
+
+    // ya estirando: seguir empujando para el mismo lado sostiene el estirado;
+    // para el otro lado lo suelta y vuelve al scroll normal
+    if(workPull){
+      if(dir === workPull.dir){ workPull.last = now; return; }
+      workPull = null;
+    }
+
+    // en el tope, un movimiento nuevo (después de una pausa, no el envión del
+    // scroll que venía) empieza a estirar
+    const lim = dir > 0 ? workMax : 0;
+    const enTope = (dir > 0 ? workTarget >= workMax : workTarget <= 0) && Math.abs(workCurrent - lim) < 30;
+    if(enTope && gap > PULL_GAP){
+      workPull = { dir, t0: now, last: now };
       return;
     }
-    if(workTarget < 0) workTarget = Math.max(workTarget, -90);
-    if(workTarget > workMax) workTarget = workMax;
+
+    workTarget = Math.min(Math.max(workTarget + e.deltaY, 0), workMax);
   }, { passive:false });
 
   const smbVeil   = document.getElementById('smbVeil');
@@ -3840,9 +3883,22 @@
         });
       }
 
-      if(!workLeaving && workCurrent > workMax - 4){
-        workLeaving = true;
-        sectionTransition(goHome, root.classList.contains('work-dark'));
+      // estirado para salir: crece mientras se sostiene; si se suelta antes
+      // de tiempo, vuelve al tope
+      if(workPull && !workLeaving){
+        const now = performance.now();
+        if(now - workPull.last > PULL_LET_GO){
+          workTarget = workPull.dir > 0 ? workMax : 0;
+          workPull = null;
+        } else {
+          const p = Math.min((now - workPull.t0) / PULL_HOLD, 1);
+          const d = (1 - (1 - p) * (1 - p)) * (workPull.dir > 0 ? PULL_BOTTOM : PULL_TOP);
+          workTarget = workPull.dir > 0 ? workMax + d : -d;
+          if(p >= 1){
+            workLeaving = true;
+            sectionTransition(goHome, root.classList.contains('work-dark'));
+          }
+        }
       }
     }
     requestAnimationFrame(workLoop);
