@@ -141,10 +141,12 @@ Editorial, minimalista, mucho espacio en blanco.
 ### 3.1 Intro (loader)
 
 - La web arranca con una **pantalla negra** (`#000`) y "carolinapicone.com" en el centro (12px, letter-spacing .08em, en blanco apagado por un velo negro al 62%). Es un botón: hay que hacer click.
-- **El cursor "ilumina" el texto**: mismo efecto que el texto conceptual de La Sombrerera (un velo negro con un agujero difuminado que sigue al mouse), pero con un aura más chica (radio 70px, contra 190px en Sombrerera) porque es una sola frase. Cerca del cursor el texto se ve blanco.
+- **El cursor "ilumina" el texto**: mismo efecto que el texto conceptual de La Sombrerera (un velo negro con un agujero difuminado que sigue al mouse), pero con un aura más chica (radio 100px, contra 190px en Sombrerera) porque es una sola frase. Cerca del cursor el texto se ve blanco.
 - Al hacer click: el texto se **funde** (0.8s) y no vuelve a aparecer.
 - Arranca un **zoom al revés**: lo que se veía negro era el logo ampliadísimo (desde el **centro del logo**: el punto del trazo más cercano a su centro); se retrae hasta quedar centrado sobre fondo blanco, del mismo tamaño que en "Sobre mí" (`clamp(70px, 7.5vw, 110px)` de ancho). **En la intro el logo va en negro puro** (solo acá), para que no haya cambio de color entre la pantalla negra y el logo. Misma curva que el zoom de "Contacto", `cubic-bezier(.165,.84,.44,1)`, pero un poco más rápido: 3600ms (Contacto usa 4200ms) (la escala se interpola en forma logarítmica para que el alejamiento se vea parejo).
-- El logo queda **1 segundo** y todo se funde (0.8s) para dar paso al home y su entrada.
+- **Mientras se retrae, gira** una vuelta completa sobre su eje vertical, con grosor 3D, igual que al entrar a "Sobre mí" (curva `cubic-bezier(.35,0,.25,1)`, 9px de grosor a su tamaño final): arranca plano, toma volumen al girar y, al terminar la vuelta, se aplana (450ms). En el canvas el grosor se arma dibujando el logo una vez y duplicándolo de costado (1, 2, 4, 8… px), no capa por capa: así no se traba.
+- Para que no se "pixele" al quedar chico, el logo se guarda en versiones cada vez más chicas (la mitad cada una) y se dibuja la más cercana al tamaño en pantalla.
+- El logo queda **1 segundo** y la pantalla de la intro se funde (1150ms) mientras el home ya arranca por debajo, igual que al volver de un trabajo: así el giro de entrada de la esfera se ve igual en los dos casos.
 - Técnica: el logo se dibuja en un `<canvas>` (no con `transform: scale`), porque parte de un zoom de cientos de veces y así no pierde calidad ni se traba.
 - *(sin definir)* — la ubicación final de "carolinapicone.com" se va a pulir más adelante.
 
@@ -201,7 +203,7 @@ Se disparan agregando la clase `revealed` al `<html>` (home) o al abrir un panel
 
 ### 3.4 Trabajos del home (esfera que se gira arrastrando)
 
-- Los 5 trabajos están repartidos sobre una **esfera invisible centrada en la pantalla** (puntos con espiral de Fibonacci; radio `32vw`, entre 300 y 570px). Referencia: el home de gionatannese.com.
+- Los 5 trabajos están repartidos sobre una **esfera invisible centrada en la pantalla** (radio `32vw`, entre 300 y 570px). El reparto es **a propósito desordenado**: se descartó la espiral de Fibonacci porque, con algunos trabajos adelante, dejaba a los otros cuatro casi equidistantes (en cruz). Ahora, cada vez que se carga la página, se prueban miles de repartos al azar y se elige el que, con **cualquier** trabajo adelante, deja a los demás más irregulares (ángulos y distancias al centro distintos), sin que ninguno quede pegado a otro ni escondido detrás del de adelante. Referencia: el home de gionatannese.com.
 - Se ven siempre **de frente**, como tarjetas (no se tuercen con la esfera). La profundidad se nota en el **tamaño** (adelante = tamaño actual de los recuadros, 380×304; atrás, la mitad) y en un **fundido en blanco** (los de atrás se van lavando hacia el blanco, hasta un 72%; **no** se vuelven transparentes, así no se ve lo que queda detrás de cada uno, y nunca desaparecen).
 - Algunos trabajos pueden quedar cortados por el borde de la pantalla; está bien.
 - **Siempre pasan por debajo de los textos del home.**

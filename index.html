@@ -38,17 +38,17 @@
      partir de un zoom enorme sin perder calidad. */
   #loader{ position:fixed; inset:0; z-index:1000; background:#000; display:flex; align-items:center; justify-content:center;
            transition: background-color .8s ease; }
-  #loader.fade-out{ transition: opacity .8s ease; opacity:0; pointer-events:none; }
+  #loader.fade-out{ transition: opacity 1.15s ease; opacity:0; pointer-events:none; }
   .loader-url{ position:relative; z-index:2; font-size:12px; letter-spacing:.08em; color:#fff;
                background:none; border:none; padding:12px 16px; cursor:pointer; font-family:var(--font-body);
                transition:opacity .8s ease; }
   .loader-url.gone{ opacity:0; pointer-events:none; }
   /* mismo efecto que el texto conceptual de La Sombrerera: un velo negro
-     apaga el texto y el cursor lo "ilumina". El aura es más chica (70px)
-     porque acá es una sola frase */
+     apaga el texto y el cursor lo "ilumina". El aura es más chica (100px de
+     radio, contra 190px en Sombrerera) porque acá es una sola frase */
   .loader-veil{ position:absolute; inset:0; z-index:3; pointer-events:none; background:#000; opacity:.62;
-    -webkit-mask-image: radial-gradient(circle 70px at var(--lv-mx,-500px) var(--lv-my,-500px), transparent 0%, rgba(0,0,0,.45) 55%, #000 100%);
-    mask-image: radial-gradient(circle 70px at var(--lv-mx,-500px) var(--lv-my,-500px), transparent 0%, rgba(0,0,0,.45) 55%, #000 100%);
+    -webkit-mask-image: radial-gradient(circle 100px at var(--lv-mx,-500px) var(--lv-my,-500px), transparent 0%, rgba(0,0,0,.45) 55%, #000 100%);
+    mask-image: radial-gradient(circle 100px at var(--lv-mx,-500px) var(--lv-my,-500px), transparent 0%, rgba(0,0,0,.45) 55%, #000 100%);
     transition:opacity .8s ease; }
   .loader-veil.gone{ opacity:0; }
   #loaderCanvas{ position:absolute; inset:0; width:100%; height:100%; display:none; z-index:1; }
@@ -1332,13 +1332,52 @@
   const SPH_INTRO_MS = 1700;   // entrada: llega girando y frena
   const SPH_INTRO_A  = 1.9;    // cuánto gira en la entrada (radianes)
 
-  // puntos repartidos parejo sobre la esfera (espiral de Fibonacci)
-  const sphPts = items.map((_, i) => {
-    const y = 1 - (i + 0.5) * 2 / N;
-    const r = Math.sqrt(1 - y * y);
-    const phi = i * Math.PI * (3 - Math.sqrt(5));
-    return [Math.cos(phi) * r, y, Math.sin(phi) * r];
-  });
+  // puntos sobre la esfera, a propósito desordenados: con un reparto parejo
+  // (espiral de Fibonacci) algunos trabajos, al quedar adelante, dejaban a los
+  // otros cuatro casi equidistantes (en cruz). Se prueban muchos repartos al
+  // azar (cada vez que se carga la página) y se queda el que, con CUALQUIER
+  // trabajo adelante, deja a los demás más irregulares: ángulos alrededor del
+  // centro bien distintos entre sí y distancias al centro distintas. Además,
+  // ninguno puede quedar muy pegado a otro ni escondido justo detrás del de adelante.
+  function sphIrregular(P, i){
+    const p = P[i], dot = (a, b) => a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
+    const a = Math.abs(p[0]) < 0.9 ? [1,0,0] : [0,1,0];
+    let u = [p[1]*a[2]-p[2]*a[1], p[2]*a[0]-p[0]*a[2], p[0]*a[1]-p[1]*a[0]];
+    const lu = Math.hypot(u[0], u[1], u[2]); u = u.map(x => x / lu);
+    const v = [p[1]*u[2]-p[2]*u[1], p[2]*u[0]-p[0]*u[2], p[0]*u[1]-p[1]*u[0]];
+    const az = [], rr = [];
+    P.forEach((q, j) => {
+      if(j === i) return;
+      const f = 2 / (3 - dot(q, p));             // misma perspectiva que la esfera (D = 3R)
+      const x = dot(q, u) * f, y = dot(q, v) * f;
+      az.push(Math.atan2(y, x)); rr.push(Math.hypot(x, y));
+    });
+    az.sort((x, y) => x - y);
+    const gaps = az.map((x, k) => k < az.length - 1 ? az[k + 1] - x : az[0] + Math.PI * 2 - x);
+    const m = Math.PI * 2 / gaps.length;
+    const sd = Math.sqrt(gaps.reduce((acc, g) => acc + (g - m) * (g - m), 0) / gaps.length) / m;
+    const rMax = Math.max(...rr), rMin = Math.min(...rr);
+    if(rMin < 0.32) return -1;                   // uno quedaría tapado por el de adelante
+    return Math.min(sd / 0.55, (rMax - rMin) / rMax / 0.45);
+  }
+  function sphMakePoints(){
+    const rnd = () => { const y = Math.random() * 2 - 1, t = Math.random() * Math.PI * 2, r = Math.sqrt(1 - y * y); return [r * Math.cos(t), y, r * Math.sin(t)]; };
+    const minDot = Math.cos(48 * Math.PI / 180);  // separación mínima entre dos trabajos
+    let best = null, bestScore = -Infinity;
+    for(let t = 0; t < 12000; t++){
+      const P = items.map(rnd);
+      let ok = true;
+      for(let a = 0; a < N && ok; a++) for(let b = a + 1; b < N; b++){
+        if(P[a][0]*P[b][0] + P[a][1]*P[b][1] + P[a][2]*P[b][2] > minDot){ ok = false; break; }
+      }
+      if(!ok) continue;
+      let score = Infinity;
+      for(let i = 0; i < N && score > bestScore; i++) score = Math.min(score, sphIrregular(P, i));
+      if(score > bestScore){ bestScore = score; best = P; }
+    }
+    return best;
+  }
+  const sphPts = sphMakePoints();
 
   // orientación de la esfera: matriz de rotación 3x3 (x a la derecha, y hacia
   // abajo, z hacia quien mira)
@@ -2014,6 +2053,7 @@
   window.addEventListener('mousemove', loaderAura);
   const logoImg = new Image();
   logoImg.src = 'assets/logo.png';
+  logoImg.addEventListener('load', () => { makeBlackLogo(); buildLogoMips(); });
   // en la intro el logo va en negro puro (igual que la pantalla de arranque),
   // así no hay cambio de color entre el negro y el logo
   let logoBlack = null;
@@ -2028,43 +2068,71 @@
     logoBlack = c;
   }
 
-  // cubic-bezier(.165,.84,.44,1), igual que el zoom de Contacto
-  function lzEase(x){
-    const p1x = .165, p1y = .84, p2x = .44, p2y = 1;
-    let t = x;
-    for(let i = 0; i < 8; i++){
-      const bx = 3*(1-t)*(1-t)*t*p1x + 3*(1-t)*t*t*p2x + t*t*t - x;
-      const dx = 3*(1-t)*(1-t)*p1x + 6*(1-t)*t*(p2x-p1x) + 3*t*t*(1-p2x);
-      if(Math.abs(dx) < 1e-6) break;
-      t = Math.min(Math.max(t - bx / dx, 0), 1);
+  // curvas cubic-bezier como las de CSS
+  function makeBezier(p1x, p1y, p2x, p2y){
+    return function(x){
+      let t = x;
+      for(let i = 0; i < 8; i++){
+        const bx = 3*(1-t)*(1-t)*t*p1x + 3*(1-t)*t*t*p2x + t*t*t - x;
+        const dx = 3*(1-t)*(1-t)*p1x + 6*(1-t)*t*(p2x-p1x) + 3*t*t*(1-p2x);
+        if(Math.abs(dx) < 1e-6) break;
+        t = Math.min(Math.max(t - bx / dx, 0), 1);
+      }
+      return 3*(1-t)*(1-t)*t*p1y + 3*(1-t)*t*t*p2y + t*t*t;
+    };
+  }
+  const lzEase   = makeBezier(.165, .84, .44, 1);   // igual que el zoom de Contacto
+  const lzSpinEase = makeBezier(.35, 0, .25, 1);    // igual que el giro del logo en "Sobre mí"
+  const LZ_DEPTH  = 9;     // grosor del logo girando (px, a su tamaño final), igual que en "Sobre mí"
+  const LZ_FLAT_MS = 450;  // al terminar el giro se aplana, igual que en "Sobre mí"
+
+  // versiones del logo cada vez más chicas (la mitad cada una): al achicar
+  // mucho una imagen de una sola vez el navegador la "pixela"; achicando de a
+  // la mitad y eligiendo la versión más cercana al tamaño en pantalla, queda nítido
+  let logoMips = null;
+  function buildLogoMips(){
+    logoMips = [logoBlack];
+    let src = logoBlack;
+    while(src.width > 48){
+      const c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(src.width / 2)); c.height = Math.max(1, Math.round(src.height / 2));
+      const x = c.getContext('2d');
+      x.imageSmoothingEnabled = true; x.imageSmoothingQuality = 'high';
+      x.drawImage(src, 0, 0, c.width, c.height);
+      logoMips.push(c);
+      src = c;
     }
-    return 3*(1-t)*(1-t)*t*p1y + 3*(1-t)*t*t*p2y + t*t*t;
   }
 
   function finishLoader(){
+    // igual que al volver de un trabajo: el home (y el giro de la esfera)
+    // arranca por debajo mientras la pantalla de la intro se funde (1150ms)
+    document.documentElement.classList.remove('loading');
+    document.documentElement.classList.add('revealed');
+    startIntroReverse();
     loader.classList.add('fade-out');
-    setTimeout(() => {
-      loader.style.display = 'none';
-      document.documentElement.classList.remove('loading');
-      document.documentElement.classList.add('revealed');
-      startIntroReverse();
-    }, 800);
+    setTimeout(() => { loader.style.display = 'none'; }, 1200);
   }
 
+  const lzBuf = document.createElement('canvas');   // donde se arma el logo con grosor, cuadro a cuadro
+  const bctx = lzBuf.getContext('2d');
   function playLogoZoom(){
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const ctx = loaderCanvas.getContext('2d');
     const W = logoImg.naturalWidth, H = logoImg.naturalHeight;
     if(!logoBlack) makeBlackLogo();
+    if(!logoMips) buildLogoMips();
     const t0 = performance.now();
     function frame(now){
       const vw = window.innerWidth, vh = window.innerHeight;
       if(loaderCanvas.width !== Math.round(vw * dpr)){ loaderCanvas.width = Math.round(vw * dpr); loaderCanvas.height = Math.round(vh * dpr); }
+      const el = now - t0;
+      const tz = Math.min(el / LZ_MS, 1);
       // escala inicial: la pantalla entera cae adentro del trazo; final: el
       // ancho del logo de "Sobre mí" (clamp(70px, 7.5vw, 110px))
       const k0 = Math.hypot(vw, vh) / 2 / (LZ_P0.r * 0.85);
       const k1 = Math.min(Math.max(vw * 0.075, 70), 110) / W;
-      const u = lzEase(Math.min((now - t0) / LZ_MS, 1));
+      const u = lzEase(tz);
       const k = Math.exp(Math.log(k0) + (Math.log(k1) - Math.log(k0)) * u);
       // el punto de partida queda en el centro; a medida que se aleja, el logo
       // se va corriendo hasta quedar centrado (sin saltos)
@@ -2072,17 +2140,66 @@
       const ox = vw / 2 + (LZ_P0.x - W / 2) * k * g;
       const oy = vh / 2 + (LZ_P0.y - H / 2) * k * g;
       const left = ox - LZ_P0.x * k, top = oy - LZ_P0.y * k;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(0, 0, vw, vh);
+
+      // mientras se retrae, gira una vuelta sobre su eje vertical, con grosor
+      // (como al entrar a "Sobre mí"): arranca plano, toma volumen al girar y,
+      // al terminar la vuelta, se aplana de nuevo
+      const th = lzSpinEase(tz) * Math.PI * 2;
+      const cs = Math.cos(th), sn = Math.sin(th);
+      let dz = Math.min(tz / 0.3, 1); dz = dz * dz * (3 - 2 * dz);
+      if(el > LZ_MS){ const f = Math.min((el - LZ_MS) / LZ_FLAT_MS, 1); dz = 1 - f * f * (3 - 2 * f); }
+      const depth = LZ_DEPTH * (k / k1) * dz;
+      const axis = left + W / 2 * k;                 // eje de giro: el centro del logo
+      // grosor: todas las capas del logo (como las 16 de "Sobre mí") se ven
+      // iguales, solo corridas de costado. En vez de dibujar capa por capa, se
+      // dibuja el logo una vez y se lo "estira" de costado duplicándolo sobre
+      // sí mismo (1, 2, 4, 8… px): el canto queda macizo con muy pocos dibujos
+      const edge = Math.abs(depth * sn);
+      // justo de canto el logo queda más fino que un pixel: se le deja un mínimo
+      let c = cs;
+      if(edge >= 0.5){ const minC = 5 / (W * k); if(Math.abs(c) < minC) c = (c < 0 ? -1 : 1) * minC; }
+      const shift = axis * (1 - c) - edge / 2;
+
+      // versión del logo según el tamaño en pantalla
+      const scale = k * dpr;
+      let L = 0;
+      while(L + 1 < logoMips.length && scale <= Math.pow(0.5, L + 1)) L++;
+      const img = logoMips[L], ls = img.width / W, lsy = img.height / H;
+
       // solo la parte visible del archivo (con zooms enormes no se dibuja de más)
-      const sx = Math.max(0, -left / k), sy = Math.max(0, -top / k);
-      const ex = Math.min(W, (vw - left) / k), ey = Math.min(H, (vh - top) / k);
-      if(ex > sx && ey > sy){
-        ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
-        ctx.drawImage(logoBlack, sx, sy, ex - sx, ey - sy, left + sx * k, top + sy * k, (ex - sx) * k, (ey - sy) * k);
+      const sy = Math.max(0, -top / k), ey = Math.min(H, (vh - top) / k);
+      let sx = 0, ex = W;
+      if(Math.abs(c) > 0.02){
+        const a = (0 - shift - edge) / c, b = (vw - shift) / c;
+        sx = Math.max(0, (Math.min(a, b) - left) / k); ex = Math.min(W, (Math.max(a, b) - left) / k);
       }
-      if(now - t0 < LZ_MS) requestAnimationFrame(frame);
+      const bw = loaderCanvas.width, bh = loaderCanvas.height;
+      if(lzBuf.width !== bw || lzBuf.height !== bh){ lzBuf.width = bw; lzBuf.height = bh; }
+      bctx.setTransform(1, 0, 0, 1, 0, 0);
+      bctx.clearRect(0, 0, bw, bh);
+      if(ex > sx && ey > sy){
+        bctx.imageSmoothingEnabled = true; bctx.imageSmoothingQuality = 'high';
+        bctx.setTransform(dpr * c, 0, 0, dpr, dpr * shift, 0);
+        bctx.drawImage(img, sx * ls, sy * lsy, (ex - sx) * ls, (ey - sy) * lsy,
+                       left + sx * k, top + sy * k, (ex - sx) * k, (ey - sy) * k);
+        bctx.setTransform(1, 0, 0, 1, 0, 0);
+        const E = edge * dpr;
+        for(let done = 1; done < E; ){
+          const step = Math.min(done, E - done);
+          bctx.drawImage(lzBuf, step, 0);
+          done += step;
+        }
+        // casi de canto, el logo aplastado queda gris (el navegador promedia los
+        // trazos en tan poco ancho): se lo superpone consigo mismo para que el
+        // canto vuelva a verse negro y macizo
+        const fix = Math.abs(cs) < 0.04 ? 4 : Math.abs(cs) < 0.1 ? 2 : Math.abs(cs) < 0.18 ? 1 : 0;
+        for(let f = 0; f < fix; f++) bctx.drawImage(lzBuf, 0, 0);
+      }
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, bw, bh);
+      ctx.drawImage(lzBuf, 0, 0);
+      if(el < LZ_MS + LZ_FLAT_MS) requestAnimationFrame(frame);
       else setTimeout(finishLoader, LZ_HOLD);
     }
     loaderCanvas.classList.add('on');
