@@ -53,8 +53,8 @@
   .loader-veil.gone{ opacity:0; }
   #loaderCanvas{ position:absolute; inset:0; width:100%; height:100%; display:none; z-index:1; }
   #loaderCanvas.on{ display:block; }
-  /* logo quieto: se dibuja con WebGL para el blur con grano (aura del cursor y
-     diluido de acuarela al hacer click) */
+  /* fondo blanco con grano (y estela del cursor) por debajo del logo, y el
+     diluido del logo: se dibujan con WebGL */
   #loaderGL{ position:absolute; inset:0; width:100%; height:100%; display:none; z-index:1; }
   #loaderGL.on{ display:block; }
 
@@ -326,15 +326,18 @@
        En px fijos, no en %: si fuera relativo al alto de la cortina, apenas empieza
        a crecer (muy bajita) el degradé se comprime a casi nada y se ve como una
        línea dura en vez de un difuminado. */
+    /* el largo del fundido (--alb-g) lo fija el JS según el alto de la
+       pantalla (hasta 340px), siempre con la misma curva */
+    --alb-g: 340px;
     background: linear-gradient(to bottom,
-      transparent 0px, rgba(0,0,0,.08) 90px, rgba(0,0,0,.3) 180px,
-      rgba(0,0,0,.7) 260px, #000 340px, #000 100%);
+      transparent 0px, rgba(0,0,0,.08) calc(var(--alb-g) * .265), rgba(0,0,0,.3) calc(var(--alb-g) * .53),
+      rgba(0,0,0,.7) calc(var(--alb-g) * .765), #000 var(--alb-g), #000 100%);
   }
   .alb-curtain-caption{
     /* la separación horizontal es la misma que ya tenía el margen de la página.
        El difuminado mide 340px; recién ahí empieza el negro opaco. La separación
        con ese borde (no con el tope de la cortina) es la mitad de esos 340px. */
-    position:absolute; top:350px; left:clamp(24px,6vw,90px);
+    position:absolute; top:calc(var(--alb-g) + 10px); left:clamp(24px,6vw,90px);
     font-size:11px; letter-spacing:.04em; color:var(--alb-stone);
   }
   /* el recorrido va por encima de la cortina: así el texto se lee sobre el negro */
@@ -403,6 +406,23 @@
     .alb-concept-cols{ flex-direction:column; gap:clamp(20px,5vh,40px); width:auto; }
     .alb-proceso{ flex-direction:column; height:auto; gap:clamp(24px,5vh,48px); padding:clamp(30px,7vh,60px) clamp(20px,5vw,40px); }
     .alb-proceso-text{ max-width:none; }
+  }
+
+  /* =============== NADA ES PLANO (proyecto 01) =============== */
+  /* Trabajo de diseño: fondo blanco, texto en tinta/piedra (no entra en
+     DARK_WORKS). Por ahora solo la parte inicial (título, subtítulo y
+     servicios), con la misma composición que Un Mundo para Exprimir: texto a
+     la izquierda, al triple del margen, a un 30% del alto. */
+  .nep{ --nep-m: clamp(20px,4vw,56px); }
+  .nep-part{ width:100vw; position:relative; }
+  .nep-inicial{ height:100vh; }
+  .nep-inicial-text{ position:absolute; left:calc(var(--nep-m) * 3); top:30%; text-align:left; max-width:min(44ch,50vw); }
+  .nep-title{ font-size:clamp(34px,4.6vw,64px); font-weight:500; line-height:1.02; letter-spacing:-.015em; color:var(--ink); }
+  .nep-sub{ margin-top:14px; font-size:clamp(13px,1.25vw,15px); color:var(--stone); }
+  .nep-sub em{ font-style:normal; color:var(--ink); }
+  .nep-roles{ margin-top:30px; font-size:11.5px; letter-spacing:.06em; line-height:2.05; color:var(--stone); }
+  @media (max-width:900px){
+    .nep-inicial-text{ position:static; padding:calc(var(--nav-h) + 8vh) var(--nep-m) 0; max-width:none; }
   }
 
   /* =============== DUALIDAD FUSIONADA (proyecto 02) =============== */
@@ -792,8 +812,8 @@
 <body class="loading">
 
 <div id="loader">
-  <canvas id="loaderCanvas"></canvas>
   <canvas id="loaderGL"></canvas>
+  <canvas id="loaderCanvas"></canvas>
   <div class="loader-url" id="loaderUrl">carolinapicone.com</div>
   <div class="loader-veil" id="loaderVeil"></div>
 </div>
@@ -918,6 +938,25 @@
     <div class="panel-page" data-page="work">
 
       <!-- ===== 02 - Dualidad Fusionada ===== -->
+      <!-- ===== 01 - Nada es Plano ===== -->
+      <div class="work-project nep" data-project="1">
+        <div class="nep-track work-track" id="nepTrack">
+
+          <!-- 1. INICIAL -->
+          <section class="nep-part nep-inicial">
+            <div class="nep-inicial-text">
+              <h1 class="nep-title">Nada es Plano</h1>
+              <div class="nep-sub"><em>Colecci&oacute;n de indumentaria</em> &nbsp;2026</div>
+              <div class="nep-roles">
+                <span data-es>Direcci&oacute;n Creativa<br>Desarrollo Conceptual<br>Direcci&oacute;n de Arte<br>Identidad Visual<br>Desarrollo de Colecci&oacute;n</span>
+                <span data-en>Creative Direction<br>Concept Development<br>Art Direction<br>Visual Identity<br>Collection Development</span>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+
       <div class="work-project df" data-project="2">
         <div class="df-bg" id="dfBg"></div>
         <!-- imagenes del moodboard: el JS las reparte al azar entre la capa de
@@ -1337,59 +1376,70 @@
   const SPH_INTRO_MS = 1700;   // entrada: llega girando y frena
   const SPH_INTRO_A  = 1.9;    // cuánto gira en la entrada (radianes)
 
-  // puntos sobre la esfera, a propósito desordenados: con un reparto parejo
-  // (espiral de Fibonacci) algunos trabajos, al quedar adelante, dejaban a los
-  // otros cuatro casi equidistantes (en cruz). Se prueban muchos repartos al
-  // azar (cada vez que se carga la página) y se queda el que, con CUALQUIER
-  // trabajo adelante, deja a los demás más irregulares: ángulos alrededor del
-  // centro bien distintos entre sí y distancias al centro distintas, pero sin
-  // formar una fila. Además, ninguno puede quedar muy pegado a otro ni
-  // escondido justo detrás del de adelante.
-  function sphIrregular(P, i){
+  // puntos sobre la esfera, a propósito desordenados pero equilibrados: con un
+  // reparto parejo (espiral de Fibonacci) algunos trabajos, al quedar adelante,
+  // dejaban a los otros cuatro casi equidistantes (en cruz); con un reparto
+  // muy al azar quedaba un hueco grande vacío. Cada vez que se carga la página
+  // se busca un reparto que, con CUALQUIER trabajo adelante, deje a los demás
+  // con ángulos y distancias al centro distintos entre sí (irregular), pero sin
+  // huecos grandes ni todo cargado para un lado (equilibrado), sin que ninguno
+  // quede pegado a otro ni escondido detrás del de adelante.
+  // Primero se prueban repartos al azar y después se ajusta el mejor de a poco.
+  function sphPole(P, i){
     const p = P[i], dot = (a, b) => a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
     const a = Math.abs(p[0]) < 0.9 ? [1,0,0] : [0,1,0];
     let u = [p[1]*a[2]-p[2]*a[1], p[2]*a[0]-p[0]*a[2], p[0]*a[1]-p[1]*a[0]];
     const lu = Math.hypot(u[0], u[1], u[2]); u = u.map(x => x / lu);
     const v = [p[1]*u[2]-p[2]*u[1], p[2]*u[0]-p[0]*u[2], p[0]*u[1]-p[1]*u[0]];
-    const az = [], rr = [];
+    const az = [], rr = []; let cx = 0, cy = 0;
     P.forEach((q, j) => {
       if(j === i) return;
       const f = 2 / (3 - dot(q, p));             // misma perspectiva que la esfera (D = 3R)
       const x = dot(q, u) * f, y = dot(q, v) * f;
-      az.push(Math.atan2(y, x)); rr.push(Math.hypot(x, y));
+      az.push(Math.atan2(y, x)); rr.push(Math.hypot(x, y)); cx += x; cy += y;
     });
     az.sort((x, y) => x - y);
     const gaps = az.map((x, k) => k < az.length - 1 ? az[k + 1] - x : az[0] + Math.PI * 2 - x);
     const m = Math.PI * 2 / gaps.length;
     const sd = Math.sqrt(gaps.reduce((acc, g) => acc + (g - m) * (g - m), 0) / gaps.length) / m;
-    const rMax = Math.max(...rr), rMin = Math.min(...rr);
-    if(rMin < 0.32) return -1;                   // uno quedaría tapado por el de adelante
-    // tampoco en fila: si dos ángulos quedan casi pegados o hay un hueco enorme,
-    // los trabajos se ven alineados en una columna (otra forma de orden)
-    const gMin = Math.min(...gaps), gMax = Math.max(...gaps);
-    if(gMin < Math.PI / 6 || gMax > Math.PI * 5 / 6) return -1;
-    return Math.min(sd / 0.4, (rMax - rMin) / rMax / 0.4);
+    const rMax = Math.max(...rr), rMin = Math.min(...rr), rMean = rr.reduce((x, y) => x + y, 0) / rr.length;
+    return { sd, sp: (rMax - rMin) / rMax, bal: Math.hypot(cx, cy) / rr.length / rMean,
+             gMin: Math.min(...gaps), gMax: Math.max(...gaps), rMin };
+  }
+  function sphScore(P){
+    const D = Math.PI / 180;
+    let minSep = Math.PI;
+    for(let a = 0; a < N; a++) for(let b = a + 1; b < N; b++){
+      minSep = Math.min(minSep, Math.acos(Math.min(1, P[a][0]*P[b][0] + P[a][1]*P[b][1] + P[a][2]*P[b][2])));
+    }
+    let s = Infinity;
+    for(let i = 0; i < N; i++){
+      const k = sphPole(P, i);
+      let v = Math.min(k.sd / 0.3, k.sp / 0.35, 1.2);           // irregular
+      v -= Math.max(0, k.gMax - 115 * D) * 3;                    // sin huecos grandes
+      v -= Math.max(0, 45 * D - k.gMin) * 3;                     // sin dos casi en fila
+      v -= Math.max(0, k.bal - 0.22) * 4;                        // sin todo cargado para un lado
+      v -= Math.max(0, 0.34 - k.rMin) * 4;                       // ninguno tapado por el de adelante
+      s = Math.min(s, v);
+    }
+    return s - Math.max(0, 50 * D - minSep) * 4;                 // ninguno pegado a otro
   }
   function sphMakePoints(){
     const rnd = () => { const y = Math.random() * 2 - 1, t = Math.random() * Math.PI * 2, r = Math.sqrt(1 - y * y); return [r * Math.cos(t), y, r * Math.sin(t)]; };
-    const minDot = Math.cos(48 * Math.PI / 180);  // separación mínima entre dos trabajos
     let best = null, bestScore = -Infinity;
-    for(let t = 0; t < 20000; t++){
-      const P = items.map(rnd);
-      let ok = true;
-      for(let a = 0; a < N && ok; a++) for(let b = a + 1; b < N; b++){
-        if(P[a][0]*P[b][0] + P[a][1]*P[b][1] + P[a][2]*P[b][2] > minDot){ ok = false; break; }
-      }
-      if(!ok) continue;
-      let score = Infinity;
-      for(let i = 0; i < N && score > bestScore; i++) score = Math.min(score, sphIrregular(P, i));
-      if(score > bestScore){ bestScore = score; best = P; }
+    for(let t = 0; t < 4000; t++){
+      const P = items.map(rnd), sc = sphScore(P);
+      if(sc > bestScore){ bestScore = sc; best = P; }
     }
-    // (por las dudas) si ningún reparto sirviera, uno parejo
-    return best || items.map((_, i) => {
-      const y = 1 - (i + 0.5) * 2 / N, r = Math.sqrt(1 - y * y), phi = i * Math.PI * (3 - Math.sqrt(5));
-      return [Math.cos(phi) * r, y, Math.sin(phi) * r];
-    });
+    for(let it = 0; it < 6000; it++){
+      const amt = 0.25 * (1 - it / 6000) + 0.02;
+      const Q = best.map(p => p.slice()), i = Math.floor(Math.random() * N), r = rnd();
+      const q = Q[i].map((x, k) => x + r[k] * amt), l = Math.hypot(q[0], q[1], q[2]);
+      Q[i] = q.map(x => x / l);
+      const sc = sphScore(Q);
+      if(sc > bestScore){ bestScore = sc; best = Q; }
+    }
+    return best;
   }
   const sphPts = sphMakePoints();
 
@@ -2208,46 +2258,45 @@
         const fix = Math.abs(cs) < 0.04 ? 4 : Math.abs(cs) < 0.1 ? 2 : Math.abs(cs) < 0.18 ? 1 : 0;
         for(let f = 0; f < fix; f++) bctx.drawImage(lzBuf, 0, 0);
       }
+      // el logo se dibuja sobre transparente: el fondo blanco con grano lo
+      // pone la capa de abajo (WebGL)
       ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(0, 0, bw, bh);
+      ctx.clearRect(0, 0, bw, bh);
       ctx.drawImage(lzBuf, 0, 0);
       if(el < LZ_MS + LZ_FLAT_MS) requestAnimationFrame(frame);
-      else startLogoHold();
+      else setTimeout(lbDilute, LB_HOLD);   // queda quieto 1s y se diluye solo
     }
     loaderCanvas.classList.add('on');
     requestAnimationFrame(frame);
   }
 
-  // ---- Logo quieto: aura de blur con grano y diluido de acuarela ----
-  // Cuando el logo frena, se pasa a WebGL: una foto exacta del último cuadro
-  // del zoom (así no hay salto) y, encima, el efecto. Hay un "mapa de blur"
-  // chiquito (1/6 de la pantalla) donde el cursor, al moverse, va pintando; ese
-  // mapa se borra solo de a poco, así el logo se recompone cuando el cursor
-  // se queda quieto o se aleja. Al hacer click en el logo, se expande y se
-  // diluye como acuarela hasta quedar todo blanco, y ahí entra el home.
-  const LB_AURA   = 40;     // radio del aura del cursor (px): un tercio del logo
-  const LB_BLUR   = 30;     // blur máximo dentro del aura (px)
-  const LB_FADE   = 0.975;  // cuánto queda del blur en cada cuadro (se recompone en algo más de 1s)
-  const LB_DILUTE = 3200;   // duración del diluido de acuarela (ms)
-  const LB_FIELD  = 6;      // el mapa de blur mide 1/6 de la pantalla
+  // ---- Fondo blanco con grano + diluido del logo (WebGL) ----
+  // Desde que arranca el zoom, debajo del logo hay una capa WebGL con el fondo:
+  // blanco con un grano ínfimo (para que no sea un blanco plano) y una estela
+  // donde pasa el cursor, que "abre paso" en el grano y se vuelve a cerrar
+  // sola. Cuando el logo frena, queda quieto 1s y se diluye solo en ese fondo,
+  // como acuarela: se expande, fluye en formas irregulares y se va mezclando
+  // con el papel hasta desaparecer. Ahí entra el home (que sigue en blanco puro).
+  const LB_TRAIL  = 7;      // radio de la estela del cursor (px): del tamaño del cursor o un poco menos
+  const LB_FADE   = 0.965;  // cuánto queda de la estela en cada cuadro (se cierra en algo más de 1s)
+  const LB_HOLD   = 1000;   // cuánto queda quieto el logo antes de diluirse
+  const LB_DILUTE = 3800;   // duración del diluido
+  const LB_FIELD  = 3;      // el mapa de la estela mide 1/3 de la pantalla
   const loaderGL = document.getElementById('loaderGL');
-  let lb = null;            // estado del logo quieto
+  let lb = null;
 
   const LB_VERT = `#version 300 es
 in vec2 aPos; void main(){ gl_Position = vec4(aPos, 0., 1.); }`;
-  const LB_FRAG = `#version 300 es
+  // funciones comunes a las dos pasadas del shader
+  const LB_COMMON = `#version 300 es
 precision highp float;
-uniform sampler2D uImg;     // el logo tal cual quedó (con sus versiones más chicas)
-uniform sampler2D uField;   // mapa de blur pintado por el cursor
-uniform vec2  uRes;         // tamaño en px reales
+uniform sampler2D uInk;     // el logo quieto (alfa = tinta)
+uniform vec2  uRes;         // tamaño de la pantalla en px reales
 uniform float uDpr;
-uniform float uMaxR;        // blur máximo del aura (px reales)
-uniform float uT;           // avance del diluido (0 = quieto, 1 = todo blanco)
+uniform float uT;           // avance del diluido (0 a 1)
 uniform float uTime;        // segundos, para que el agua fluya
 uniform vec2  uCenter;      // centro del logo (px reales)
 out vec4 outColor;
-
 // azar por pixel (con enteros: sin tramas repetidas)
 float hash(vec2 p){
   uvec2 q = uvec2(ivec2(floor(p))) * uvec2(1597334673u, 3812015801u);
@@ -2261,80 +2310,86 @@ float vnoise(vec2 p){
 }
 float fbm(vec2 p){
   float s = 0., a = .5;
-  for(int i = 0; i < 5; i++){ s += a * vnoise(p); p = p * 2.03 + vec2(17.1, 9.2); a *= .5; }
+  for(int i = 0; i < 4; i++){ s += a * vnoise(p); p = p * 2.03 + vec2(17.1, 9.2); a *= .5; }
   return s;
 }
-// cantidad de tinta (0 blanco, 1 negro) alrededor de px, desenfocada con radio r.
-// Las muestras caen al azar (distinto en cada pixel): de ahí sale el grano.
-float ink(vec2 px, float r){
-  if(r < .7) return 1. - texture(uImg, px / uRes).r;
-  float lod = max(0., log2(r / 6.));
-  float ang = hash(floor(px) + vec2(3., 7.)) * 6.2832;
-  float acc = 0.;
-  for(int i = 0; i < 14; i++){
-    float fi = float(i);
-    float rr = r * sqrt((fi + hash(floor(px) + vec2(fi * 17. + 1., fi * 29. + 5.))) / 14.);
-    float a = ang + fi * 2.39996;
-    acc += 1. - textureLod(uImg, (px + vec2(cos(a), sin(a)) * rr) / uRes, lod).r;
-  }
-  return acc / 14.;
-}
-// la misma tinta desenfocada pero lisa (sin grano): para la forma de la mancha
+// tinta desenfocada (lisa) alrededor de px, con radio r
 float inkSmooth(vec2 px, float r){
   float lod = max(0., log2(r * .7));
-  float acc = 1. - textureLod(uImg, px / uRes, lod).r;
+  float acc = textureLod(uInk, px / uRes, lod).a;
   for(int i = 0; i < 6; i++){
     float a = float(i) * 1.0472;
-    acc += 1. - textureLod(uImg, (px + vec2(cos(a), sin(a)) * r * .55) / uRes, lod).r;
+    acc += textureLod(uInk, (px + vec2(cos(a), sin(a)) * r * .55) / uRes, lod).a;
   }
   return acc / 7.;
 }
+`;
+  // pasada 1 (a media resolución): la mancha de acuarela
+  const LB_FRAG_INK = LB_COMMON + `
+uniform float uScale;       // px reales por px de esta pasada
+void main(){
+  // px con el origen arriba (igual que en la pasada 2, que lee esta textura así)
+  vec2 px = gl_FragCoord.xy * uScale;
+  float t = uT;
+  // se expande y el agua la hace fluir: forma general + bordes plumosos
+  float eo = 1. - pow(1. - t, 3.);
+  float s = 1. + 3.2 * eo;
+  vec2 q = uCenter + (px - uCenter) / s;
+  vec2 np = q / (200. * uDpr);
+  vec2 w = vec2(fbm(np + vec2(0., uTime * .2)), fbm(np + vec2(31.7, -uTime * .16))) - .5;
+  vec2 nf = px / (38. * uDpr);
+  vec2 wf = vec2(fbm(nf + vec2(5.2, uTime * .3)), fbm(nf + vec2(-9.4, 2.1 - uTime * .25))) - .5;
+  q += w * (140. * uDpr) * eo / s + wf * (24. * uDpr) * eo;
+  float r = 240. * uDpr * pow(eo, .85) / s + 1.;
+  float dsn = clamp(inkSmooth(q, r) * mix(1., 6., eo), 0., 1.);
+  // borde de agua irregular (en dos escalas), definido pero sin línea oscura;
+  // al final el umbral sube y la mancha se rompe en islas que se lavan
+  float n1 = fbm(px / (110. * uDpr) + vec2(5.3, uTime * .05));
+  float n2 = fbm(px / (24. * uDpr) + vec2(1.7, 4.4));
+  float thr = .1 + (n1 - .5) * .26 + (n2 - .5) * .16 + smoothstep(.4, 1., t) * .75;
+  float wet = smoothstep(thr - .035, thr + .05, dsn);
+  // adentro: charcos donde el agua empujó el pigmento (más lavados, con el
+  // contorno apenas más cargado) y vetas que fluyen
+  float pn = fbm(q / (55. * uDpr) + vec2(uTime * .12, 3.3));
+  float pool = smoothstep(.47, .55, pn);
+  float poolEdge = smoothstep(.41, .51, pn) * (1. - smoothstep(.51, .6, pn));
+  float veins = 1. - abs(2. * fbm(q / (32. * uDpr) + vec2(9.1, -uTime * .08)) - 1.);
+  float body = dsn * (.62 + .38 * veins) * mix(1., .5, pool) + poolEdge * .1 * dsn;
+  // cada vez más diluida, hasta desaparecer
+  float tone = mix(1., .55, smoothstep(0., .3, t)) * pow(1. - smoothstep(.05, 1., t), 1.3);
+  outColor = vec4(clamp(wet * body, 0., 1.) * tone, 0., 0., 1.);
+}`;
+  // pasada 2 (a resolución completa): el papel con grano y la tinta encima
+  const LB_FRAG = LB_COMMON + `
+uniform sampler2D uField;   // estela del cursor
+uniform sampler2D uDens;    // la mancha de la pasada 1
+uniform float uInkOn;       // 0 mientras el logo lo dibuja el zoom; 1 desde que se diluye
+// el papel: blanco con un grano ínfimo, de un pixel, con algún punto apenas
+// más oscuro y cálido. Donde pasó el cursor, el grano se abre (queda blanco
+// limpio) y se junta un poco en el borde de la estela.
+vec3 paper(vec2 px, float f){
+  float h = hash(px), h2 = hash(px + vec2(17., 5.));
+  float dark = pow(h, 12.) * .05 + h2 * .009;
+  float open = smoothstep(.12, .5, f);                                    // adentro: sin grano
+  float rim = smoothstep(.02, .12, f) * (1. - smoothstep(.12, .35, f));  // borde: un poco más
+  dark *= (1. - open) * (1. + rim * .8);
+  return vec3(1.) - dark * vec3(1., 1.05, 1.16);
+}
 void main(){
   vec2 px = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y);
-  float f = texture(uField, px / uRes).a;
-  float t = uT;
-  float d;
-  if(t <= 0.){
-    d = ink(px, f * uMaxR);
-  } else {
-    // diluido de acuarela: la tinta del logo se expande como en agua. Se
-    // agranda, el agua la hace fluir (formas irregulares que se mueven), se
-    // desenfoca cada vez más y forma una mancha de borde irregular, con la
-    // tinta un poco acumulada en el borde; el tono se va aclarando al
-    // extenderse hasta quedar todo blanco
-    float eo = 1. - pow(1. - t, 3.);
-    float s = 1. + 4.5 * eo;
-    vec2 q = uCenter + (px - uCenter) / s;
-    // flujo grande (la forma general de la mancha) y flujo fino (bordes plumosos)
-    vec2 np = q / (240. * uDpr);
-    vec2 w = vec2(fbm(np + vec2(0., uTime * .2)), fbm(np + vec2(31.7, -uTime * .16))) - .5;
-    vec2 nf = px / (45. * uDpr);
-    vec2 wf = vec2(fbm(nf + vec2(5.2, uTime * .3)), fbm(nf + vec2(-9.4, 2.1 - uTime * .25))) - .5;
-    q += w * (110. * uDpr) * eo / s + wf * (14. * uDpr) * eo;
-    float r = max(f * uMaxR, 300. * uDpr * pow(eo, .85)) / s;
-    float di = ink(q, r);           // con grano: la textura de adentro
-    float ds = inkSmooth(q, r);     // lisa: la forma de la mancha
-    // la tinta desenfocada se reparte en más superficie: se la compensa para
-    // que la mancha conserve cuerpo mientras crece
-    float gain = mix(1., 7., eo);
-    float dn = clamp(di * gain, 0., 1.), dsn = clamp(ds * gain, 0., 1.);
-    float n = fbm(px / (90. * uDpr) + 5.3);
-    float thr = .12 + (n - .5) * .14;
-    float wet = smoothstep(thr - .05, thr + .05, dsn);              // dentro de la mancha (borde suave)
-    float rim = wet * (1. - smoothstep(thr + .02, thr + .24, dsn)); // borde más cargado de tinta
-    // zonas más claras y más oscuras dentro de la mancha, que fluyen con el agua
-    float bloom = fbm(q / (70. * uDpr) + vec2(uTime * .12, 3.3));
-    float body = mix(dsn, dn, .3) * (.72 + .56 * bloom);
-    float tone = mix(1., .62, smoothstep(0., .35, t)) * (1. - smoothstep(.42, 1., t));
-    float dw = clamp(wet * (.38 + .52 * body) + rim * .34, 0., 1.) * tone;
-    float k = smoothstep(0., .12, t);
-    d = k < 1. ? mix(ink(px, f * uMaxR), dw, k) : dw;
-    f = max(f, k);
+  vec2 uv = px / uRes;
+  float f = texture(uField, uv).a;
+  vec3 bg = paper(px, f);
+  float d = 0.;
+  if(uInkOn > .5){
+    float sharp = textureLod(uInk, uv, 0.).a;
+    d = uT <= 0. ? sharp : mix(sharp, texture(uDens, uv).r, smoothstep(0., .1, uT));
   }
-  // grano leve, solo donde hay blur y en los grises (nunca sobre el blanco limpio)
-  float g = hash(floor(px / max(uDpr, 1.)) + vec2(11., 13.)) - .5;
-  d += g * .34 * smoothstep(0., .25, f) * clamp(d * (1. - d) * 4., 0., 1.);
-  outColor = vec4(vec3(1. - clamp(d, 0., 1.)), 1.);
+  // la tinta se mezcla con el papel (se multiplica sobre el fondo con grano),
+  // con el mismo grano ínfimo adentro
+  vec3 col = bg * (1. - d);
+  col += (hash(px + vec2(3., 11.)) - .5) * .05 * clamp(d * (1. - d) * 4., 0., 1.);
+  outColor = vec4(col, 1.);
 }`;
 
   function lbCompile(gl, type, src){
@@ -2344,85 +2399,114 @@ void main(){
     return sh;
   }
 
-  function startLogoHold(){
+  // arranca junto con el zoom
+  function lbStart(){
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const vw = window.innerWidth, vh = window.innerHeight;
-    const W = logoImg.naturalWidth, H = logoImg.naturalHeight;
-    const lw = Math.min(Math.max(vw * 0.075, 70), 110), lh = lw * H / W;
-    lb = { dpr, rs: 1, rect: { l: vw / 2 - lw / 2, t: vh / 2 - lh / 2, w: lw, h: lh },
-           mx: null, my: null, px: null, py: null, last: performance.now(), t0: performance.now(),
-           dilute: null, done: false };
+    lb = { dpr, mx: null, my: null, px: null, py: null, last: performance.now(), t0: performance.now(),
+           inkOn: false, dilute: null, done: false };
     let gl = null;
     try{ gl = loaderGL.getContext('webgl2', { premultipliedAlpha:false, antialias:false }); } catch(e){}
     if(gl){
       try{
-        const pr = gl.createProgram();
-        gl.attachShader(pr, lbCompile(gl, gl.VERTEX_SHADER, LB_VERT));
-        gl.attachShader(pr, lbCompile(gl, gl.FRAGMENT_SHADER, LB_FRAG));
-        gl.linkProgram(pr);
-        if(!gl.getProgramParameter(pr, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(pr));
-        gl.useProgram(pr);
+        const program = (frag, names) => {
+          const pr = gl.createProgram();
+          gl.attachShader(pr, lbCompile(gl, gl.VERTEX_SHADER, LB_VERT));
+          gl.attachShader(pr, lbCompile(gl, gl.FRAGMENT_SHADER, frag));
+          gl.linkProgram(pr);
+          if(!gl.getProgramParameter(pr, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(pr));
+          const u = {};
+          names.forEach(n => u[n] = gl.getUniformLocation(pr, n));
+          return { pr, u, loc: gl.getAttribLocation(pr, 'aPos') };
+        };
+        const common = ['uInk','uRes','uDpr','uT','uTime','uCenter'];
+        lb.pMain = program(LB_FRAG, common.concat(['uField','uDens','uInkOn']));
+        lb.pInk  = program(LB_FRAG_INK, common.concat(['uScale']));
         const buf = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, buf);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
-        const loc = gl.getAttribLocation(pr, 'aPos');
-        gl.enableVertexAttribArray(loc);
-        gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-        lb.gl = gl; lb.pr = pr;
-        lb.u = {};
-        ['uImg','uField','uRes','uDpr','uMaxR','uT','uTime','uCenter'].forEach(n => lb.u[n] = gl.getUniformLocation(pr, n));
-        lb.texImg = gl.createTexture();
-        lb.texField = gl.createTexture();
+        lb.gl = gl;
+        const tex = () => {
+          const t = gl.createTexture();
+          gl.bindTexture(gl.TEXTURE_2D, t);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
+          return t;
+        };
+        lb.texInk = tex();
+        lb.texField = tex();
+        lb.texDens = tex();                      // la mancha (pasada 1), a media resolución
+        lb.fbo = gl.createFramebuffer();
         lb.field = document.createElement('canvas');
         lb.fctx = lb.field.getContext('2d');
         lbResize();
       } catch(e){ lb.gl = null; }
     }
-    if(lb.gl){
-      loaderGL.classList.add('on');
-      loaderCanvas.classList.remove('on');
-    }
+    if(lb.gl) loaderGL.classList.add('on');
+    else loader.style.background = '#fff';      // sin WebGL: fondo blanco liso
     requestAnimationFrame(lbFrame);
   }
 
-  // foto del logo quieto (la misma que dejó el zoom) y mapa de blur a la medida de la pantalla
-  function lbResize(){
-    if(!lb || !lb.gl) return;
-    const gl = lb.gl, dpr = lb.dpr;
-    const vw = window.innerWidth, vh = window.innerHeight;
+  // el logo quieto, tal como lo deja el último cuadro del zoom
+  function lbDrawStill(){
+    const dpr = lb.dpr, vw = window.innerWidth, vh = window.innerHeight;
     const W = logoImg.naturalWidth, H = logoImg.naturalHeight;
     const lw = Math.min(Math.max(vw * 0.075, 70), 110), lh = lw * H / W;
-    lb.rect = { l: vw / 2 - lw / 2, t: vh / 2 - lh / 2, w: lw, h: lh };
-    // el logo quieto se vuelve a dibujar igual que en el último cuadro del zoom
     const bw = Math.round(vw * dpr), bh = Math.round(vh * dpr);
     if(loaderCanvas.width !== bw || loaderCanvas.height !== bh){ loaderCanvas.width = bw; loaderCanvas.height = bh; }
     const ctx = loaderCanvas.getContext('2d');
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, bw, bh);
-    const k = lw / W, scale = k * dpr;
+    ctx.clearRect(0, 0, bw, bh);
+    const scale = lw / W * dpr;
     let L = 0;
     while(L + 1 < logoMips.length && scale <= Math.pow(0.5, L + 1)) L++;
     ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.drawImage(logoMips[L], lb.rect.l, lb.rect.t, lw, lh);
-    loaderGL.width = Math.round(bw * lb.rs); loaderGL.height = Math.round(bh * lb.rs);
-    gl.viewport(0, 0, loaderGL.width, loaderGL.height);
-    gl.bindTexture(gl.TEXTURE_2D, lb.texImg);
+    ctx.drawImage(logoMips[L], vw / 2 - lw / 2, vh / 2 - lh / 2, lw, lh);
+  }
+  // foto del logo quieto como "tinta" para el diluido
+  function lbUploadInk(){
+    const gl = lb.gl;
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, lb.texInk);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, loaderCanvas);
     gl.generateMipmap(gl.TEXTURE_2D);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  }
+
+  function lbResize(){
+    if(!lb || !lb.gl) return;
+    const gl = lb.gl, dpr = lb.dpr, vw = window.innerWidth, vh = window.innerHeight;
+    loaderGL.width = Math.round(vw * dpr); loaderGL.height = Math.round(vh * dpr);
+    gl.viewport(0, 0, loaderGL.width, loaderGL.height);
+    // la mancha es borrosa: se calcula a media resolución (la pantalla de
+    // alta resolución, a un cuarto) y la placa de video trabaja mucho menos
+    lb.dScale = dpr > 1.25 ? 4 : 2;
+    lb.dw = Math.ceil(loaderGL.width / lb.dScale); lb.dh = Math.ceil(loaderGL.height / lb.dScale);
+    gl.bindTexture(gl.TEXTURE_2D, lb.texDens);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, lb.dw, lb.dh, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, lb.fbo);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, lb.texDens, 0);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     lb.field.width = Math.ceil(vw / LB_FIELD); lb.field.height = Math.ceil(vh / LB_FIELD);
-    gl.bindTexture(gl.TEXTURE_2D, lb.texField);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    if(lb.inkOn){ lbDrawStill(); lbUploadInk(); }
   }
   window.addEventListener('resize', () => { if(lb && !lb.done) lbResize(); });
+
+  // el logo quedó quieto 1s: se diluye solo
+  function lbDilute(){
+    if(!lb || lb.dilute !== null) return;
+    if(lb.gl){
+      lbDrawStill();
+      lbUploadInk();
+      lb.inkOn = true;
+      loaderCanvas.classList.remove('on');      // de acá en más, el logo lo dibuja la capa WebGL
+    }
+    lb.dilute = performance.now();
+  }
 
   function lbFrame(now){
     if(!lb || lb.done) return;
@@ -2431,21 +2515,21 @@ void main(){
     if(lb.dilute !== null) t = Math.min((now - lb.dilute) / LB_DILUTE, 1);
     if(lb.gl){
       const gl = lb.gl, fctx = lb.fctx, F = LB_FIELD;
-      // el blur se va borrando solo, de a poco
+      // la estela se va cerrando sola, de a poco
       fctx.globalCompositeOperation = 'destination-out';
       fctx.fillStyle = 'rgba(0,0,0,' + (1 - Math.pow(LB_FADE, dt / 16.7)).toFixed(4) + ')';
       fctx.fillRect(0, 0, lb.field.width, lb.field.height);
-      // y el cursor, al moverse, pinta blur a lo largo de su recorrido
+      // y el cursor, al moverse, la abre a lo largo de su recorrido
       if(lb.mx !== null && lb.px !== null){
         const dx = lb.mx - lb.px, dy = lb.my - lb.py, dist = Math.hypot(dx, dy);
         if(dist > 0.5){
           fctx.globalCompositeOperation = 'lighter';
-          const steps = Math.ceil(dist / 4), R = LB_AURA / F;
+          const steps = Math.ceil(dist / 2), R = LB_TRAIL / F;
           for(let i = 1; i <= steps; i++){
             const x = (lb.px + dx * i / steps) / F, y = (lb.py + dy * i / steps) / F;
             const gr = fctx.createRadialGradient(x, y, 0, x, y, R);
-            gr.addColorStop(0, 'rgba(255,255,255,.08)');
-            gr.addColorStop(.5, 'rgba(255,255,255,.05)');
+            gr.addColorStop(0, 'rgba(255,255,255,.6)');
+            gr.addColorStop(.6, 'rgba(255,255,255,.3)');
             gr.addColorStop(1, 'rgba(255,255,255,0)');
             fctx.fillStyle = gr;
             fctx.fillRect(x - R, y - R, R * 2, R * 2);
@@ -2453,20 +2537,43 @@ void main(){
         }
       }
       if(lb.mx !== null){ lb.px = lb.mx; lb.py = lb.my; }
+      const setCommon = (P) => {
+        gl.useProgram(P.pr);
+        gl.enableVertexAttribArray(P.loc);
+        gl.vertexAttribPointer(P.loc, 2, gl.FLOAT, false, 0, 0);
+        gl.uniform1i(P.u.uInk, 0);
+        gl.uniform2f(P.u.uRes, loaderGL.width, loaderGL.height);
+        gl.uniform1f(P.u.uDpr, lb.dpr);
+        gl.uniform1f(P.u.uT, t);
+        gl.uniform1f(P.u.uTime, (now - lb.t0) / 1000);
+        gl.uniform2f(P.u.uCenter, window.innerWidth / 2 * lb.dpr, window.innerHeight / 2 * lb.dpr);
+      };
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, lb.texInk);
+      // pasada 1: la mancha, a media resolución (solo mientras se diluye)
+      if(lb.inkOn && t > 0){
+        gl.activeTexture(gl.TEXTURE2);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, lb.fbo);
+        gl.viewport(0, 0, lb.dw, lb.dh);
+        setCommon(lb.pInk);
+        gl.uniform1f(lb.pInk.u.uScale, lb.dScale);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        gl.viewport(0, 0, loaderGL.width, loaderGL.height);
+      }
+      // pasada 2: el papel con grano, la estela y la tinta encima
       gl.activeTexture(gl.TEXTURE1);
       gl.bindTexture(gl.TEXTURE_2D, lb.texField);
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, lb.field);
+      gl.activeTexture(gl.TEXTURE2);
+      gl.bindTexture(gl.TEXTURE_2D, lb.texDens);
       gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, lb.texImg);
-      gl.uniform1i(lb.u.uImg, 0);
-      gl.uniform1i(lb.u.uField, 1);
-      gl.uniform2f(lb.u.uRes, loaderGL.width, loaderGL.height);
-      const ds = lb.dpr * lb.rs;   // px reales por px de pantalla, en la resolución en que se dibuja
-      gl.uniform1f(lb.u.uDpr, ds);
-      gl.uniform1f(lb.u.uMaxR, LB_BLUR * ds);
-      gl.uniform1f(lb.u.uT, t);
-      gl.uniform1f(lb.u.uTime, (now - lb.t0) / 1000);
-      gl.uniform2f(lb.u.uCenter, (lb.rect.l + lb.rect.w / 2) * ds, (lb.rect.t + lb.rect.h / 2) * ds);
+      setCommon(lb.pMain);
+      gl.uniform1i(lb.pMain.u.uField, 1);
+      gl.uniform1i(lb.pMain.u.uDens, 2);
+      gl.uniform1f(lb.pMain.u.uInkOn, lb.inkOn ? 1 : 0);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     } else if(lb.dilute !== null){
       // sin WebGL: el logo simplemente se funde en blanco
@@ -2484,28 +2591,13 @@ void main(){
     if(!lb) return;
     lb.mx = e.clientX; lb.my = e.clientY;
   });
-  // click en cualquier parte del logo: arranca el diluido
-  loader.addEventListener('click', (e) => {
-    if(!lb || lb.dilute !== null) return;
-    const r = lb.rect, m = 6;
-    if(e.clientX < r.l - m || e.clientX > r.l + r.w + m || e.clientY < r.t - m || e.clientY > r.t + r.h + m) return;
-    lb.dilute = performance.now();
-    // durante el diluido todo está desenfocado: se dibuja a menos resolución
-    // (no se nota y la placa de video trabaja mucho menos)
-    if(lb.gl){
-      lb.rs = Math.min(1, 1.25 / lb.dpr);
-      loaderGL.width = Math.round(window.innerWidth * lb.dpr * lb.rs);
-      loaderGL.height = Math.round(window.innerHeight * lb.dpr * lb.rs);
-      lb.gl.viewport(0, 0, loaderGL.width, loaderGL.height);
-    }
-  });
 
   // la intro arranca sola a los 2s: el texto se funde y el logo empieza a girar
   setTimeout(() => {
     loaderUrl.classList.add('gone');
     loaderVeil.classList.add('gone');
     window.removeEventListener('mousemove', loaderAura);
-    const go = () => { if(!logoBlack) makeBlackLogo(); if(!logoMips) buildLogoMips(); playLogoZoom(); };
+    const go = () => { if(!logoBlack) makeBlackLogo(); if(!logoMips) buildLogoMips(); lbStart(); playLogoZoom(); };
     if(logoImg.complete && logoImg.naturalWidth) go(); else logoImg.addEventListener('load', go, { once:true });
   }, 2000);
 
@@ -2980,10 +3072,18 @@ void main(){
       // esconde de un salto ni se "censura": como de ahí en más el recorrido real
       // también es negro, quedarse quieta no se nota.
       const past = pinThreshold - screenTop; // 0 apenas se congela; crece con el scroll
+      // la cortina sube hasta dejar la portada en menos de un cuarto de la
+      // pantalla, arriba: el negro pleno arranca al 24% del alto y el fundido
+      // (misma curva de siempre) queda por encima, entrando apenas por arriba
+      // de la pantalla si hace falta para no comprimirse
+      const blackFrom = vh * 0.24;
+      const G = Math.min(340, blackFrom * 1.25);
+      const capH = vh - blackFrom + G;
+      curtain.style.setProperty('--alb-g', G + 'px');
       coverEl.style.opacity = '0';
       pinWrap.style.opacity = '1';
       pinWrap.style.transform = `translateY(${pinThreshold}px)`;
-      curtain.style.height = Math.min(past, vh) + 'px';
+      curtain.style.height = Math.min(past, capH) + 'px';
       // se apaga apenas empieza a subir la cortina, junto con la portada
       if(albScrollTag) albScrollTag.style.opacity = String(Math.max(1 - past / (vh * 0.18), 0));
       // "arte de tapa": una vez que la cortina ya cubrió toda la pantalla, se
@@ -2994,7 +3094,7 @@ void main(){
         // con el texto que sigue), pero de forma más gradual, no de un tirón
         const fadeStart = vh * 0.04;
         const fadeDist  = vh * 0.26;
-        const extra = past - vh; // 0 hasta que la cortina llena la pantalla; crece después
+        const extra = past - capH; // 0 hasta que la cortina llega a su alto final; crece después
         const rawT = extra <= fadeStart ? 1 : Math.max(1 - (extra - fadeStart) / fadeDist, 0);
         const capOpacity = rawT * rawT; // ease-in: se nota más lento al principio del desvanecido
         albCurtainCaption.style.opacity = String(capOpacity);
