@@ -421,19 +421,83 @@
 
   /* =============== NADA ES PLANO (proyecto 01) =============== */
   /* Trabajo de diseño: fondo blanco, texto en tinta/piedra (no entra en
-     DARK_WORKS). Por ahora solo la parte inicial (título, subtítulo y
-     servicios), con la misma composición que Un Mundo para Exprimir: texto a
-     la izquierda, al triple del margen, a un 30% del alto. */
+     DARK_WORKS). Partes: 1) video a pantalla completa y, al terminar, título
+     y subtítulo al centro + servicios abajo a la izquierda; 2) concepto, que
+     queda fijo en la pantalla mientras el scroll recorre el texto; 3) tres
+     tarjetas que se dan vuelta con un click. */
   .nep{ --nep-m: clamp(20px,4vw,56px); }
   .nep-part{ width:100vw; position:relative; }
-  .nep-inicial{ height:100vh; }
-  .nep-inicial-text{ position:absolute; left:calc(var(--nep-m) * 3); top:30%; text-align:left; max-width:min(44ch,50vw); }
+
+  /* ---- 1. INICIAL ---- */
+  .nep-inicial{ height:100vh; overflow:hidden; }
+  .nep-video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; background:#fff; z-index:2; }
+  .nep-video.off{ display:none; }          /* al terminar, se corta (sin fundido) */
+  .nep-head{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); text-align:center; white-space:nowrap; }
   .nep-title{ font-size:clamp(34px,4.6vw,64px); font-weight:500; line-height:1.02; letter-spacing:-.015em; color:var(--ink); }
   .nep-sub{ margin-top:14px; font-size:clamp(13px,1.25vw,15px); color:var(--stone); }
   .nep-sub em{ font-style:normal; color:var(--ink); }
-  .nep-roles{ margin-top:30px; font-size:11.5px; letter-spacing:.06em; line-height:2.05; color:var(--stone); }
+  .nep-roles{ position:absolute; left:var(--nep-m); bottom:clamp(28px,6vh,60px); font-size:11.5px; letter-spacing:.06em; line-height:2.05; color:var(--stone); }
+  /* entran "desde el fondo": apenas más chicos y transparentes, sutil pero no lento */
+  .nep-in{ opacity:0; transform:scale(.94); }
+  .nep-inicial.show .nep-in{ animation: nepFromBack .9s cubic-bezier(.22,1,.36,1) forwards; }
+  @keyframes nepFromBack{ to{ opacity:1; transform:scale(1); } }
+
+  .nep-gap{ width:100vw; height:40vh; }  /* menos de medio viewport */
+
+  /* ---- 2. CONCEPTO ---- */
+  /* la sección mide un viewport + el recorrido del texto: mientras dura ese
+     recorrido, el "escenario" (un viewport) queda quieto en la pantalla y lo
+     que se mueve es el texto, dentro de una ventana del alto del párrafo más
+     corto. Cada línea entra y sale con el mismo movimiento que el concepto de
+     Un Mundo para Exprimir. */
+  .nep-concept{ overflow:visible; }
+  .nep-stage{ position:relative; height:100vh; will-change:transform; }
+  .nep-window{ position:absolute; left:50%; top:50%; width:min(52ch,80vw); transform:translateX(-50%); }
+  .nep-flow{ position:relative; will-change:transform; text-align:center; }
+  .nep-question{ font-size:clamp(22px,2.5vw,36px); line-height:1.25; letter-spacing:-.01em; color:var(--ink);
+    width:min(760px,90vw); margin-left:50%; transform:translateX(-50%); margin-bottom:1.3em; }
+  .nep-flow p.nep-p{ font-size:clamp(12.5px,1.05vw,14px); line-height:1.85; color:var(--ink); margin-bottom:1.25em; }
+  .nep-flow p.nep-p:last-child{ margin-bottom:0; }
+  .nep-rl-line{ display:block; overflow:hidden; }
+  .nep-rl-line .nep-rl-inner{ display:inline-block; opacity:0; transform:translateY(70%);
+    transition:opacity .25s ease, transform .25s cubic-bezier(.22,1,.36,1); }
+  .nep-rl-line .nep-rl-inner.show{ opacity:1; transform:translateY(0); }
+  .nep-rl-line .nep-rl-inner.gone{ opacity:0; transform:translateY(-70%); }
+
+  /* ---- 3. TARJETAS ---- */
+  .nep-cards{ height:100vh; display:flex; align-items:center; justify-content:center; }
+  .nep-cards-row{ display:flex; gap:clamp(24px,3vw,48px); align-items:flex-start; }
+  .nep-card-wrap{ --s: min(calc((100vw - var(--nep-m) * 4 - 2 * clamp(24px,3vw,48px)) / 3), 56vh, 440px);
+    --t: 7px;   /* grosor */
+    width:var(--s); margin:0; }
+  /* al pasar el cursor se levanta, como los trabajos del home pero más sutil */
+  .nep-card-lift{ width:var(--s); height:var(--s); perspective:1600px; cursor:pointer; transition:transform .35s ease; }
+  .nep-card-wrap:hover .nep-card-lift{ transform:scale(1.04); }
+  .nep-card{ position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .95s cubic-bezier(.45,0,.2,1); }
+  .nep-card.flipped{ transform:rotateY(180deg); }
+  .nep-face{ position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; overflow:hidden; }
+  .nep-front{ transform:translateZ(calc(var(--t) / 2)); }
+  .nep-front img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .nep-back{ transform:rotateY(180deg) translateZ(calc(var(--t) / 2)); background:var(--c);
+    display:flex; align-items:center; justify-content:center; text-align:center; padding:clamp(18px,2.2vw,34px); }
+  .nep-back h3{ font-size:clamp(13px,1.25vw,15px); font-weight:500; letter-spacing:.09em; text-transform:uppercase; color:var(--ink); margin-bottom:1.1em; }
+  .nep-back p{ font-size:clamp(11px,.9vw,12.5px); line-height:1.62; color:var(--ink); margin-bottom:.9em; }
+  .nep-back p:last-child{ margin-bottom:0; }
+  /* el canto: cuatro lados finos del mismo color que el dorso */
+  .nep-side{ position:absolute; background:var(--c); }
+  .nep-side-l, .nep-side-r{ top:0; width:var(--t); height:100%; }
+  .nep-side-l{ left:calc(var(--t) / -2); transform:rotateY(-90deg); }
+  .nep-side-r{ left:calc(100% - var(--t) / 2); transform:rotateY(90deg); }
+  .nep-side-t, .nep-side-b{ left:0; height:var(--t); width:100%; }
+  .nep-side-t{ top:calc(var(--t) / -2); transform:rotateX(90deg); }
+  .nep-side-b{ top:calc(100% - var(--t) / 2); transform:rotateX(-90deg); }
+  /* pie de cada tarjeta: mismo estilo que "Arte de tapa" en 7600 */
+  .nep-card-wrap figcaption{ margin-top:14px; text-align:center; font-size:11px; letter-spacing:.04em; color:var(--stone); }
+
   @media (max-width:900px){
-    .nep-inicial-text{ position:static; padding:calc(var(--nav-h) + 8vh) var(--nep-m) 0; max-width:none; }
+    .nep-cards{ height:auto; padding:10vh 0; }
+    .nep-cards-row{ flex-direction:column; align-items:center; }
+    .nep-card-wrap{ --s: min(80vw, 420px); }
   }
 
   /* =============== DUALIDAD FUSIONADA (proyecto 02) =============== */
@@ -953,15 +1017,67 @@
       <div class="work-project nep" data-project="1">
         <div class="nep-track work-track" id="nepTrack">
 
-          <!-- 1. INICIAL -->
-          <section class="nep-part nep-inicial">
-            <div class="nep-inicial-text">
-              <h1 class="nep-title">Nada es Plano</h1>
-              <div class="nep-sub"><em>Colecci&oacute;n de indumentaria</em> &nbsp;2026</div>
-              <div class="nep-roles">
-                <span data-es>Direcci&oacute;n Creativa<br>Desarrollo Conceptual<br>Direcci&oacute;n de Arte<br>Identidad Visual<br>Desarrollo de Colecci&oacute;n</span>
-                <span data-en>Creative Direction<br>Concept Development<br>Art Direction<br>Visual Identity<br>Collection Development</span>
+          <!-- 1. INICIAL: video a pantalla completa; al terminar se corta y entran los textos -->
+          <section class="nep-part nep-inicial" id="nepInicial">
+            <video class="nep-video" id="nepVideo" src="assets/nada-es-plano-video.mp4" muted playsinline preload="auto"></video>
+            <div class="nep-head">
+              <h1 class="nep-title nep-in">Nada es Plano</h1>
+              <div class="nep-sub nep-in" style="animation-delay:120ms"><em>Colecci&oacute;n de indumentaria</em> &nbsp;2026</div>
+            </div>
+            <div class="nep-roles nep-in" style="animation-delay:260ms">
+              <span data-es>Direcci&oacute;n Creativa<br>Desarrollo Conceptual<br>Direcci&oacute;n de Arte<br>Identidad Visual<br>Desarrollo de Colecci&oacute;n</span>
+              <span data-en>Creative Direction<br>Concept Development<br>Art Direction<br>Visual Identity<br>Collection Development</span>
+            </div>
+          </section>
+
+          <div class="nep-gap"></div>
+
+          <!-- 2. CONCEPTO: queda fijo en la pantalla mientras el scroll recorre el texto -->
+          <section class="nep-part nep-concept" id="nepConcept">
+            <div class="nep-stage" id="nepStage">
+              <div class="nep-window" id="nepWindow">
+                <div class="nep-flow" id="nepFlow">
+                  <p class="nep-question" data-text="¿Cómo es posible que aquello que nos resulta naturalmente propio termine desplazado?">¿Cómo es posible que aquello que nos resulta naturalmente propio termine desplazado?</p>
+                  <p class="nep-p" id="nepP1" data-text="Como proyecto final de la carrera, la colección parte de esta pregunta. Con el paso del tiempo, las normas, expectativas y formas aprendidas de encajar pueden alejarnos de una manera más genuina de sentir, crear y expresarnos, hasta volver extraño aquello que alguna vez nos fue natural.">Como proyecto final de la carrera, la colección parte de esta pregunta. Con el paso del tiempo, las normas, expectativas y formas aprendidas de encajar pueden alejarnos de una manera más genuina de sentir, crear y expresarnos, hasta volver extraño aquello que alguna vez nos fue natural.</p>
+                  <p class="nep-p" data-text="Frente a esa distancia, la propuesta busca volver sobre lo propio sin intentar regresar al pasado. La infancia aparece como referencia a ese estado de espontaneidad y libertad, mientras la memoria abre la posibilidad de reencontrarse con aquello que permanece. El color, entendido como lenguaje de expresión emocional, permite hacer visible lo que no siempre puede decirse con palabras. Así, aquello que en un primer momento puede sentirse extraño también resulta familiar: la colección propone reconocer lo extraño como propio y encontrar, en esa reconciliación, una forma auténtica de existir.">Frente a esa distancia, la propuesta busca volver sobre lo propio sin intentar regresar al pasado. La infancia aparece como referencia a ese estado de espontaneidad y libertad, mientras la memoria abre la posibilidad de reencontrarse con aquello que permanece. El color, entendido como lenguaje de expresión emocional, permite hacer visible lo que no siempre puede decirse con palabras. Así, aquello que en un primer momento puede sentirse extraño también resulta familiar: la colección propone reconocer lo extraño como propio y encontrar, en esa reconciliación, una forma auténtica de existir.</p>
+                </div>
               </div>
+            </div>
+          </section>
+
+          <!-- 3. TARJETAS: se levantan al pasar el cursor y se dan vuelta con un click -->
+          <section class="nep-part nep-cards">
+            <div class="nep-cards-row">
+            <figure class="nep-card-wrap" style="--c:#89a3eb">
+              <div class="nep-card-lift">
+                <div class="nep-card">
+                  <div class="nep-face nep-front"><img src="assets/nada-es-plano-arte-1.jpg" alt="Matiz Irruptivo"></div>
+                  <div class="nep-face nep-back"><div><h3>Matiz Irruptivo</h3><p>Es el binomio fundante de este proceso. Nombra la manera en que una verdad personal emerge con intensidad, generando un quiebre que transforma la percepción de uno mismo. No se trata solo de un cambio, sino de una manifestación con identidad propia: algo que irrumpe, pero que al mismo tiempo revela profundidad.</p><p>Este concepto surge de comprender que la autenticidad no es plana ni uniforme; está compuesta por capas, variaciones y contrastes que, al hacerse visibles, producen impacto. Matiz irruptivo expresa así el instante en que la esencia -esa identidad natural y primera- deja de permanecer en segundo plano y aparece con fuerza, diferenciándose con claridad de todo lo que la rodea.</p></div></div>
+                  <div class="nep-side nep-side-l"></div><div class="nep-side nep-side-r"></div><div class="nep-side nep-side-t"></div><div class="nep-side nep-side-b"></div>
+                </div>
+              </div>
+              <figcaption>Arte @sven_pfrommer</figcaption>
+            </figure>
+            <figure class="nep-card-wrap" style="--c:#eeede4">
+              <div class="nep-card-lift">
+                <div class="nep-card">
+                  <div class="nep-face nep-front"><img src="assets/nada-es-plano-arte-2.jpg" alt="Reverberante Eco"></div>
+                  <div class="nep-face nep-back"><div><h3>Reverberante Eco</h3><p>El reverberante eco es la resonancia persistente de una verdad interior. Se trata de una vibración profunda que, aunque en ciertos momentos no se perciba con claridad, continúa existiendo y buscando manifestarse. No es algo circunstancial, sino una presencia constante del propio ser.</p><p>Puede quedar opacada por miedos o por zonas internas no exploradas -como habitaciones en penumbra dentro de una casa-, pero su carácter reverberante implica que no desaparece. Cuando finalmente se hace audible, se reconoce como algo familiar: la expresión auténtica de la identidad, que al expandirse transforma el interior y comienza también a proyectarse hacia el exterior.</p></div></div>
+                  <div class="nep-side nep-side-l"></div><div class="nep-side nep-side-r"></div><div class="nep-side nep-side-t"></div><div class="nep-side nep-side-b"></div>
+                </div>
+              </div>
+              <figcaption>Arte @origersht</figcaption>
+            </figure>
+            <figure class="nep-card-wrap" style="--c:#f5b920">
+              <div class="nep-card-lift">
+                <div class="nep-card">
+                  <div class="nep-face nep-front"><img src="assets/nada-es-plano-arte-3.jpg" alt="Albor Indómito"></div>
+                  <div class="nep-face nep-back"><div><h3>Albor Indómito</h3><p>Albor indómito nombra el momento en que una verdad interior irrumpe con claridad y fuerza. Es la luz que aparece después de un período de oscuridad, pero no como algo frágil, sino como una presencia intensa, imposible de contener. No se trata solo de un inicio, sino de un nacimiento con impulso propio.</p><p>En este concepto conviven la calma de la revelación y la potencia de lo que ya no puede ser silenciado. Es claridad que avanza, energía que se expande y una identidad que, al reconocerse, deja de buscar permiso para existir.</p></div></div>
+                  <div class="nep-side nep-side-l"></div><div class="nep-side nep-side-r"></div><div class="nep-side nep-side-t"></div><div class="nep-side nep-side-b"></div>
+                </div>
+              </div>
+              <figcaption>Arte @alekustn</figcaption>
+            </figure>
             </div>
           </section>
 
@@ -2291,7 +2407,8 @@
   // vuelve para atrás, se deshace. Cuando ya apareció todo, el home queda
   // fijo y funciona como siempre (la ruedita no hace nada).
   const SI_LERP  = 0.085;   // peso del scroll (igual que en el resto del sitio)
-  const SI_GROW  = 260;     // cada 260px de scroll el logo suma su tamaño una vez más
+  const SI_GROW  = 220;     // zoom: cada 220px de scroll el logo suma su tamaño una vez más
+  const SI_LIFT  = 0.45;    // subida: le "cuesta" más que el zoom, un poco menos de la mitad del scroll
   const SI_TAG   = 30;      // en cuántos px desaparece "[ Scroll ]"
   const SI_RISE  = 50;      // cuánto suben los bloques de texto al entrar (px)
   const SI_STEP  = 190;     // separación entre la entrada de un trabajo y el siguiente
@@ -2305,8 +2422,9 @@
     const vw = window.innerWidth, vh = window.innerHeight;
     const W = logoImg.naturalWidth, H = logoImg.naturalHeight;
     const lw = Math.min(Math.max(vw * 0.075, 70), 110), lh = lw * H / W;
-    // en qué punto del scroll el logo termina de salir por arriba
-    const out = (vh / 2 + lh / 2 + 4) / (1 - lh / (2 * SI_GROW));
+    // en qué punto del scroll el logo termina de salir por arriba (el zoom
+    // crece hacia arriba desde su borde de abajo, que sube con SI_LIFT)
+    const out = (vh / 2 + lh / 2 + 4) / SI_LIFT;
     const A = out * 0.72;                     // el logo está por irse
     const W0 = A + 480;
     return {
@@ -2319,8 +2437,10 @@
     };
   }
 
-  // el logo, más grande y más arriba (se redibuja nítido en cada cuadro)
-  function siDrawLogo(scale, dy){
+  // el logo, más grande y más arriba (se redibuja nítido en cada cuadro). El
+  // zoom sigue al scroll y crece desde el borde de abajo del logo; la subida
+  // (de ese borde) es más lenta, así el movimiento que se siente es el zoom
+  function siDrawLogo(scale, rise){
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const vw = window.innerWidth, vh = window.innerHeight;
     const W = logoImg.naturalWidth, H = logoImg.naturalHeight;
@@ -2329,9 +2449,11 @@
     const ctx = loaderCanvas.getContext('2d');
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, bw, bh);
-    const lw = Math.min(Math.max(vw * 0.075, 70), 110) * scale, lh = lw * H / W;
-    const top = vh / 2 - lh / 2 + dy;
-    if(top + lh < 0) return;                  // ya se fue de la pantalla
+    const lw0 = Math.min(Math.max(vw * 0.075, 70), 110), lh0 = lw0 * H / W;
+    const lw = lw0 * scale, lh = lh0 * scale;
+    const bottom = vh / 2 + lh0 / 2 - rise;
+    const top = bottom - lh;
+    if(bottom < 0) return;                    // ya se fue de la pantalla
     const k = lw / W * dpr;
     let L = 0;
     while(L + 1 < logoMips.length && k <= Math.pow(0.5, L + 1)) L++;
@@ -2380,7 +2502,7 @@
 
     // el logo: más grande y más arriba
     if(Math.abs(S - si.drawn) > 0.05){
-      siDrawLogo(1 + S / SI_GROW, -S);
+      siDrawLogo(1 + S / SI_GROW, S * SI_LIFT);
       si.drawn = S;
     }
 
@@ -2918,10 +3040,10 @@
       // también es negro, quedarse quieta no se nota.
       const past = pinThreshold - screenTop; // 0 apenas se congela; crece con el scroll
       // la cortina sube hasta dejar la portada en menos de un cuarto de la
-      // pantalla, arriba: el negro pleno arranca al 24% del alto y el fundido
+      // pantalla, arriba: el negro pleno arranca al 19% del alto y el fundido
       // (misma curva de siempre) queda por encima, entrando apenas por arriba
       // de la pantalla si hace falta para no comprimirse
-      const blackFrom = vh * 0.24;
+      const blackFrom = vh * 0.19;
       const G = Math.min(340, blackFrom * 1.25);
       const capH = vh - blackFrom + G;
       curtain.style.setProperty('--alb-g', G + 'px');
@@ -3172,6 +3294,129 @@
       if(wasShown) exprPlayReveal(container, 45);
     });
   }
+
+  // ---- Nada es Plano ----
+  // 1) Al abrir el trabajo se reproduce el video (sin sonido, a pantalla
+  //    completa, sin textos ni menú). Mientras dura no se puede bajar. Al
+  //    terminar se corta y, sobre blanco, entran los textos "desde el fondo".
+  // 2) Concepto: la sección mide un viewport + el recorrido del texto. Mientras
+  //    dura ese recorrido, el escenario queda quieto en la pantalla y el
+  //    scroll mueve el texto dentro de una ventana del alto del párrafo más
+  //    corto: las líneas entran por abajo y se van por arriba con el mismo
+  //    movimiento que el concepto de Exprimir. Arranca con la pregunta
+  //    centrada. Al llegar al final del texto, sigue el scroll de la página.
+  // 3) Tarjetas: se levantan apenas al pasar el cursor y se dan vuelta (3D,
+  //    con grosor) con un click; otro click las vuelve.
+  const nepTrackEl = document.getElementById('nepTrack');
+  const nepInicial = document.getElementById('nepInicial');
+  const nepVideo   = document.getElementById('nepVideo');
+  const nepConcept = document.getElementById('nepConcept');
+  const nepStage   = document.getElementById('nepStage');
+  const nepWindow  = document.getElementById('nepWindow');
+  const nepFlow    = document.getElementById('nepFlow');
+  const NEP_VIDEO_DELAY = 400;   // el video arranca cuando el fundido de entrada ya casi se fue
+  let nepVideoOn = false, nepVideoTimer = null;
+  let nepL = null;               // medidas del concepto
+
+  // parte un párrafo en sus líneas reales (cada una recortada, para el movimiento)
+  function nepSplit(p){
+    const words = p.dataset.text.split(' ');
+    p.innerHTML = words.map(w => '<span class="nep-w">' + w + '</span>').join(' ');
+    const rows = []; let top = null, row = null;
+    p.querySelectorAll('.nep-w').forEach(sp => {
+      const t = Math.round(sp.offsetTop);
+      if(top === null || Math.abs(t - top) > 3){ top = t; row = []; rows.push(row); }
+      row.push(sp.textContent);
+    });
+    p.innerHTML = rows.map(r => '<span class="nep-rl-line"><span class="nep-rl-inner">' + r.join(' ') + '</span></span>').join(' ');
+  }
+
+  function nepLayout(){
+    if(!nepFlow || workTrack !== nepTrackEl) return;
+    const vh = window.innerHeight;
+    nepFlow.style.transform = 'none';
+    nepWindow.style.height = '0px';
+    nepFlow.querySelectorAll('p[data-text]').forEach(nepSplit);
+    // la ventana: del alto del párrafo más corto (si la pregunta fuera más alta, de su alto)
+    const qh = nepFlow.querySelector('.nep-question').getBoundingClientRect().height;
+    const H = Math.max(document.getElementById('nepP1').getBoundingClientRect().height, qh);
+    nepWindow.style.height = H + 'px';
+    nepWindow.style.marginTop = (-H / 2) + 'px';
+    // todo se mide recién ahora (con la ventana ya ubicada), respecto de su borde de arriba
+    const fr = nepFlow.getBoundingClientRect();
+    const qr = nepFlow.querySelector('.nep-question').getBoundingClientRect();
+    const y0 = H / 2 - (qr.top - fr.top + qr.height / 2);   // la pregunta, centrada
+    const y1 = H - fr.height;                                // la última línea, al pie de la ventana
+    const D = Math.max(y0 - y1, 0);
+    const lines = Array.from(nepFlow.querySelectorAll('.nep-rl-line')).map(el => {
+      const r = el.getBoundingClientRect();
+      return { inner: el.firstChild, top: r.top - fr.top, h: r.height, state: -1 };
+    });
+    nepConcept.style.height = (vh + D) + 'px';
+    nepL = { H, y0, D, lines };
+    nepFrame();
+  }
+
+  function nepFrame(){
+    if(!nepL) return;
+    const local = workCurrent - nepConcept.offsetTop;
+    const pin = Math.min(Math.max(local, 0), nepL.D);
+    nepStage.style.transform = 'translateY(' + pin.toFixed(1) + 'px)';
+    const y = nepL.y0 - pin;
+    nepFlow.style.transform = 'translateY(' + y.toFixed(1) + 'px)';
+    // cada línea: abajo de la ventana (escondida), adentro (a la vista) o ya
+    // pasada por arriba (se fue)
+    nepL.lines.forEach(L => {
+      const c = y + L.top + L.h / 2;
+      const st = c > nepL.H + 0.5 ? 0 : (c < -0.5 ? 2 : 1);
+      if(st !== L.state){
+        L.state = st;
+        L.inner.classList.toggle('show', st === 1);
+        L.inner.classList.toggle('gone', st === 2);
+      }
+    });
+  }
+
+  function nepEndVideo(){
+    if(!nepVideoOn) return;
+    nepVideoOn = false;
+    clearTimeout(nepVideoTimer);
+    nepVideo.pause();
+    nepVideo.classList.add('off');                 // se corta, sin fundido
+    root.classList.remove('work-nav-hidden');
+    nepInicial.classList.add('show');              // entran los textos
+  }
+  if(nepVideo){
+    nepVideo.addEventListener('ended', nepEndVideo);
+    nepVideo.addEventListener('error', nepEndVideo);
+  }
+
+  function nepSetup(){
+    nepInicial.classList.remove('show');
+    nepVideo.classList.remove('off');
+    document.querySelectorAll('.nep-card.flipped').forEach(c => c.classList.remove('flipped'));
+    nepLayout();
+    measureWork();
+    nepVideoOn = true;
+    root.classList.add('work-nav-hidden');
+    try{ nepVideo.currentTime = 0; } catch(e){}
+    clearTimeout(nepVideoTimer);
+    nepVideoTimer = setTimeout(() => {
+      const pr = nepVideo.play();
+      if(pr && pr.catch) pr.catch(() => nepEndVideo());   // si el navegador no lo deja reproducir, sigue igual
+    }, NEP_VIDEO_DELAY);
+  }
+  function nepTeardown(){
+    clearTimeout(nepVideoTimer);
+    nepVideoOn = false;
+    if(nepVideo){ nepVideo.pause(); }
+    if(nepInicial) nepInicial.classList.remove('show');
+    document.querySelectorAll('.nep-card.flipped').forEach(c => c.classList.remove('flipped'));
+  }
+
+  document.querySelectorAll('.nep-card').forEach(card => {
+    card.addEventListener('click', () => card.classList.toggle('flipped'));
+  });
 
   // ---- Un Mundo para Exprimir: geometral -- se levanta al pasar el mouse
   // (con un "click" seuido al cursor) y el texto se abre recien con un click,
@@ -3954,6 +4199,7 @@
     if(procesoPart) startMedia();
     if(String(id) === '5'){ setupAlbFinal(); startAlbMedia(); updateAlbCoverPin(); }
     if(String(id) === '2') dfSetup();
+    if(String(id) === '1') nepSetup();
     if(String(id) === '3'){
       drawExprArrow();
       setTimeout(() => { drawExprArrow(); measureWork(); }, 260);
@@ -3981,6 +4227,7 @@
     stopAlbMedia();
     teardownAlbFinal();
     dfTeardown();
+    nepTeardown();
     const albPin = document.getElementById('albCoverPin');
     const albCurtainEl = document.getElementById('albCurtain');
     const albCoverEl = document.getElementById('albCoverFull');
@@ -4010,7 +4257,7 @@
       if(fin) workMax = Math.max(fin.offsetTop + fin.offsetHeight / 2 - vh / 2, 0);
     }
   }
-  window.addEventListener('resize', () => { if(root.classList.contains('work-open')){ measureWork(); sizeAlbSlot(ALB_RATIO); drawExprArrow(); dfLayout(); } });
+  window.addEventListener('resize', () => { if(root.classList.contains('work-open')){ nepLayout(); measureWork(); sizeAlbSlot(ALB_RATIO); drawExprArrow(); dfLayout(); } });
 
   window.addEventListener('wheel', (e) => {
     if(!panel.classList.contains('open') || !panel.classList.contains('show-work')) return;
@@ -4023,6 +4270,8 @@
     workLastWheel = now;
     const dir = e.deltaY > 0 ? 1 : (e.deltaY < 0 ? -1 : 0);
     if(!dir) return;
+    // Nada es Plano: mientras corre el video del principio no se puede bajar
+    if(workTrack === nepTrackEl && nepVideoOn && dir > 0) return;
 
     // ya estirando: seguir empujando para el mismo lado sostiene el estirado;
     // para el otro lado lo suelta y vuelve al scroll normal
@@ -4113,6 +4362,7 @@
       updateAlbCoverPin();
 
       if(workTrack === dfTrackEl) dfFrame(vh);
+      if(workTrack === nepTrackEl) nepFrame();
 
       if(workTrack === exprTrackEl){
         exprRenderFruits(performance.now());
