@@ -440,6 +440,15 @@
   /* entran "desde el fondo": apenas más chicos y transparentes, sutil pero no lento */
   .nep-in{ opacity:0; transform:scale(.94); }
   .nep-inicial.show .nep-in{ animation: nepFromBack .9s cubic-bezier(.22,1,.36,1) forwards; }
+  /* al terminar el video, su última imagen se transforma (como un líquido) en
+     el título y el subtítulo: eso se dibuja en este canvas; al final quedan
+     las letras de verdad, sin animación propia */
+  .nep-morph{ position:absolute; inset:0; width:100%; height:100%; z-index:3; display:none; pointer-events:none; transition:opacity .35s ease; }
+  .nep-morph.on{ display:block; }
+  .nep-morph.out{ opacity:0; }
+  .nep-inicial.morph .nep-morph-t{ animation:none !important; opacity:0; transform:none; }
+  .nep-inicial.morphed .nep-morph-t{ opacity:1; }
+  .nep-inicial.measure .nep-morph-t{ animation:none !important; transform:none !important; }
   @keyframes nepFromBack{ to{ opacity:1; transform:scale(1); } }
 
   .nep-gap{ width:100vw; height:40vh; }  /* menos de medio viewport */
@@ -452,47 +461,76 @@
      Un Mundo para Exprimir. */
   .nep-concept{ overflow:visible; }
   .nep-stage{ position:relative; height:100vh; will-change:transform; }
-  .nep-window{ position:absolute; left:50%; top:50%; width:min(52ch,80vw); transform:translateX(-50%); }
-  .nep-flow{ position:relative; will-change:transform; text-align:center; }
-  .nep-question{ font-size:clamp(22px,2.5vw,36px); line-height:1.25; letter-spacing:-.01em; color:var(--ink);
+  .nep-window{ position:absolute; left:50%; top:50%; width:min(52ch,80vw); transform:translateX(-50%); perspective:2600px; }
+  .nep-flow{ position:relative; text-align:center; transform-style:preserve-3d; }
+  .nep-flow p{ transform-style:preserve-3d; }
+  /* la pregunta: misma tipografía que la cita del concepto de La Sombrerera
+     (Instrument Sans itálica), en tinta y bastante más grande */
+  .nep-question{ font-size:clamp(22px,2.5vw,36px); line-height:1.25; font-style:italic; letter-spacing:-.005em; color:var(--ink);
     width:min(760px,90vw); margin-left:50%; transform:translateX(-50%); margin-bottom:1.3em; }
   .nep-flow p.nep-p{ font-size:clamp(12.5px,1.05vw,14px); line-height:1.85; color:var(--ink); margin-bottom:1.25em; }
   .nep-flow p.nep-p:last-child{ margin-bottom:0; }
-  .nep-rl-line{ display:block; overflow:hidden; }
-  .nep-rl-line .nep-rl-inner{ display:inline-block; opacity:0; transform:translateY(70%);
-    transition:opacity .25s ease, transform .25s cubic-bezier(.22,1,.36,1); }
-  .nep-rl-line .nep-rl-inner.show{ opacity:1; transform:translateY(0); }
-  .nep-rl-line .nep-rl-inner.gone{ opacity:0; transform:translateY(-70%); }
+  /* cada línea se ubica sobre un cilindro (lo calcula el JS cuadro a cuadro):
+     las de los bordes se inclinan, se alejan y se funden con el fondo, sin
+     que el párrafo se separe nunca */
+  .nep-rl-line{ display:block; will-change:transform,opacity; backface-visibility:hidden; }
+  .nep-rl-inner{ display:inline; }
 
   /* ---- 3. TARJETAS ---- */
   .nep-cards{ height:100vh; display:flex; align-items:center; justify-content:center; }
   .nep-cards-row{ display:flex; gap:clamp(24px,3vw,48px); align-items:flex-start; }
-  .nep-card-wrap{ --s: min(calc((100vw - var(--nep-m) * 4 - 2 * clamp(24px,3vw,48px)) / 3), 56vh, 440px);
-    --t: 7px;   /* grosor */
+  /* 2/3 del tamaño que tenían antes */
+  .nep-card-wrap{ --s: calc(min((100vw - var(--nep-m) * 4 - 2 * clamp(24px,3vw,48px)) / 3, 56vh, 440px) * .667);
+    --t: 12px;  /* grosor */
+    --r: 5px;   /* bordes levemente redondeados */
     width:var(--s); margin:0; }
   /* al pasar el cursor se levanta, como los trabajos del home pero más sutil */
   .nep-card-lift{ width:var(--s); height:var(--s); perspective:1600px; cursor:pointer; transition:transform .35s ease; }
   .nep-card-wrap:hover .nep-card-lift{ transform:scale(1.04); }
+  .nep-front img{ border-radius:var(--r); }
   .nep-card{ position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .95s cubic-bezier(.45,0,.2,1); }
   .nep-card.flipped{ transform:rotateY(180deg); }
-  .nep-face{ position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; overflow:hidden; }
+  .nep-face{ position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; overflow:hidden; border-radius:var(--r); }
   .nep-front{ transform:translateZ(calc(var(--t) / 2)); }
   .nep-front img{ width:100%; height:100%; object-fit:cover; display:block; }
   .nep-back{ transform:rotateY(180deg) translateZ(calc(var(--t) / 2)); background:var(--c);
-    display:flex; align-items:center; justify-content:center; text-align:center; padding:clamp(18px,2.2vw,34px); }
-  .nep-back h3{ font-size:clamp(13px,1.25vw,15px); font-weight:500; letter-spacing:.09em; text-transform:uppercase; color:var(--ink); margin-bottom:1.1em; }
-  .nep-back p{ font-size:clamp(11px,.9vw,12.5px); line-height:1.62; color:var(--ink); margin-bottom:.9em; }
+    display:flex; align-items:center; justify-content:center; text-align:center; padding:clamp(12px,1.3vw,20px); }
+  /* un 10% más chicas que antes (y si el texto no entra en la tarjeta, el JS lo achica un poco más) */
+  .nep-back h3{ font-size:clamp(11.5px,1.1vw,13.5px); font-weight:500; letter-spacing:.09em; text-transform:uppercase; color:var(--ink); margin-bottom:.9em; }
+  .nep-back p{ font-size:clamp(10px,.81vw,11.25px); line-height:1.55; color:var(--ink); margin-bottom:.7em; }
   .nep-back p:last-child{ margin-bottom:0; }
   /* el canto: cuatro lados finos del mismo color que el dorso */
   .nep-side{ position:absolute; background:var(--c); }
-  .nep-side-l, .nep-side-r{ top:0; width:var(--t); height:100%; }
+  /* los lados arrancan y terminan donde empieza la curva de las esquinas */
+  .nep-side-l, .nep-side-r{ top:var(--r); width:var(--t); height:calc(100% - 2 * var(--r)); }
   .nep-side-l{ left:calc(var(--t) / -2); transform:rotateY(-90deg); }
   .nep-side-r{ left:calc(100% - var(--t) / 2); transform:rotateY(90deg); }
-  .nep-side-t, .nep-side-b{ left:0; height:var(--t); width:100%; }
+  .nep-side-t, .nep-side-b{ left:var(--r); height:var(--t); width:calc(100% - 2 * var(--r)); }
   .nep-side-t{ top:calc(var(--t) / -2); transform:rotateX(90deg); }
   .nep-side-b{ top:calc(100% - var(--t) / 2); transform:rotateX(-90deg); }
   /* pie de cada tarjeta: mismo estilo que "Arte de tapa" en 7600 */
   .nep-card-wrap figcaption{ margin-top:14px; text-align:center; font-size:11px; letter-spacing:.04em; color:var(--stone); }
+
+  /* ---- 4. CUADERNO ---- */
+  /* las 8 fotos están alineadas en un mismo marco de 2000×1700 (lomo en el
+     centro, tapa de 1000 de alto): la tapa (1), seis páginas abiertas (2 a 7)
+     y la contratapa (8). La sección queda fija mientras el scroll mueve el
+     cuaderno; con click se pasan las páginas (una hoja que gira sobre el lomo). */
+  .nep-book-sec{ overflow:visible; }
+  .nep-book-stage{ position:relative; height:100vh; overflow:hidden; will-change:transform; }
+  .nep-book{ position:absolute; left:0; top:0; perspective:2400px; will-change:transform; }
+  .nep-half, .nep-leaf, .nep-leaf-face{ position:absolute; top:0; height:100%; width:50%; background-repeat:no-repeat; background-size:200% 100%; }
+  .nep-half-l{ left:0; background-position:0 0; }
+  .nep-half-r{ left:50%; background-position:100% 0; }
+  .nep-leaf{ left:50%; transform-origin:0 50%; transform-style:preserve-3d; display:none; }
+  .nep-leaf.on{ display:block; }
+  .nep-leaf-face{ left:0; width:100%; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
+  .nep-leaf-front{ background-position:100% 0; }
+  .nep-leaf-back{ background-position:0 0; transform:rotateY(180deg); }
+  .nep-book.ready{ cursor:pointer; }
+  .nep-book-hint{ position:fixed; z-index:340; pointer-events:none; opacity:0; transform:translate(16px,-50%);
+    transition:opacity .3s ease; font-size:10.5px; letter-spacing:.1em; color:var(--stone); }
+  .nep-book-hint.show{ opacity:1; }
 
   @media (max-width:900px){
     .nep-cards{ height:auto; padding:10vh 0; }
@@ -1015,14 +1053,16 @@
       <!-- ===== 02 - Dualidad Fusionada ===== -->
       <!-- ===== 01 - Nada es Plano ===== -->
       <div class="work-project nep" data-project="1">
+        <div class="nep-book-hint" id="nepBookHint">click</div>
         <div class="nep-track work-track" id="nepTrack">
 
           <!-- 1. INICIAL: video a pantalla completa; al terminar se corta y entran los textos -->
           <section class="nep-part nep-inicial" id="nepInicial">
             <video class="nep-video" id="nepVideo" src="assets/nada-es-plano-video.mp4" muted playsinline preload="auto"></video>
+            <canvas class="nep-morph" id="nepMorph"></canvas>
             <div class="nep-head">
-              <h1 class="nep-title nep-in">Nada es Plano</h1>
-              <div class="nep-sub nep-in" style="animation-delay:120ms"><em>Colecci&oacute;n de indumentaria</em> &nbsp;2026</div>
+              <h1 class="nep-title nep-in nep-morph-t">Nada es Plano</h1>
+              <div class="nep-sub nep-in nep-morph-t" style="animation-delay:120ms"><em>Colecci&oacute;n de indumentaria</em> &nbsp;2026</div>
             </div>
             <div class="nep-roles nep-in" style="animation-delay:260ms">
               <span data-es>Direcci&oacute;n Creativa<br>Desarrollo Conceptual<br>Direcci&oacute;n de Arte<br>Identidad Visual<br>Desarrollo de Colecci&oacute;n</span>
@@ -1056,7 +1096,7 @@
                   <div class="nep-side nep-side-l"></div><div class="nep-side nep-side-r"></div><div class="nep-side nep-side-t"></div><div class="nep-side nep-side-b"></div>
                 </div>
               </div>
-              <figcaption>Arte @sven_pfrommer</figcaption>
+              <figcaption>arte @sven_pfrommer</figcaption>
             </figure>
             <figure class="nep-card-wrap" style="--c:#eeede4">
               <div class="nep-card-lift">
@@ -1066,7 +1106,7 @@
                   <div class="nep-side nep-side-l"></div><div class="nep-side nep-side-r"></div><div class="nep-side nep-side-t"></div><div class="nep-side nep-side-b"></div>
                 </div>
               </div>
-              <figcaption>Arte @origersht</figcaption>
+              <figcaption>arte @origersht</figcaption>
             </figure>
             <figure class="nep-card-wrap" style="--c:#f5b920">
               <div class="nep-card-lift">
@@ -1076,8 +1116,25 @@
                   <div class="nep-side nep-side-l"></div><div class="nep-side nep-side-r"></div><div class="nep-side nep-side-t"></div><div class="nep-side nep-side-b"></div>
                 </div>
               </div>
-              <figcaption>Arte @alekustn</figcaption>
+              <figcaption>arte @alekustn</figcaption>
             </figure>
+            </div>
+          </section>
+
+
+          <div class="nep-gap" style="height:50vh"></div>
+
+          <!-- 4. CUADERNO: entra desde la izquierda, se corre a la derecha y con click se pasan las páginas -->
+          <section class="nep-part nep-book-sec" id="nepBookSec">
+            <div class="nep-book-stage" id="nepBookStage">
+              <div class="nep-book" id="nepBook">
+                <div class="nep-half nep-half-l" id="nepHalfL"></div>
+                <div class="nep-half nep-half-r" id="nepHalfR"></div>
+                <div class="nep-leaf" id="nepLeaf">
+                  <div class="nep-leaf-face nep-leaf-front" id="nepLeafF"></div>
+                  <div class="nep-leaf-face nep-leaf-back" id="nepLeafB"></div>
+                </div>
+              </div>
             </div>
           </section>
 
@@ -1691,8 +1748,8 @@
       // empieza chico y lavado en blanco y crece hasta su lugar
       const ap = sphAppear[i];
       const fade = SPH_FADE_MAX * Math.pow(1 - depth, 1.3);
-      item.style.transform = 'translate(' + sx.toFixed(1) + 'px,' + sy.toFixed(1) + 'px) scale(' + (f * (0.35 + 0.65 * ap)).toFixed(4) + ')';
-      item.style.opacity = ap >= 1 ? '1' : Math.min(ap * 1.6, 1).toFixed(3);
+      item.style.transform = 'translate(' + sx.toFixed(1) + 'px,' + sy.toFixed(1) + 'px) scale(' + (f * (0.82 + 0.18 * ap)).toFixed(4) + ')';
+      item.style.opacity = ap >= 1 ? '1' : ap.toFixed(3);
       item.style.setProperty('--fade', (fade + (1 - fade) * (1 - ap)).toFixed(3));
       item.style.zIndex = String(Math.round(depth * 100));
       item.classList.toggle('is-front', depth >= SPH_FRONT && ap >= 1);
@@ -2408,10 +2465,12 @@
   // fijo y funciona como siempre (la ruedita no hace nada).
   const SI_LERP  = 0.085;   // peso del scroll (igual que en el resto del sitio)
   const SI_GROW  = 220;     // zoom: cada 220px de scroll el logo suma su tamaño una vez más
-  const SI_LIFT  = 0.45;    // subida: le "cuesta" más que el zoom, un poco menos de la mitad del scroll
+  const SI_LIFT  = 0.3;     // subida: le "cuesta" bastante más que el zoom (menos de un tercio del scroll)
   const SI_TAG   = 30;      // en cuántos px desaparece "[ Scroll ]"
   const SI_RISE  = 50;      // cuánto suben los bloques de texto al entrar (px)
-  const SI_STEP  = 190;     // separación entre la entrada de un trabajo y el siguiente
+  const SI_STEP  = 340;     // separación entre la entrada de un trabajo y el siguiente
+  const SI_WORK  = 620;     // cuánto scroll tarda cada trabajo en aparecer (pesado y sutil)
+  const SI_WORK_LERP = 0.05; // y encima, un peso extra: siguen al scroll con demora
   const loaderScroll = document.getElementById('loaderScroll');
   let si = null;
 
@@ -2433,7 +2492,7 @@
       sig:  [A + 220, 340],
       works: W0,
       nav:  [W0 + SI_STEP * 2, 300],
-      end:  W0 + SI_STEP * 4 + 320
+      end:  W0 + SI_STEP * 4 + SI_WORK
     };
   }
 
@@ -2522,10 +2581,16 @@
       el.style.opacity = pn.toFixed(3);
       el.style.transform = pn >= 1 ? '' : 'translateY(' + (-(1 - pn) * 70).toFixed(1) + 'px)';
     });
-    // los trabajos, de a uno, desde el fondo
-    si.order.forEach((i, k) => { sphAppear[i] = siEase((S - plan.works - k * SI_STEP) / 320); });
+    // los trabajos, de a uno, desde el fondo: pesados y sutiles (siguen al
+    // scroll con una demora propia, más lenta que el resto)
+    let worksSettled = true;
+    si.order.forEach((i, k) => {
+      const tg = siEase((S - plan.works - k * SI_STEP) / SI_WORK);
+      sphAppear[i] += (tg - sphAppear[i]) * SI_WORK_LERP;
+      if(Math.abs(tg - sphAppear[i]) < 0.002) sphAppear[i] = tg; else worksSettled = false;
+    });
 
-    if(S >= plan.end - 0.5 && si.target >= plan.end) siFinish();
+    if(S >= plan.end - 0.5 && si.target >= plan.end && worksSettled) siFinish();
     else requestAnimationFrame(siFrame);
   }
 
@@ -3331,6 +3396,27 @@
     p.innerHTML = rows.map(r => '<span class="nep-rl-line"><span class="nep-rl-inner">' + r.join(' ') + '</span></span>').join(' ');
   }
 
+  // el texto del dorso tiene que entrar en la tarjeta: si no entra con el
+  // tamaño de letra de la hoja de estilos, se achica de a poco
+  function nepFitCards(){
+    document.querySelectorAll('.nep-back').forEach(back => {
+      const inner = back.firstElementChild;
+      const ps = Array.from(inner.querySelectorAll('p'));
+      ps.forEach(p => p.style.fontSize = '');
+      const cs = getComputedStyle(back);
+      const avail = back.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+      let fs = parseFloat(getComputedStyle(ps[0]).fontSize);
+      while(inner.scrollHeight > avail && fs > 7.5){
+        fs -= 0.25;
+        ps.forEach(p => p.style.fontSize = fs + 'px');
+      }
+    });
+  }
+
+  const NEP_WEIGHT = 1.7;    // cuánto scroll hace falta por cada px que se mueve el texto (más = más pesado)
+  const NEP_LERP   = 0.07;   // y el texto sigue al scroll con un peso propio, gradual
+  const NEP_ARC    = 0.78;   // radio del cilindro (en altos de la ventana)
+
   function nepLayout(){
     if(!nepFlow || workTrack !== nepTrackEl) return;
     const vh = window.innerHeight;
@@ -3345,36 +3431,388 @@
     // todo se mide recién ahora (con la ventana ya ubicada), respecto de su borde de arriba
     const fr = nepFlow.getBoundingClientRect();
     const qr = nepFlow.querySelector('.nep-question').getBoundingClientRect();
-    const y0 = H / 2 - (qr.top - fr.top + qr.height / 2);   // la pregunta, centrada
-    const y1 = H - fr.height;                                // la última línea, al pie de la ventana
-    const D = Math.max(y0 - y1, 0);
     const lines = Array.from(nepFlow.querySelectorAll('.nep-rl-line')).map(el => {
       const r = el.getBoundingClientRect();
-      return { inner: el.firstChild, top: r.top - fr.top, h: r.height, state: -1 };
+      return { el, top: r.top - fr.top, h: r.height };
     });
+    const R = NEP_ARC * H;
+    const gone = R * Math.PI / 2;               // a esta distancia del centro, la línea ya está de canto (no se ve)
+    const last = lines[lines.length - 1];
+    const y0 = H / 2 - (qr.top - fr.top + qr.height / 2);                     // la pregunta, centrada
+    const y1 = H / 2 - gone - last.h - (last.top + last.h / 2);               // la última línea, ya ida por arriba
+    const Dtext = Math.max(y0 - y1, 0);
+    const D = Dtext * NEP_WEIGHT;
+    nepFitCards();
+    nbLayout();
     nepConcept.style.height = (vh + D) + 'px';
-    nepL = { H, y0, D, lines };
-    nepFrame();
+    nepL = { H, R, y0, D, lines, y: nepL && nepL.y0 === y0 ? nepL.y : y0 };
+    nepFrame(true);
   }
 
-  function nepFrame(){
+  function nepFrame(snap){
     if(!nepL) return;
     const local = workCurrent - nepConcept.offsetTop;
     const pin = Math.min(Math.max(local, 0), nepL.D);
     nepStage.style.transform = 'translateY(' + pin.toFixed(1) + 'px)';
-    const y = nepL.y0 - pin;
-    nepFlow.style.transform = 'translateY(' + y.toFixed(1) + 'px)';
-    // cada línea: abajo de la ventana (escondida), adentro (a la vista) o ya
-    // pasada por arriba (se fue)
+    // el texto sigue al scroll con demora propia (pesado y gradual)
+    const target = nepL.y0 - pin / NEP_WEIGHT;
+    nepL.y = snap === true ? target : nepL.y + (target - nepL.y) * NEP_LERP;
+    if(Math.abs(target - nepL.y) < 0.05) nepL.y = target;
+    const y = nepL.y, H = nepL.H, R = nepL.R;
+    // cada línea, sobre un cilindro: en el centro, plana y nítida; hacia los
+    // bordes se inclina, se aleja y se funde con el fondo. Su posición se
+    // "aprieta" contra la de al lado, así el párrafo no se separa nunca
     nepL.lines.forEach(L => {
-      const c = y + L.top + L.h / 2;
-      const st = c > nepL.H + 0.5 ? 0 : (c < -0.5 ? 2 : 1);
-      if(st !== L.state){
-        L.state = st;
-        L.inner.classList.toggle('show', st === 1);
-        L.inner.classList.toggle('gone', st === 2);
+      const d = y + L.top + L.h / 2 - H / 2;               // distancia al centro de la ventana
+      const th = Math.max(Math.min(d / R, Math.PI / 2), -Math.PI / 2);
+      const yp = R * Math.sin(th);
+      const z = R * (Math.cos(th) - 1);
+      const a = Math.abs(th);
+      const o = a < 0.72 ? 1 : Math.max(0, 1 - (a - 0.72) / (Math.PI / 2 - 0.72));
+      const op = o * o * (3 - 2 * o);
+      if(op <= 0.001){
+        if(L.vis !== false){ L.el.style.opacity = '0'; L.vis = false; }
+        return;
+      }
+      L.vis = true;
+      L.el.style.opacity = op.toFixed(3);
+      L.el.style.transform = 'translateY(' + (yp - d).toFixed(2) + 'px) translateZ(' + z.toFixed(2) + 'px) rotateX(' + (-th * 57.2958).toFixed(2) + 'deg)';
+    });
+    nepFlow.style.transform = 'translateY(' + y.toFixed(2) + 'px)';
+  }
+
+  // ---- Nada es Plano: cuaderno ----
+  // Marco común de las 8 fotos: 2000×1700, lomo en x=1000, tapa de y=150 a 1150
+  // (1000 de alto); la tapa cerrada mide 631 de ancho desde el lomo.
+  // Con el scroll (la sección queda fija): A) entra desde la izquierda hasta
+  // quedar centrado; B) se queda quieto un tramo; C) se corre a la derecha
+  // hasta su lugar natural: el lomo en el centro de la pantalla (así, al
+  // abrirse, las páginas quedan centradas). Ahí aparece "click" junto al
+  // cursor: cada click pasa una página (2 a 7, y la 8 es la contratapa, que
+  // queda del lado izquierdo); en la contratapa, un click más cierra todo
+  // rápido y vuelve a la tapa del lado derecho. Si se scrollea para arriba con
+  // el cuaderno abierto, primero se cierra (rápido) y recién ahí sigue el scroll.
+  const NB_N = 8;
+  const NB_SPINE = 1000, NB_TOP = 150, NB_H = 1000, NB_FRONT_W = 631;
+  const NB_FLIP_MS = 720;     // pasar una página: sutil pero no lento
+  const NB_FAST_MS = 170;     // cada página al cerrar rápido
+  const nbSec   = document.getElementById('nepBookSec');
+  const nbStage = document.getElementById('nepBookStage');
+  const nbBook  = document.getElementById('nepBook');
+  const nbL = document.getElementById('nepHalfL'), nbR = document.getElementById('nepHalfR');
+  const nbLeaf = document.getElementById('nepLeaf');
+  const nbLeafF = document.getElementById('nepLeafF'), nbLeafB = document.getElementById('nepLeafB');
+  const nbHint = document.getElementById('nepBookHint');
+  const nbImg = n => 'url("assets/nada-es-plano-cuaderno-' + n + '.webp")';
+  const nb = { cur: 1, busy: false, ready: false, closing: false, k: 1, phases: null, hover: false };
+
+  function nbShow(left, right){
+    nbL.style.backgroundImage = left ? nbImg(left) : 'none';
+    nbR.style.backgroundImage = right ? nbImg(right) : 'none';
+  }
+  function nbReset(){
+    nb.cur = 1; nb.busy = false; nb.closing = false;
+    nbLeaf.classList.remove('on');
+    nbShow(1, 1);
+  }
+  function nbPreload(){
+    for(let i = 1; i <= NB_N; i++){ const im = new Image(); im.src = 'assets/nada-es-plano-cuaderno-' + i + '.webp'; }
+  }
+
+  // tamaño y tramos del recorrido
+  function nbLayout(){
+    const vw = window.innerWidth, vh = window.innerHeight;
+    // la tapa mide un 60% del alto de la pantalla (sin pasarse de ancho con el cuaderno abierto)
+    const k = Math.min(vh * 0.6 / NB_H, vw * 0.86 / 1500);
+    nb.k = k;
+    nbBook.style.width = (2000 * k) + 'px';
+    nbBook.style.height = (1700 * k) + 'px';
+    const A = vh * 0.9, B = vh * 0.45, C = vh * 0.7;
+    nb.phases = { A, B, C, D: A + B + C };
+    nbSec.style.height = (vh + nb.phases.D) + 'px';
+  }
+
+  function nbEase(x){ x = Math.min(Math.max(x, 0), 1); return x * x * (3 - 2 * x); }
+
+  function nbFrame(){
+    if(!nb.phases) return;
+    const vw = window.innerWidth, vh = window.innerHeight, k = nb.k, P = nb.phases;
+    const local = workCurrent - nbSec.offsetTop;
+    const pin = Math.min(Math.max(local, 0), P.D);
+    nbStage.style.transform = 'translateY(' + pin.toFixed(1) + 'px)';
+    // posiciones del lomo en la pantalla
+    const xOut   = -800 * k - 30;                              // cuaderno (con los papeles que sobresalen) fuera de la pantalla, a la izquierda
+    const xMid   = vw / 2 - NB_FRONT_W * k / 2;                // cerrado y centrado
+    const xFinal = vw / 2;                                     // lomo en el centro: al abrirse, queda centrado
+    let xs;
+    if(pin <= P.A) xs = xOut + (xMid - xOut) * nbEase(pin / P.A);
+    else if(pin <= P.A + P.B) xs = xMid;
+    else xs = xMid + (xFinal - xMid) * nbEase((pin - P.A - P.B) / P.C);
+    const top = vh / 2 - (NB_TOP + NB_H / 2) * k;
+    nbBook.style.transform = 'translate(' + (xs - NB_SPINE * k).toFixed(1) + 'px,' + top.toFixed(1) + 'px)';
+    const ready = pin >= P.D - 2;
+    if(ready !== nb.ready){ nb.ready = ready; nbBook.classList.toggle('ready', ready); }
+    nbHint.classList.toggle('show', nb.ready && nb.hover && !nb.busy);
+  }
+
+  function nbEaseInOut(x){ return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+
+  // una hoja que gira sobre el lomo, entre la página a (abajo) y a+1:
+  // forward: de a a a+1 (la hoja va de 0 a -180°); si no, de a+1 a a
+  function nbFlip(a, forward, ms){
+    return new Promise(done => {
+      nbShow(a, a + 1);                           // lo que queda debajo: izquierda de a, derecha de a+1
+      nbLeafF.style.backgroundImage = nbImg(a);   // frente de la hoja: derecha de a
+      nbLeafB.style.backgroundImage = nbImg(a + 1); // dorso: izquierda de a+1
+      nbLeaf.classList.add('on');
+      const t0 = performance.now();
+      const step = (now) => {
+        const t = Math.min((now - t0) / ms, 1), e = nbEaseInOut(t);
+        const ang = forward ? -180 * e : -180 * (1 - e);
+        nbLeaf.style.transform = 'rotateY(' + ang.toFixed(2) + 'deg)';
+        // sombra suave mientras la hoja está levantada (oscurece solo la hoja, no su fondo transparente)
+        const sh = 1 - Math.sin(Math.abs(ang) * Math.PI / 180) * 0.16;
+        nbLeafF.style.filter = nbLeafB.style.filter = 'brightness(' + sh.toFixed(3) + ')';
+        if(t < 1){ requestAnimationFrame(step); return; }
+        const n = forward ? a + 1 : a;
+        nbShow(n, n);
+        nbLeaf.classList.remove('on');
+        done();
+      };
+      requestAnimationFrame(step);
+    });
+  }
+
+  async function nbCloseFast(){
+    if(nb.busy || nb.cur === 1) return;
+    nb.busy = true; nb.closing = true;
+    while(nb.cur > 1){
+      await nbFlip(nb.cur - 1, false, NB_FAST_MS);
+      nb.cur--;
+    }
+    nb.busy = false; nb.closing = false;
+  }
+
+  if(nbBook){
+    nbBook.addEventListener('click', async () => {
+      if(!nb.ready || nb.busy) return;
+      if(nb.cur >= NB_N){ nbCloseFast(); return; }
+      nb.busy = true;
+      await nbFlip(nb.cur, true, NB_FLIP_MS);
+      nb.cur++;
+      nb.busy = false;
+    });
+    nbBook.addEventListener('mouseenter', () => { nb.hover = true; });
+    nbBook.addEventListener('mouseleave', () => { nb.hover = false; nbHint.classList.remove('show'); });
+    window.addEventListener('mousemove', (e) => {
+      if(!nbHint) return;
+      nbHint.style.left = e.clientX + 'px';
+      nbHint.style.top = e.clientY + 'px';
+    });
+  }
+
+  // ---- Nada es Plano: del video a las letras ----
+  // Cuando termina el video, su última imagen se "retrae" y fluye como un
+  // líquido hasta formar el título y el subtítulo; los colores del video pasan
+  // de a poco al negro de las letras (sin un corte a negro) y todo es mate,
+  // sin brillos. Se hace con WebGL: la imagen A es el último cuadro del video
+  // (tal como se veía), la B son las letras dibujadas exactamente donde están.
+  const NEP_MORPH_MS = 2300;
+  const nepMorph = document.getElementById('nepMorph');
+  const NEP_MORPH_VERT = `#version 300 es
+in vec2 aPos; void main(){ gl_Position = vec4(aPos, 0., 1.); }`;
+  const NEP_MORPH_FRAG = `#version 300 es
+precision highp float;
+uniform sampler2D uA;      // último cuadro del video
+uniform sampler2D uB;      // las letras (color + alfa)
+uniform vec2  uRes;
+uniform float uDpr;
+uniform float uT;          // 0 = la imagen del video, 1 = las letras
+uniform float uTime;
+uniform vec2  uC;          // centro del bloque de letras (px reales)
+uniform vec2  uS;          // medio ancho y medio alto del bloque de letras (px reales)
+out vec4 outColor;
+float hash(vec2 p){
+  uvec2 q = uvec2(ivec2(floor(p))) * uvec2(1597334673u, 3812015801u);
+  uint n = (q.x ^ q.y) * 1597334673u;
+  n ^= n >> 16u; n *= 2246822519u; n ^= n >> 13u;
+  return float(n) * (1. / 4294967295.);
+}
+float vnoise(vec2 p){
+  vec2 i = floor(p), f = fract(p); f = f * f * (3. - 2. * f);
+  return mix(mix(hash(i), hash(i + vec2(1., 0.)), f.x), mix(hash(i + vec2(0., 1.)), hash(i + vec2(1., 1.)), f.x), f.y);
+}
+float fbm(vec2 p){
+  float s = 0., a = .5;
+  for(int i = 0; i < 4; i++){ s += a * vnoise(p); p = p * 2.03 + vec2(17.1, 9.2); a *= .5; }
+  return s;
+}
+void main(){
+  vec2 px = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y);
+  float t = uT;
+  float e = t * t * (3. - 2. * t);
+  float wave = sin(3.14159 * t);
+  // el líquido: un flujo que se mueve, más fuerte a mitad de camino
+  vec2 np = px / (150. * uDpr);
+  vec2 w = vec2(fbm(np + vec2(uTime * .35, 0.)), fbm(np + vec2(7.3, -uTime * .3))) - .5;
+  vec2 disp = w * 120. * uDpr * wave;
+  // la imagen del video fluye y se contrae apenas hacia las letras
+  vec2 qa = uC + (px + disp - uC) * (1. + .45 * e);
+  vec2 ua = qa / uRes;
+  vec3 ca = (ua.x < 0. || ua.y < 0. || ua.x > 1. || ua.y > 1.) ? vec3(1.) : texture(uA, ua).rgb;
+  // mate y plano: un poco menos saturado y con menos contraste a medida que fluye
+  float l = dot(ca, vec3(.299, .587, .114));
+  ca = mix(ca, mix(vec3(l), vec3(.5), .2), .3 * smoothstep(0., .6, t));
+  // 1) la imagen se retrae desde los bordes hacia las letras: un frente de
+  //    borde líquido e irregular que se va cerrando alrededor del bloque de texto
+  vec2 dv = (px - uC) / (uS * 1.25);
+  float dist = length(dv);
+  float n1 = fbm(px / (90. * uDpr) + vec2(uTime * .3, 4.1));
+  float front = mix(length(uRes / (uS * 1.25)) + .2, 1.05, smoothstep(0., .62, t));
+  float mFront = 1. - smoothstep(front - .25, front + .05, dist + (n1 - .5) * .9 * wave);
+  // 2) adentro, la mancha va tomando la forma de las letras (de borrosa a nítida)
+  vec2 ub = (px + disp * (1. - e)) / uRes;
+  float lt = smoothstep(.3, .95, t);
+  float lod = mix(6.5, 0., lt);
+  float field = textureLod(uB, ub, lod).a * mix(1., 6., lod / 6.5);
+  float n2 = fbm(px / (50. * uDpr) + vec2(1.7, uTime * .25));
+  float mLet = smoothstep(.42, .62, field * 1.8 + (n2 - .5) * .6 * wave);
+  float m = mFront * mix(1., mLet, smoothstep(.3, .75, t));
+  // color: del video al de las letras, de a poco (sin pasar por un negro de golpe)
+  vec4 bt = texture(uB, ub);
+  vec3 tc = bt.a > .01 ? bt.rgb / bt.a : vec3(.08);
+  vec3 col = mix(ca, tc, smoothstep(.45, .97, t));
+  // en el final, exactamente las letras
+  float fin = smoothstep(.9, 1., t);
+  m = mix(m, bt.a, fin);
+  col = mix(col, tc, fin);
+  outColor = vec4(mix(vec3(1.), col, m), 1.);
+}`;
+  let nepGL = null;
+
+  function nepMorphInit(){
+    if(nepGL !== null) return nepGL;
+    try{
+      const gl = nepMorph.getContext('webgl2', { premultipliedAlpha:false, antialias:false });
+      if(!gl){ nepGL = false; return false; }
+      const sh = (type, src) => { const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); if(!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(o)); return o; };
+      const pr = gl.createProgram();
+      gl.attachShader(pr, sh(gl.VERTEX_SHADER, NEP_MORPH_VERT));
+      gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, NEP_MORPH_FRAG));
+      gl.linkProgram(pr);
+      if(!gl.getProgramParameter(pr, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(pr));
+      gl.useProgram(pr);
+      const buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+      const loc = gl.getAttribLocation(pr, 'aPos');
+      gl.enableVertexAttribArray(loc);
+      gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+      const u = {};
+      ['uA','uB','uRes','uDpr','uT','uTime','uC','uS'].forEach(n => u[n] = gl.getUniformLocation(pr, n));
+      nepGL = { gl, u, tA: gl.createTexture(), tB: gl.createTexture() };
+    } catch(e){ nepGL = false; }
+    return nepGL;
+  }
+
+  function nepUpload(gl, tex, src, mip){
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src);
+    if(mip) gl.generateMipmap(gl.TEXTURE_2D);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, mip ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  }
+
+  // las letras, dibujadas exactamente donde están en la página (misma
+  // tipografía, tamaño, color y espaciado)
+  function nepDrawLetters(w, h, dpr){
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d');
+    x.scale(dpr, dpr);
+    nepInicial.classList.add('measure');
+    const base = nepInicial.getBoundingClientRect();
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    nepInicial.querySelectorAll('.nep-morph-t').forEach(el => {
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+      let node;
+      while((node = walker.nextNode())){
+        if(!node.textContent.trim()) continue;
+        const range = document.createRange(); range.selectNodeContents(node);
+        const r = range.getBoundingClientRect();
+        const st = getComputedStyle(node.parentElement);
+        x.font = st.fontStyle + ' ' + st.fontWeight + ' ' + st.fontSize + ' ' + st.fontFamily;
+        try{ x.letterSpacing = st.letterSpacing === 'normal' ? '0px' : st.letterSpacing; } catch(e){}
+        x.fillStyle = st.color;
+        x.textBaseline = 'alphabetic';
+        const m = x.measureText(node.textContent);
+        const asc = m.fontBoundingBoxAscent, desc = m.fontBoundingBoxDescent;
+        const left = r.left - base.left, top = r.top - base.top;
+        x.fillText(node.textContent, left, top + (r.height - (asc + desc)) / 2 + asc);
+        minX = Math.min(minX, left); minY = Math.min(minY, top);
+        maxX = Math.max(maxX, left + r.width); maxY = Math.max(maxY, top + r.height);
       }
     });
+    nepInicial.classList.remove('measure');
+    return { canvas: c, cx: (minX + maxX) / 2, cy: (minY + maxY) / 2, hw: (maxX - minX) / 2, hh: (maxY - minY) / 2 };
+  }
+
+  // el último cuadro del video, tal como se veía (recortado para cubrir la pantalla)
+  function nepVideoFrame(w, h){
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d');
+    x.fillStyle = '#fff'; x.fillRect(0, 0, w, h);
+    const vw = nepVideo.videoWidth, vh = nepVideo.videoHeight;
+    if(vw && vh){
+      const s = Math.max(w / vw, h / vh);
+      x.drawImage(nepVideo, (w - vw * s) / 2, (h - vh * s) / 2, vw * s, vh * s);
+    }
+    return c;
+  }
+
+  function nepFinishLetters(){
+    nepInicial.classList.add('morph', 'morphed', 'show');   // quedan las letras de verdad; entran los servicios
+    root.classList.remove('work-nav-hidden');
+    nepMorph.classList.add('out');
+    setTimeout(() => { nepMorph.classList.remove('on', 'out'); }, 400);
+  }
+
+  function nepMorphStart(){
+    const G = nepMorphInit();
+    if(!G) return false;
+    const gl = G.gl, dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = Math.round(nepInicial.clientWidth * dpr), h = Math.round(nepInicial.clientHeight * dpr);
+    nepMorph.width = w; nepMorph.height = h;
+    gl.viewport(0, 0, w, h);
+    const letters = nepDrawLetters(w, h, dpr);
+    gl.activeTexture(gl.TEXTURE0); nepUpload(gl, G.tA, nepVideoFrame(w, h), false);
+    gl.activeTexture(gl.TEXTURE1); nepUpload(gl, G.tB, letters.canvas, true);
+    gl.uniform1i(G.u.uA, 0); gl.uniform1i(G.u.uB, 1);
+    gl.uniform2f(G.u.uRes, w, h);
+    gl.uniform1f(G.u.uDpr, dpr);
+    gl.uniform2f(G.u.uC, letters.cx * dpr, letters.cy * dpr);
+    gl.uniform2f(G.u.uS, Math.max(letters.hw, 40) * dpr, Math.max(letters.hh, 30) * dpr);
+    nepInicial.classList.add('morph');
+    const t0 = performance.now();
+    const draw = (now) => {
+      if(!nepMorph.classList.contains('on')) return;
+      const t = Math.min((now - t0) / NEP_MORPH_MS, 1);
+      gl.uniform1f(G.u.uT, t);
+      gl.uniform1f(G.u.uTime, (now - t0) / 1000);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      if(t < 1) requestAnimationFrame(draw); else nepFinishLetters();
+    };
+    // primer cuadro (igual a la última imagen del video) y recién ahí se saca el video
+    nepMorph.classList.remove('out');
+    nepMorph.classList.add('on');
+    gl.uniform1f(G.u.uT, 0); gl.uniform1f(G.u.uTime, 0);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    nepVideo.classList.add('off');
+    requestAnimationFrame(draw);
+    return true;
   }
 
   function nepEndVideo(){
@@ -3382,9 +3820,14 @@
     nepVideoOn = false;
     clearTimeout(nepVideoTimer);
     nepVideo.pause();
-    nepVideo.classList.add('off');                 // se corta, sin fundido
-    root.classList.remove('work-nav-hidden');
-    nepInicial.classList.add('show');              // entran los textos
+    let ok = false;
+    try{ ok = nepMorphStart(); } catch(e){ ok = false; }
+    if(!ok){
+      // sin WebGL: se corta y los textos entran como antes
+      nepVideo.classList.add('off');
+      root.classList.remove('work-nav-hidden');
+      nepInicial.classList.add('show');
+    }
   }
   if(nepVideo){
     nepVideo.addEventListener('ended', nepEndVideo);
@@ -3392,9 +3835,12 @@
   }
 
   function nepSetup(){
-    nepInicial.classList.remove('show');
+    nepInicial.classList.remove('show', 'morph', 'morphed');
     nepVideo.classList.remove('off');
+    nepMorph.classList.remove('on', 'out');
     document.querySelectorAll('.nep-card.flipped').forEach(c => c.classList.remove('flipped'));
+    nbReset();
+    nbPreload();
     nepLayout();
     measureWork();
     nepVideoOn = true;
@@ -3410,12 +3856,20 @@
     clearTimeout(nepVideoTimer);
     nepVideoOn = false;
     if(nepVideo){ nepVideo.pause(); }
-    if(nepInicial) nepInicial.classList.remove('show');
+    if(nepInicial) nepInicial.classList.remove('show', 'morph', 'morphed');
+    if(nepMorph) nepMorph.classList.remove('on', 'out');
     document.querySelectorAll('.nep-card.flipped').forEach(c => c.classList.remove('flipped'));
+    if(nbHint) nbHint.classList.remove('show');
+    nb.hover = false;
+    nbReset();
   }
 
   document.querySelectorAll('.nep-card').forEach(card => {
-    card.addEventListener('click', () => card.classList.toggle('flipped'));
+    card.addEventListener('click', () => {
+      // solo una tarjeta puede estar dada vuelta: la que estaba, vuelve al frente
+      document.querySelectorAll('.nep-card.flipped').forEach(c => { if(c !== card) c.classList.remove('flipped'); });
+      card.classList.toggle('flipped');
+    });
   });
 
   // ---- Un Mundo para Exprimir: geometral -- se levanta al pasar el mouse
@@ -4272,6 +4726,8 @@
     if(!dir) return;
     // Nada es Plano: mientras corre el video del principio no se puede bajar
     if(workTrack === nepTrackEl && nepVideoOn && dir > 0) return;
+    // y con el cuaderno abierto, para subir primero se cierra
+    if(workTrack === nepTrackEl && dir < 0 && (nb.cur > 1 || nb.closing)){ nbCloseFast(); return; }
 
     // ya estirando: seguir empujando para el mismo lado sostiene el estirado;
     // para el otro lado lo suelta y vuelve al scroll normal
@@ -4362,7 +4818,7 @@
       updateAlbCoverPin();
 
       if(workTrack === dfTrackEl) dfFrame(vh);
-      if(workTrack === nepTrackEl) nepFrame();
+      if(workTrack === nepTrackEl){ nepFrame(); nbFrame(); }
 
       if(workTrack === exprTrackEl){
         exprRenderFruits(performance.now());
