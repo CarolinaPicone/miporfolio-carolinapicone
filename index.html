@@ -461,26 +461,28 @@
      Un Mundo para Exprimir. */
   .nep-concept{ overflow:visible; }
   .nep-stage{ position:relative; height:100vh; will-change:transform; }
-  .nep-window{ position:absolute; left:50%; top:50%; width:min(52ch,80vw); transform:translateX(-50%); perspective:2600px; }
-  .nep-flow{ position:relative; text-align:center; transform-style:preserve-3d; }
-  .nep-flow p{ transform-style:preserve-3d; }
+  .nep-window{ position:absolute; left:50%; top:50%; width:min(52ch,80vw); transform:translateX(-50%); }
+  .nep-flow{ position:relative; text-align:center; will-change:transform; }
   /* la pregunta: misma tipografía que la cita del concepto de La Sombrerera
-     (Instrument Sans itálica), en tinta y bastante más grande */
+     (Instrument Sans itálica), en tinta y bastante más grande. Cada letra
+     aparece por separado (la separación con los párrafos la fija el JS) */
   .nep-question{ font-size:clamp(22px,2.5vw,36px); line-height:1.25; font-style:italic; letter-spacing:-.005em; color:var(--ink);
-    width:min(760px,90vw); margin-left:50%; transform:translateX(-50%); margin-bottom:1.3em; }
+    width:min(760px,90vw); margin-left:50%; transform:translateX(-50%); }
+  .nep-qw{ display:inline-block; white-space:nowrap; }
+  .nep-ql{ display:inline-block; will-change:transform,opacity; }
   .nep-flow p.nep-p{ font-size:clamp(12.5px,1.05vw,14px); line-height:1.85; color:var(--ink); margin-bottom:1.25em; }
   .nep-flow p.nep-p:last-child{ margin-bottom:0; }
-  /* cada línea se ubica sobre un cilindro (lo calcula el JS cuadro a cuadro):
-     las de los bordes se inclinan, se alejan y se funden con el fondo, sin
-     que el párrafo se separe nunca */
-  .nep-rl-line{ display:block; will-change:transform,opacity; backface-visibility:hidden; }
+  /* cada línea se funde con el fondo al acercarse a los bordes de la franja
+     nítida (5 líneas); su opacidad la calcula el JS */
+  .nep-rl-line{ display:block; will-change:opacity; }
   .nep-rl-inner{ display:inline; }
 
   /* ---- 3. TARJETAS ---- */
   .nep-cards{ height:100vh; display:flex; align-items:center; justify-content:center; }
-  .nep-cards-row{ display:flex; gap:clamp(24px,3vw,48px); align-items:flex-start; }
-  /* 2/3 del tamaño que tenían antes */
-  .nep-card-wrap{ --s: calc(min((100vw - var(--nep-m) * 4 - 2 * clamp(24px,3vw,48px)) / 3, 56vh, 440px) * .667);
+  /* repartidas de forma pareja en todo el ancho de la pantalla (mismo espacio entre ellas y hacia los bordes) */
+  .nep-cards-row{ display:flex; width:100%; justify-content:space-evenly; align-items:flex-start; }
+  /* 2/3 del tamaño que tenían al principio, y después un 15% más */
+  .nep-card-wrap{ --s: calc(min((100vw - var(--nep-m) * 4 - 2 * clamp(24px,3vw,48px)) / 3, 56vh, 440px) * .767);
     --t: 12px;  /* grosor */
     --r: 5px;   /* bordes levemente redondeados */
     width:var(--s); margin:0; }
@@ -528,6 +530,18 @@
   .nep-leaf-front{ background-position:100% 0; }
   .nep-leaf-back{ background-position:0 0; transform:rotateY(180deg); }
   .nep-book.ready{ cursor:pointer; }
+  /* textos del cuaderno: mismo tamaño y color que el concepto */
+  .nep-bt{ position:absolute; top:0; width:min(46ch,38vw); will-change:transform; }
+  .nep-bt p{ font-size:clamp(12.5px,1.05vw,14px); line-height:1.85; color:var(--ink); margin-bottom:1.25em; }
+  .nep-bt p:last-child{ margin-bottom:0; }
+  .nep-bt p.nep-bt-gap{ height:1.4em; margin:0; }
+  /* el primero pasa por el centro de la pantalla y se funde en los bordes de arriba y abajo */
+  .nep-bt1-wrap{ position:absolute; inset:0; pointer-events:none; }
+  .nep-bt1{ left:50%; text-align:center; }
+  .nep-bt1-mask{ -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 22vh, #000 calc(100vh - 22vh), transparent 100vh);
+                 mask-image:linear-gradient(to bottom, transparent 0, #000 22vh, #000 calc(100vh - 22vh), transparent 100vh); }
+  /* el segundo, alineado a la izquierda */
+  .nep-bt2{ left:0; text-align:left; }
   .nep-book-hint{ position:fixed; z-index:340; pointer-events:none; opacity:0; transform:translate(16px,-50%);
     transition:opacity .3s ease; font-size:10.5px; letter-spacing:.1em; color:var(--stone); }
   .nep-book-hint.show{ opacity:1; }
@@ -1127,9 +1141,16 @@
           <!-- 4. CUADERNO: entra desde la izquierda, se corre a la derecha y con click se pasan las páginas -->
           <section class="nep-part nep-book-sec" id="nepBookSec">
             <div class="nep-book-stage" id="nepBookStage">
+              <!-- texto que acompaña la entrada del cuaderno: pasa por el centro con el scroll -->
+              <div class="nep-bt1-wrap nep-bt1-mask"><div class="nep-bt nep-bt1" id="nepBt1"><p>La investigación sobre color, emoción, memoria e identidad dio lugar a una extensa experimentación textil. La psicología del color funcionó como punto de partida para explorar distintas relaciones cromáticas, mientras la búsqueda de materiales permitió comprender cómo cada superficie modificaba la percepción del color y su expresión.</p><p>A través de pruebas de color, combinaciones y sublimados, se desarrollaron múltiples variantes sobre los textiles seleccionados hasta encontrar las relaciones precisas para cada material. El proceso convirtió la investigación conceptual en decisiones concretas de producto, construyendo un lenguaje cromático propio para la colección.</p><p class="nep-bt-gap"></p><p>La experimentación se extendió a estampas, texturas, transparencias y superposiciones, explorando distintas formas de hacer visible la multiplicidad que atraviesa el concepto. Cada recurso fue desarrollado en relación con los materiales y con su comportamiento sobre la prenda, buscando que lo visual y lo material construyeran una misma expresión.</p><p>El resultado surge de un proceso de prueba y ajuste en el que la exploración no fue un paso previo al diseño, sino parte de su propia construcción.</p></div></div>
+              <!-- texto que entra desde la izquierda, siguiendo al cuaderno, y frena del lado derecho -->
+              <div class="nep-bt nep-bt2" id="nepBt2"><p>El desarrollo de la colección implicó una búsqueda específica de moldería para cada diseño, explorando formas, proporciones y resoluciones constructivas hasta encontrar aquellas que mejor respondieran a las propuestas. A partir de allí se trabajó con prototipos y pruebas de calce, ajustando cada diseño hasta alcanzar su resolución definitiva. El proceso se complementó con la elaboración de fichas técnicas para cada prenda.</p><p>La colección se compone de 15 prendas, representadas en sus geometrales y construidas a partir del lenguaje desarrollado durante el proceso. De ellas, cuatro fueron materializadas, llevando la experimentación y las decisiones de diseño a su resolución final.</p></div>
               <div class="nep-book" id="nepBook">
+                <!-- debajo de la hoja que gira: las dos páginas (la que se va y la que llega), para fundirlas -->
                 <div class="nep-half nep-half-l" id="nepHalfL"></div>
+                <div class="nep-half nep-half-l" id="nepHalfL2"></div>
                 <div class="nep-half nep-half-r" id="nepHalfR"></div>
+                <div class="nep-half nep-half-r" id="nepHalfR2"></div>
                 <div class="nep-leaf" id="nepLeaf">
                   <div class="nep-leaf-face nep-leaf-front" id="nepLeafF"></div>
                   <div class="nep-leaf-face nep-leaf-back" id="nepLeafB"></div>
@@ -3415,70 +3436,97 @@
 
   const NEP_WEIGHT = 1.7;    // cuánto scroll hace falta por cada px que se mueve el texto (más = más pesado)
   const NEP_LERP   = 0.07;   // y el texto sigue al scroll con un peso propio, gradual
-  const NEP_ARC    = 0.78;   // radio del cilindro (en altos de la ventana)
+  const NEP_LINES  = 5;      // la franja nítida mide 5 líneas
+  const NEP_FADE   = 2.6;    // y las líneas se funden en este alto (en líneas) por arriba y por abajo
+  const NEP_Q_RISE = 0.3;    // la pregunta aparece mientras sube este tramo (en altos de pantalla) hasta el centro
+  const NEP_Q_DWELL = 0.22;  // y se queda quieta en el centro este tramo de scroll
+
+  // la pregunta, letra por letra (las palabras no se cortan)
+  function nepSplitLetters(p){
+    p.innerHTML = p.dataset.text.split(' ').map(w =>
+      '<span class="nep-qw">' + Array.from(w).map(ch => '<span class="nep-ql">' + ch + '</span>').join('') + '</span>'
+    ).join(' ');
+  }
 
   function nepLayout(){
     if(!nepFlow || workTrack !== nepTrackEl) return;
     const vh = window.innerHeight;
     nepFlow.style.transform = 'none';
-    nepWindow.style.height = '0px';
-    nepFlow.querySelectorAll('p[data-text]').forEach(nepSplit);
-    // la ventana: del alto del párrafo más corto (si la pregunta fuera más alta, de su alto)
-    const qh = nepFlow.querySelector('.nep-question').getBoundingClientRect().height;
-    const H = Math.max(document.getElementById('nepP1').getBoundingClientRect().height, qh);
+    const q = nepFlow.querySelector('.nep-question');
+    nepSplitLetters(q);
+    nepFlow.querySelectorAll('p.nep-p[data-text]').forEach(nepSplit);
+    const lineH = parseFloat(getComputedStyle(document.getElementById('nepP1')).lineHeight);
+    const H = NEP_LINES * lineH;                   // la franja nítida
+    const F = NEP_FADE * lineH;                    // el fundido de cada lado
+    const A = NEP_Q_RISE * vh;
     nepWindow.style.height = H + 'px';
     nepWindow.style.marginTop = (-H / 2) + 'px';
-    // todo se mide recién ahora (con la ventana ya ubicada), respecto de su borde de arriba
+    // separación entre la pregunta y los párrafos: la pregunta tiene que
+    // haberse ido del todo antes de que asome la primera línea
+    const qh = q.getBoundingClientRect().height;
+    q.style.marginBottom = Math.max(H / 2 - lineH / 2 + F + A - qh / 2 - lineH / 2 + 30, 20) + 'px';
     const fr = nepFlow.getBoundingClientRect();
-    const qr = nepFlow.querySelector('.nep-question').getBoundingClientRect();
-    const lines = Array.from(nepFlow.querySelectorAll('.nep-rl-line')).map(el => {
+    const qr = q.getBoundingClientRect();
+    const letters = Array.from(q.querySelectorAll('.nep-ql'));
+    const lines = Array.from(nepFlow.querySelectorAll('p.nep-p .nep-rl-line')).map(el => {
       const r = el.getBoundingClientRect();
-      return { el, top: r.top - fr.top, h: r.height };
+      return { el, top: r.top - fr.top, h: r.height, op: -1 };
     });
-    const R = NEP_ARC * H;
-    const gone = R * Math.PI / 2;               // a esta distancia del centro, la línea ya está de canto (no se ve)
+    const qc = qr.top - fr.top + qr.height / 2;    // centro de la pregunta (en el texto)
     const last = lines[lines.length - 1];
-    const y0 = H / 2 - (qr.top - fr.top + qr.height / 2);                     // la pregunta, centrada
-    const y1 = H / 2 - gone - last.h - (last.top + last.h / 2);               // la última línea, ya ida por arriba
-    const Dtext = Math.max(y0 - y1, 0);
-    const D = Dtext * NEP_WEIGHT;
+    const y0 = H / 2 + A - qc;                                  // la pregunta arranca A por debajo del centro
+    const yEnd = H / 2 - (H / 2 - lineH / 2) - F - last.h - (last.top + last.h / 2);   // la última línea, ya fundida arriba
+    const Dtext = Math.max(y0 - yEnd, 0);
+    const dwell = NEP_Q_DWELL * vh;
+    const D = (Dtext + dwell) * NEP_WEIGHT;
     nepFitCards();
     nbLayout();
     nepConcept.style.height = (vh + D) + 'px';
-    nepL = { H, R, y0, D, lines, y: nepL && nepL.y0 === y0 ? nepL.y : y0 };
+    nepL = { H, F, A, lineH, y0, D, dwell, qc, letters, lines, y: y0 };
     nepFrame(true);
   }
 
   function nepFrame(snap){
     if(!nepL) return;
+    const L = nepL;
     const local = workCurrent - nepConcept.offsetTop;
-    const pin = Math.min(Math.max(local, 0), nepL.D);
+    const pin = Math.min(Math.max(local, 0), L.D);
     nepStage.style.transform = 'translateY(' + pin.toFixed(1) + 'px)';
-    // el texto sigue al scroll con demora propia (pesado y gradual)
-    const target = nepL.y0 - pin / NEP_WEIGHT;
-    nepL.y = snap === true ? target : nepL.y + (target - nepL.y) * NEP_LERP;
-    if(Math.abs(target - nepL.y) < 0.05) nepL.y = target;
-    const y = nepL.y, H = nepL.H, R = nepL.R;
-    // cada línea, sobre un cilindro: en el centro, plana y nítida; hacia los
-    // bordes se inclina, se aleja y se funde con el fondo. Su posición se
-    // "aprieta" contra la de al lado, así el párrafo no se separa nunca
-    nepL.lines.forEach(L => {
-      const d = y + L.top + L.h / 2 - H / 2;               // distancia al centro de la ventana
-      const th = Math.max(Math.min(d / R, Math.PI / 2), -Math.PI / 2);
-      const yp = R * Math.sin(th);
-      const z = R * (Math.cos(th) - 1);
-      const a = Math.abs(th);
-      const o = a < 0.72 ? 1 : Math.max(0, 1 - (a - 0.72) / (Math.PI / 2 - 0.72));
-      const op = o * o * (3 - 2 * o);
-      if(op <= 0.001){
-        if(L.vis !== false){ L.el.style.opacity = '0'; L.vis = false; }
-        return;
-      }
-      L.vis = true;
-      L.el.style.opacity = op.toFixed(3);
-      L.el.style.transform = 'translateY(' + (yp - d).toFixed(2) + 'px) translateZ(' + z.toFixed(2) + 'px) rotateX(' + (-th * 57.2958).toFixed(2) + 'deg)';
-    });
+    // recorrido del texto: sube con el scroll, salvo un tramo en el que la
+    // pregunta se queda quieta en el centro
+    let s = pin / NEP_WEIGHT;
+    if(s > L.A) s = Math.max(L.A, s - L.dwell);
+    const target = L.y0 - s;
+    L.y = snap === true ? target : L.y + (target - L.y) * NEP_LERP;
+    if(Math.abs(target - L.y) < 0.05) L.y = target;
+    const y = L.y;
     nepFlow.style.transform = 'translateY(' + y.toFixed(2) + 'px)';
+
+    // la pregunta: al subir hacia el centro, las letras se van apoyando una
+    // por una; al irse, se funden con el fondo una por una
+    const dq = y + L.qc - L.H / 2;                 // + abajo del centro, − arriba
+    const n = L.letters.length, S = 1.6;
+    const pin_ = dq > 0 ? 1 - Math.min(dq / L.A, 1) : 1;
+    const pout = dq < 0 ? Math.min(-dq / L.A, 1) : 0;
+    L.letters.forEach((el, i) => {
+      const k = i / n * S;
+      const a = Math.min(Math.max(pin_ * (1 + S) - k, 0), 1);
+      const b = Math.min(Math.max(pout * (1 + S) - k, 0), 1);
+      const ea = a * a * (3 - 2 * a), eb = b * b * (3 - 2 * b);
+      const op = ea * (1 - eb);
+      el.style.opacity = op.toFixed(3);
+      el.style.transform = ea >= 1 ? '' : 'translateY(' + (-(1 - ea) * 0.35).toFixed(3) + 'em)';
+    });
+
+    // los párrafos: nítidos en la franja de 5 líneas, se funden hacia los bordes
+    const half = L.H / 2 - L.lineH / 2;
+    L.lines.forEach(ln => {
+      const d = Math.abs(y + ln.top + ln.h / 2 - L.H / 2);
+      let o = d <= half ? 1 : Math.max(0, 1 - (d - half) / L.F);
+      o = o * o * (3 - 2 * o);
+      const r = Math.round(o * 1000) / 1000;
+      if(r !== ln.op){ ln.op = r; ln.el.style.opacity = r; }
+    });
   }
 
   // ---- Nada es Plano: cuaderno ----
@@ -3500,26 +3548,36 @@
   const nbStage = document.getElementById('nepBookStage');
   const nbBook  = document.getElementById('nepBook');
   const nbL = document.getElementById('nepHalfL'), nbR = document.getElementById('nepHalfR');
+  const nbL2 = document.getElementById('nepHalfL2'), nbR2 = document.getElementById('nepHalfR2');
   const nbLeaf = document.getElementById('nepLeaf');
   const nbLeafF = document.getElementById('nepLeafF'), nbLeafB = document.getElementById('nepLeafB');
   const nbHint = document.getElementById('nepBookHint');
+  const nbT1 = document.getElementById('nepBt1'), nbT2 = document.getElementById('nepBt2');
   const nbImg = n => 'url("assets/nada-es-plano-cuaderno-' + n + '.webp")';
   const nb = { cur: 1, busy: false, ready: false, closing: false, k: 1, phases: null, hover: false };
 
-  function nbShow(left, right){
-    nbL.style.backgroundImage = left ? nbImg(left) : 'none';
-    nbR.style.backgroundImage = right ? nbImg(right) : 'none';
+  // una página quieta (las capas de "la que llega" quedan escondidas)
+  function nbShow(n){
+    nbL.style.backgroundImage = nbR.style.backgroundImage = nbImg(n);
+    nbL.style.opacity = nbR.style.opacity = '1';
+    nbL2.style.opacity = nbR2.style.opacity = '0';
   }
   function nbReset(){
     nb.cur = 1; nb.busy = false; nb.closing = false;
     nbLeaf.classList.remove('on');
-    nbShow(1, 1);
+    nbShow(1);
   }
   function nbPreload(){
     for(let i = 1; i <= NB_N; i++){ const im = new Image(); im.src = 'assets/nada-es-plano-cuaderno-' + i + '.webp'; }
   }
 
-  // tamaño y tramos del recorrido
+  // tamaño y tramos del recorrido (px de scroll mientras la sección está fija):
+  //  1) el cuaderno entra desde la izquierda y queda asomado (se ve un poco
+  //     más de la mitad); a la vez, el primer texto pasa por el centro
+  //  2) cuando el texto termina, el cuaderno sale del costado y llega a su
+  //     lugar (lomo en el centro): ahí se pasan las páginas con click
+  //  3) se va por la derecha y, siguiéndolo, entra el segundo texto desde la
+  //     izquierda hasta frenar del lado derecho
   function nbLayout(){
     const vw = window.innerWidth, vh = window.innerHeight;
     // la tapa mide un 60% del alto de la pantalla (sin pasarse de ancho con el cuaderno abierto)
@@ -3527,8 +3585,9 @@
     nb.k = k;
     nbBook.style.width = (2000 * k) + 'px';
     nbBook.style.height = (1700 * k) + 'px';
-    const A = vh * 0.9, B = vh * 0.45, C = vh * 0.7;
-    nb.phases = { A, B, C, D: A + B + C };
+    const T1 = vh + nbT1.offsetHeight;              // el primer texto: entra por abajo y sale por arriba
+    const A = vh * 0.8, C = vh * 0.7, Dh = vh * 0.55, E = vh * 1.0;
+    nb.phases = { A, T1, C, Dh, E, D: T1 + C + Dh + E };
     nbSec.style.height = (vh + nb.phases.D) + 'px';
   }
 
@@ -3541,41 +3600,59 @@
     const pin = Math.min(Math.max(local, 0), P.D);
     nbStage.style.transform = 'translateY(' + pin.toFixed(1) + 'px)';
     // posiciones del lomo en la pantalla
-    const xOut   = -800 * k - 30;                              // cuaderno (con los papeles que sobresalen) fuera de la pantalla, a la izquierda
-    const xMid   = vw / 2 - NB_FRONT_W * k / 2;                // cerrado y centrado
-    const xFinal = vw / 2;                                     // lomo en el centro: al abrirse, queda centrado
+    const xOut   = -800 * k - 30;                         // cuaderno fuera de la pantalla, a la izquierda
+    const xPeek  = -0.45 * NB_FRONT_W * k;                // asomado: se ve un poco más de la mitad de la tapa
+    const xFinal = vw / 2;                                // lomo en el centro: al abrirse, queda centrado
+    const xGone  = vw + 760 * k + 30;                     // fuera de la pantalla, a la derecha
+    const c0 = P.T1, c1 = c0 + P.C, e0 = c1 + P.Dh;
     let xs;
-    if(pin <= P.A) xs = xOut + (xMid - xOut) * nbEase(pin / P.A);
-    else if(pin <= P.A + P.B) xs = xMid;
-    else xs = xMid + (xFinal - xMid) * nbEase((pin - P.A - P.B) / P.C);
+    if(pin <= P.A) xs = xOut + (xPeek - xOut) * nbEase(pin / P.A);
+    else if(pin <= c0) xs = xPeek;
+    else if(pin <= c1) xs = xPeek + (xFinal - xPeek) * nbEase((pin - c0) / P.C);
+    else if(pin <= e0) xs = xFinal;
+    else xs = xFinal + (xGone - xFinal) * nbEase((pin - e0) / P.E);
     const top = vh / 2 - (NB_TOP + NB_H / 2) * k;
     nbBook.style.transform = 'translate(' + (xs - NB_SPINE * k).toFixed(1) + 'px,' + top.toFixed(1) + 'px)';
-    const ready = pin >= P.D - 2;
+    // primer texto: entra por abajo y sale por arriba, al ritmo del scroll
+    nbT1.style.transform = 'translate(-50%,' + (vh - pin).toFixed(1) + 'px)';
+    // segundo texto: entra desde la izquierda, siguiendo al cuaderno, y frena del lado derecho
+    const w2 = nbT2.offsetWidth, h2 = nbT2.offsetHeight;
+    const m = Math.min(Math.max(vw * 0.04, 20), 56);
+    const x2a = -w2 - 30, x2b = vw - m * 2 - w2;
+    const x2 = x2a + (x2b - x2a) * nbEase((pin - e0) / P.E);
+    nbT2.style.transform = 'translate(' + x2.toFixed(1) + 'px,' + (vh / 2 - h2 / 2).toFixed(1) + 'px)';
+    const ready = pin >= c1 - 2 && pin <= e0 + 2;
     if(ready !== nb.ready){ nb.ready = ready; nbBook.classList.toggle('ready', ready); }
     nbHint.classList.toggle('show', nb.ready && nb.hover && !nb.busy);
   }
 
   function nbEaseInOut(x){ return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
 
-  // una hoja que gira sobre el lomo, entre la página a (abajo) y a+1:
-  // forward: de a a a+1 (la hoja va de 0 a -180°); si no, de a+1 a a
+  // una hoja que gira sobre el lomo, entre la página a y a+1 (forward: de a
+  // hacia a+1; si no, al revés). Debajo, las dos páginas se funden de a poco
+  // (la que se va y la que llega), así nada cambia de golpe
   function nbFlip(a, forward, ms){
     return new Promise(done => {
-      nbShow(a, a + 1);                           // lo que queda debajo: izquierda de a, derecha de a+1
-      nbLeafF.style.backgroundImage = nbImg(a);   // frente de la hoja: derecha de a
-      nbLeafB.style.backgroundImage = nbImg(a + 1); // dorso: izquierda de a+1
+      nbL.style.backgroundImage = nbR.style.backgroundImage = nbImg(a);
+      nbL2.style.backgroundImage = nbR2.style.backgroundImage = nbImg(a + 1);
+      nbLeafF.style.backgroundImage = nbImg(a);       // frente de la hoja: derecha de a
+      nbLeafB.style.backgroundImage = nbImg(a + 1);   // dorso: izquierda de a+1
       nbLeaf.classList.add('on');
       const t0 = performance.now();
       const step = (now) => {
         const t = Math.min((now - t0) / ms, 1), e = nbEaseInOut(t);
-        const ang = forward ? -180 * e : -180 * (1 - e);
-        nbLeaf.style.transform = 'rotateY(' + ang.toFixed(2) + 'deg)';
+        const f = forward ? e : 1 - e;                // 0 = página a, 1 = página a+1
+        nbLeaf.style.transform = 'rotateY(' + (-180 * f).toFixed(2) + 'deg)';
+        // del lado derecho, la página que llega aparece mientras la hoja se levanta;
+        // del izquierdo, mientras la hoja se apoya
+        const r2 = nbEase(f / 0.5), l2 = nbEase((f - 0.5) / 0.5);
+        nbR2.style.opacity = r2.toFixed(3); nbR.style.opacity = (1 - r2).toFixed(3);
+        nbL2.style.opacity = l2.toFixed(3); nbL.style.opacity = (1 - l2).toFixed(3);
         // sombra suave mientras la hoja está levantada (oscurece solo la hoja, no su fondo transparente)
-        const sh = 1 - Math.sin(Math.abs(ang) * Math.PI / 180) * 0.16;
+        const sh = 1 - Math.sin(Math.PI * f) * 0.16;
         nbLeafF.style.filter = nbLeafB.style.filter = 'brightness(' + sh.toFixed(3) + ')';
         if(t < 1){ requestAnimationFrame(step); return; }
-        const n = forward ? a + 1 : a;
-        nbShow(n, n);
+        nbShow(forward ? a + 1 : a);
         nbLeaf.classList.remove('on');
         done();
       };
@@ -3617,7 +3694,7 @@
   // de a poco al negro de las letras (sin un corte a negro) y todo es mate,
   // sin brillos. Se hace con WebGL: la imagen A es el último cuadro del video
   // (tal como se veía), la B son las letras dibujadas exactamente donde están.
-  const NEP_MORPH_MS = 2300;
+  const NEP_MORPH_MS = 2700;   // la imagen se retrae rápido (~0.7s) y la formación de las letras se toma el resto
   const nepMorph = document.getElementById('nepMorph');
   const NEP_MORPH_VERT = `#version 300 es
 in vec2 aPos; void main(){ gl_Position = vec4(aPos, 0., 1.); }`;
@@ -3651,7 +3728,7 @@ void main(){
   vec2 px = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y);
   float t = uT;
   float e = t * t * (3. - 2. * t);
-  float wave = sin(3.14159 * t);
+  float wave = sin(3.14159 * sqrt(t));   // el flujo es más fuerte al principio (cuando se retrae)
   // el líquido: un flujo que se mueve, más fuerte a mitad de camino
   vec2 np = px / (150. * uDpr);
   vec2 w = vec2(fbm(np + vec2(uTime * .35, 0.)), fbm(np + vec2(7.3, -uTime * .3))) - .5;
@@ -3668,22 +3745,23 @@ void main(){
   vec2 dv = (px - uC) / (uS * 1.25);
   float dist = length(dv);
   float n1 = fbm(px / (90. * uDpr) + vec2(uTime * .3, 4.1));
-  float front = mix(length(uRes / (uS * 1.25)) + .2, 1.05, smoothstep(0., .62, t));
+  float front = mix(length(uRes / (uS * 1.25)) + .2, 1.05, smoothstep(0., .26, t));
   float mFront = 1. - smoothstep(front - .25, front + .05, dist + (n1 - .5) * .9 * wave);
   // 2) adentro, la mancha va tomando la forma de las letras (de borrosa a nítida)
   vec2 ub = (px + disp * (1. - e)) / uRes;
-  float lt = smoothstep(.3, .95, t);
-  float lod = mix(6.5, 0., lt);
-  float field = textureLod(uB, ub, lod).a * mix(1., 6., lod / 6.5);
+  // las letras toman forma enseguida y se van definiendo despacio hasta el final
+  float lt = smoothstep(.12, 1., t);
+  float lod = 6. * pow(1. - lt, 1.6);
+  float field = textureLod(uB, ub, lod).a * mix(1., 6., lod / 6.);
   float n2 = fbm(px / (50. * uDpr) + vec2(1.7, uTime * .25));
   float mLet = smoothstep(.42, .62, field * 1.8 + (n2 - .5) * .6 * wave);
-  float m = mFront * mix(1., mLet, smoothstep(.3, .75, t));
+  float m = mFront * mix(1., mLet, smoothstep(.1, .34, t));
   // color: del video al de las letras, de a poco (sin pasar por un negro de golpe)
   vec4 bt = texture(uB, ub);
   vec3 tc = bt.a > .01 ? bt.rgb / bt.a : vec3(.08);
-  vec3 col = mix(ca, tc, smoothstep(.45, .97, t));
+  vec3 col = mix(ca, tc, smoothstep(.3, 1., t));
   // en el final, exactamente las letras
-  float fin = smoothstep(.9, 1., t);
+  float fin = smoothstep(.93, 1., t);
   m = mix(m, bt.a, fin);
   col = mix(col, tc, fin);
   outColor = vec4(mix(vec3(1.), col, m), 1.);
