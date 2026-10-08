@@ -434,6 +434,13 @@
      pantalla; su opacidad (0 = blanco) la maneja el JS con el scroll */
   .nep-bg{ position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0;
     background:url("assets/nada-es-plano-ia-creativa-fondo.jpg") center / cover no-repeat; }
+  /* el de la foto de la IA: cuando la foto se va con el scroll, este fondo se
+     va con ella (son una sola cosa) y abajo se funde de a poco con el blanco */
+  .nep-bg-ia{ bottom:auto; height:170vh; will-change:transform;
+    background:linear-gradient(to bottom, rgba(176,170,152,0) 88vh, #b0aa98 100vh) 0 0 / 100% 100vh no-repeat,
+               url("assets/nada-es-plano-ia-creativa-fondo.jpg") 0 0 / 100% 100vh no-repeat, #b0aa98;
+    -webkit-mask-image:linear-gradient(to bottom, #000 100vh, transparent 170vh);
+            mask-image:linear-gradient(to bottom, #000 100vh, transparent 170vh); }
 
   /* ---- 1. INICIAL ---- */
   .nep-inicial{ height:100vh; overflow:hidden; }
@@ -441,8 +448,8 @@
   /* al final: primero empieza a acercarse de a poco a las caras de las chicas
      (el punto de apoyo del zoom lo calcula el JS) y, en el último segundo, se
      funde en blanco (rápido: termina antes de que el video frene) */
-  .nep-video.zoom{ transform:scale(1.2); transition:transform 2.9s cubic-bezier(.4,0,.6,1); }
-  .nep-video.zoom.fade{ opacity:0; transition:transform 2.9s cubic-bezier(.4,0,.6,1), opacity .78s cubic-bezier(.45,0,.75,1); }
+  .nep-video.zoom{ transform:scale(1.2); transition:transform 2.3s cubic-bezier(.4,0,.6,1); }
+  .nep-video.zoom.fade{ opacity:0; transition:transform 2.3s cubic-bezier(.4,0,.6,1), opacity .78s cubic-bezier(.45,0,.75,1); }
   .nep-video.off{ display:none; }
   .nep-head{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); text-align:center; white-space:nowrap; }
   .nep-title{ font-size:clamp(34px,4.6vw,64px); font-weight:500; line-height:1.02; letter-spacing:-.015em; color:var(--ink); }
@@ -452,7 +459,7 @@
   /* entran "desde el fondo": apenas más chicos y transparentes. Primero el
      título; después el subtítulo y, a la vez, los servicios */
   .nep-in{ opacity:0; transform:scale(.94); }
-  .nep-inicial.show .nep-in{ animation: nepFromBack 1.1s cubic-bezier(.22,1,.36,1) forwards; }
+  .nep-inicial.show .nep-in{ animation: nepFromBack .7s cubic-bezier(.22,1,.36,1) forwards; }
   @keyframes nepFromBack{ to{ opacity:1; transform:scale(1); } }
 
   .nep-gap{ width:100vw; }
@@ -465,7 +472,7 @@
      Un Mundo para Exprimir. */
   .nep-concept{ overflow:visible; margin-top:-35vh; }   /* encimado con la parte inicial: casi sin espacio en blanco antes de la pregunta */
   .nep-stage{ position:relative; height:100vh; will-change:transform; }
-  .nep-window{ position:absolute; left:50%; top:50%; width:min(52ch,80vw); transform:translateX(-50%); }
+  .nep-window{ position:absolute; left:50%; top:50%; width:min(60ch,80vw); transform:translateX(-50%); }
   .nep-flow{ position:relative; text-align:center; will-change:transform; }
   /* la pregunta: misma tipografía que la cita del concepto de La Sombrerera
      (Instrument Sans itálica), en tinta y bastante más grande. Cada letra
@@ -549,7 +556,7 @@
     transition:opacity .3s ease; font-size:10.5px; letter-spacing:.1em; color:var(--stone); }
   .nep-book-hint.show{ opacity:1; }
   /* al llegar a la contratapa: "[ Scroll ]" debajo de ella (estilo de la intro); el lugar lo pone el JS */
-  .nep-book-scroll{ position:absolute; left:0; top:0; transform:translateX(-50%); pointer-events:none; white-space:nowrap;
+  .nep-book-scroll{ position:absolute; left:0; top:0; transform:translate(-50%,-50%); pointer-events:none; white-space:nowrap;
     font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--stone); opacity:0; transition:opacity .8s ease; }
   .nep-book-scroll.show{ opacity:1; }
 
@@ -557,50 +564,63 @@
   /* entra desde el margen izquierdo con el scroll y se acomoda sola en el
      centro; tamaño y lugar los pone el JS. Fondo: .nep-bg (la misma foto,
      difuminada y sin las figuras) */
+  /* la imagen es la foto con su fondo completado alrededor (2240×1460, la foto
+     en 120,172 – 2120,1288): los bordes se funden con .nep-bg, así no se nota
+     dónde termina */
   .nep-ia{ position:absolute; left:0; top:0; will-change:transform; }
-  .nep-ia-img{ width:100%; height:100%; display:block; }
+  .nep-ia-img{ width:100%; height:100%; display:block;
+    -webkit-mask-image:linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%), linear-gradient(to bottom, transparent 0, #000 14%, #000 86%, transparent 100%);
+    -webkit-mask-composite:source-in;
+            mask-image:linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%), linear-gradient(to bottom, transparent 0, #000 14%, #000 86%, transparent 100%);
+            mask-composite:intersect; }
   /* pie de foto: mismo estilo que los de las tarjetas (en un tono que se lea sobre el fondo de la foto) */
-  .nep-ia-cap{ position:absolute; left:0; top:calc(100% + 12px); font-size:11px; letter-spacing:.04em; color:#6f685c; white-space:nowrap; }
+  .nep-ia-cap{ position:absolute; left:5.36%; top:calc(88.22% + 12px); font-size:11px; letter-spacing:.04em; color:#6f685c; white-space:nowrap; }
+  /* bocetos del proceso, en el margen derecho (alto y lugar: el JS) */
+  .nep-proc-img{ position:absolute; right:0; top:0; width:auto; display:block; will-change:transform; pointer-events:none; }
 
   /* ---- 5. LA COLECCIÓN ---- */
   /* imagen grande a la izquierda y el texto a la derecha */
-  .nep-coll{ height:100vh; --coll-w: min(56vw, 84vh * 1.414); }
+  .nep-coll{ height:100vh; --coll-w: min(53.2vw, 79.8vh * 1.414); }   /* un 5% más chica que la primera versión grande */
   .nep-coll-img{ position:absolute; top:50%; left:5vw; transform:translateY(-50%); width:var(--coll-w); height:auto; display:block; }
   .nep-coll-text{ position:absolute; top:50%; transform:translateY(-50%); left:calc(9vw + var(--coll-w)); width:calc(85vw - var(--coll-w)); max-width:46ch; }
 
   /* ---- 6. LAS CUATRO PRENDAS ---- */
-  /* una fila de cuatro columnas iguales (cada prenda centrada en la suya). Las
-     partes de arriba y los pantalones arrancan a la misma altura (el cuello de
-     unas al nivel de la cintura de los otros). Escala: un 20% más que los
-     conjuntos de antes. Al pasar el cursor por la prenda o por su texto: las
-     de arriba bajan y los pantalones suben (sin salir de la pantalla) y en el
-     lugar que dejan aparece la descripción, del ancho de su columna. El
-     movimiento sigue al cursor: si se va antes, vuelve desde donde estaba. */
-  .nep-pz-row{ height:100vh; display:flex; --pz-k: calc(var(--nep-cover) * 1.2 / 1411); --pz-d: clamp(130px, 19vh, 190px);
-    --pz-top: calc(50vh - var(--pz-k) * 795 / 2); }
-  .nep-pz{ position:relative; flex:1 1 0; height:100%; pointer-events:none; }
-  .nep-pz-fig{ position:absolute; left:50%; top:var(--pz-top); height:calc(var(--pz-k) * var(--gh)); width:calc(var(--pz-k) * var(--gw) * 1.4);
-    transform:translateX(-50%); transition:transform 1s cubic-bezier(.3,0,.2,1); pointer-events:auto; }
+  /* una fila de cuatro prendas repartidas de forma pareja en el ancho, cada una
+     con su espalda asomando por detrás. Las partes de arriba y los pantalones
+     arrancan a la misma altura (el cuello de unas al nivel de la cintura de los
+     otros). Tamaño: un 20% más alto que la versión anterior, salvo que no
+     entre a lo ancho de la pantalla (ahí se achica lo justo). Al pasar el
+     cursor por la prenda o por su texto: las de arriba bajan y los pantalones
+     suben (sin salir de la pantalla) y en el lugar que dejan aparece la
+     descripción, del ancho de la prenda. Se abre más rápido de lo que se
+     cierra; si el cursor se va antes, vuelve desde donde estaba. */
+  .nep-pz-row{ height:100vh; display:flex; justify-content:space-evenly;
+    --pz-k: min(calc(var(--nep-cover) * 1.44 / 1411), calc((100vw - 150px) / 2295));
+    --pz-top: calc(50vh - var(--pz-k) * 795 / 2);
+    --pz-d: min(24vh, calc(var(--pz-top) - 10px)); }
+  .nep-pz{ position:relative; flex:none; width:calc(var(--pz-k) * var(--gw) * 1.3); height:100%; pointer-events:none; }
+  .nep-pz-fig{ position:absolute; left:0; top:var(--pz-top); width:100%; height:calc(var(--pz-k) * var(--gh));
+    transition:transform 1.15s cubic-bezier(.3,0,.2,1); pointer-events:auto; }
   .nep-pz-fig img{ position:absolute; top:0; height:100%; width:auto; display:block; }
   .nep-pz-front{ left:0; z-index:2; filter:drop-shadow(7px 5px 9px rgba(21,20,15,.16)); }
   .nep-pz-back{ right:0; top:-3% !important; z-index:1; }
-  .nep-pz-text{ position:absolute; left:clamp(16px,2vw,32px); right:clamp(16px,2vw,32px); opacity:0; pointer-events:none;
-    transition:opacity .45s ease, transform 1s cubic-bezier(.3,0,.2,1); }
+  .nep-pz-text{ position:absolute; left:0; width:max(calc(var(--pz-k) * var(--gw)), 190px); opacity:0; pointer-events:none;
+    transition:opacity .45s ease, transform 1.15s cubic-bezier(.3,0,.2,1); }
   .nep-pz-top .nep-pz-text{ top:var(--pz-top); transform:translateY(-12px); }
   .nep-pz-bottom .nep-pz-text{ top:calc(var(--pz-top) + var(--pz-k) * var(--gh) - var(--pz-d) + 22px); transform:translateY(12px); }
   .nep-pz-text h3{ font-size:11.5px; font-weight:500; letter-spacing:.09em; text-transform:uppercase; color:var(--ink); margin-bottom:.8em; }
   .nep-pz-text p{ font-size:clamp(12px,.95vw,13.5px); line-height:1.62; color:var(--ink); }
-  .nep-pz.on .nep-pz-text{ opacity:1; transform:none; pointer-events:auto; transition:opacity .8s ease .25s, transform 1s cubic-bezier(.3,0,.2,1); }
-  .nep-pz-top.on .nep-pz-fig{ transform:translate(-50%, var(--pz-d)); }
-  .nep-pz-bottom.on .nep-pz-fig{ transform:translate(-50%, calc(var(--pz-d) * -1)); }
+  .nep-pz.on .nep-pz-text{ opacity:1; transform:none; pointer-events:auto; transition:opacity .6s ease .18s, transform .7s cubic-bezier(.3,0,.2,1); }
+  .nep-pz.on .nep-pz-fig{ transition:transform .7s cubic-bezier(.3,0,.2,1); }
+  .nep-pz-top.on .nep-pz-fig{ transform:translateY(var(--pz-d)); }
+  .nep-pz-bottom.on .nep-pz-fig{ transform:translateY(calc(var(--pz-d) * -1)); }
 
   /* ---- 7. FOTOS ---- */
   /* el fondo pasa de blanco a bordó (#6e1d1e) mientras pasan; repartidas a los
      costados como el moodboard de Dualidad, pero más grandes. Lugar: el JS */
   .nep-bg-red{ background:#6e1d1e; }
   .nep-ph{ position:relative; }
-  .nep-ph-img{ position:absolute; display:block; cursor:pointer; transition:transform .5s ease; }
-  .nep-ph-img:hover{ transform:scale(1.02); }
+  .nep-ph-img{ position:absolute; display:block; cursor:pointer; will-change:transform; }
   html.nep-nav-light nav.links button{ color:#fff; }
   html.nep-nav-light .lang-toggle, html.nep-nav-light .lang-toggle span.active{ color:#fff; }
   /* foto ampliada: lo más grande posible dejando aire, con el fondo difuminado */
@@ -612,8 +632,9 @@
   .nep-lb.on img{ transform:none; }
 
   /* ---- 8. TEXTO MANUSCRITO + VIDEO ---- */
-  .nep-hand{ overflow:visible; }
-  .nep-hand-stage{ position:relative; height:100vh; will-change:transform; }
+  /* arranca encimada con el final de las fotos: el texto sale del fondo entre ellas */
+  .nep-hand{ overflow:visible; margin-top:-100vh; }
+  .nep-hand-stage{ position:relative; height:100vh; will-change:transform; pointer-events:none; }
   /* en blanco sobre el bordó; aparece línea por línea, como si se escribiera (máscara del JS) */
   .nep-hand-img{ position:absolute; left:50%; top:50%; width:min(62vw, 1060px); height:auto; transform:translate(-50%,-50%); display:block; will-change:transform; }
   .nep-hand-video{ position:absolute; left:50%; bottom:28px; transform:translateX(-50%); background:none; border:none; padding:6px 10px; cursor:pointer;
@@ -1151,7 +1172,7 @@
       <div class="work-project nep" data-project="1">
         <div class="nep-book-hint" id="nepBookHint">click</div>
         <!-- fondo que pasa de blanco al de la foto de la IA (y de vuelta a blanco): fijo a la pantalla -->
-        <div class="nep-bg" id="nepBg"></div>
+        <div class="nep-bg nep-bg-ia" id="nepBg"></div>
         <!-- fondo bordó del final (fotos, texto manuscrito y video): también fijo a la pantalla -->
         <div class="nep-bg nep-bg-red" id="nepBgRed"></div>
         <!-- foto ampliada (con el fondo difuminado) y video final: por encima de todo -->
@@ -1165,9 +1186,9 @@
             <video class="nep-video" id="nepVideo" src="assets/nada-es-plano-video.mp4" muted playsinline preload="auto"></video>
             <div class="nep-head">
               <h1 class="nep-title nep-in">Nada es Plano</h1>
-              <div class="nep-sub nep-in" style="animation-delay:520ms"><em>Colecci&oacute;n de indumentaria</em> &nbsp;2026</div>
+              <div class="nep-sub nep-in" style="animation-delay:300ms"><em>Colecci&oacute;n de indumentaria</em> &nbsp;2026</div>
             </div>
-            <div class="nep-roles nep-in" style="animation-delay:520ms">
+            <div class="nep-roles nep-in" style="animation-delay:300ms">
               <span data-es>Direcci&oacute;n Creativa<br>Desarrollo Conceptual<br>Direcci&oacute;n de Arte<br>Identidad Visual<br>Desarrollo de Colecci&oacute;n</span>
               <span data-en>Creative Direction<br>Concept Development<br>Art Direction<br>Visual Identity<br>Collection Development</span>
             </div>
@@ -1197,12 +1218,16 @@
                 <img src="assets/nada-es-plano-ia-creativa.jpg" alt="" class="nep-ia-img">
                 <div class="nep-ia-cap">IA creativa @studio.joaquina</div>
               </div>
+              <!-- bocetos en el margen derecho: suben junto con los párrafos -->
+              <img class="nep-proc-img" id="nepProcImg" src="assets/nada-es-plano-proceso-bocetos.webp" alt="Bocetos del proceso">
               <div class="nep-bt1-wrap nep-bt1-mask">
                 <!-- los dos primeros párrafos pasan por el centro con el scroll -->
                 <div class="nep-bt nep-bt1a" id="nepBt1a"><p>La investigación sobre color, emoción, memoria e identidad dio lugar a una extensa experimentación textil. La psicología del color funcionó como punto de partida para explorar distintas relaciones cromáticas, mientras la búsqueda de materiales permitió comprender cómo cada superficie modificaba la percepción del color y su expresión.</p><p>A través de pruebas de color, combinaciones y sublimados, se desarrollaron múltiples variantes sobre los textiles seleccionados hasta encontrar las relaciones precisas para cada material. El proceso convirtió la investigación conceptual en decisiones concretas de producto, construyendo un lenguaje cromático propio para la colección.</p></div>
                 <!-- los otros dos frenan en el centro y el cuaderno los empuja hacia la derecha -->
                 <div class="nep-bt nep-bt1b" id="nepBt1b"><p>La experimentación se extendió a estampas, texturas, transparencias y superposiciones, explorando distintas formas de hacer visible la multiplicidad que atraviesa el concepto. Cada recurso fue desarrollado en relación con los materiales y con su comportamiento sobre la prenda, buscando que lo visual y lo material construyeran una misma expresión.</p><p>El resultado surge de un proceso de prueba y ajuste en el que la exploración no fue un paso previo al diseño, sino parte de su propia construcción.</p></div>
               </div>
+              <!-- "[ Scroll ]" detrás de la tapa: se destapa al pasar la última página -->
+              <div class="nep-book-scroll" id="nepBookScroll">[ Scroll ]</div>
               <div class="nep-book" id="nepBook">
                 <!-- debajo de la hoja que gira: las dos páginas (la que se va y la que llega), para fundirlas -->
                 <div class="nep-half nep-half-l" id="nepHalfL"></div>
@@ -1214,7 +1239,6 @@
                   <div class="nep-leaf-face nep-leaf-back" id="nepLeafB"></div>
                 </div>
               </div>
-              <div class="nep-book-scroll" id="nepBookScroll">[ Scroll ]</div>
             </div>
           </section>
 
@@ -2542,6 +2566,9 @@
     }
   }
 
+  // ancho del logo cuando frena: un 10% más que el de "Sobre mí" (clamp(70px, 7.5vw, 110px))
+  function introLogoW(vw){ return Math.min(Math.max(vw * 0.075, 70), 110) * 1.1; }
+
   const lzBuf = document.createElement('canvas');   // donde se arma el logo con grosor, cuadro a cuadro
   const bctx = lzBuf.getContext('2d');
   function playLogoZoom(){
@@ -2559,7 +2586,7 @@
       // escala inicial: la pantalla entera cae adentro del trazo; final: el
       // ancho del logo de "Sobre mí" (clamp(70px, 7.5vw, 110px))
       const k0 = Math.hypot(vw, vh) / 2 / (LZ_P0.r * 0.85);
-      const k1 = Math.min(Math.max(vw * 0.075, 70), 110) / W;
+      const k1 = introLogoW(vw) / W;
       const u = lzEase(tz);
       const k = Math.exp(Math.log(k0) + (Math.log(k1) - Math.log(k0)) * u);
       // el punto de partida queda en el centro; a medida que se aleja, el logo
@@ -2641,13 +2668,13 @@
   // levanta apenas (como los trabajos del home, pero mucho más sutil y con
   // más peso); con un click se funde con el fondo y entra el home como al
   // volver de un trabajo (entradas escalonadas y giro de la esfera).
-  const LH_SCALE = 1.04;    // cuánto se levanta (los trabajos del home: 1.1)
+  const LH_SCALE = 1.12;    // cuánto se levanta (un poco más que los trabajos del home, 1.1)
   const LH_LERP  = 0.055;   // peso: va de a poco hacia ese tamaño
   const LH_FADE_MS = 900;   // el logo se funde con el fondo
   let lh = null;
   function lhInside(x, y){
     const vw = window.innerWidth, vh = window.innerHeight;
-    const lw = Math.min(Math.max(vw * 0.075, 70), 110), lhh = lw * logoImg.naturalHeight / logoImg.naturalWidth;
+    const lw = introLogoW(vw), lhh = lw * logoImg.naturalHeight / logoImg.naturalWidth;
     const pad = 12;
     return Math.abs(x - vw / 2) <= lw / 2 + pad && Math.abs(y - vh / 2) <= lhh / 2 + pad;
   }
@@ -2679,10 +2706,10 @@
     lh.s += (lh.target - lh.s) * LH_LERP;
     if(Math.abs(lh.target - lh.s) < 0.0004) lh.s = lh.target;
     if(lh.s !== lh.drawn){
-      // crece desde el centro y sube apenas (3px a su altura máxima)
+      // crece desde el centro y sube un poco (6px a su altura máxima)
       const vw = window.innerWidth;
-      const lw = Math.min(Math.max(vw * 0.075, 70), 110), lhh = lw * logoImg.naturalHeight / logoImg.naturalWidth;
-      const lift = (lh.s - 1) / (LH_SCALE - 1) * 3;
+      const lw = introLogoW(vw), lhh = lw * logoImg.naturalHeight / logoImg.naturalWidth;
+      const lift = (lh.s - 1) / (LH_SCALE - 1) * 6;
       siDrawLogo(lh.s, -lhh * (lh.s - 1) / 2 + lift);
       lh.drawn = lh.s;
     }
@@ -2732,7 +2759,7 @@
   function siPlan(){
     const vw = window.innerWidth, vh = window.innerHeight;
     const W = logoImg.naturalWidth, H = logoImg.naturalHeight;
-    const lw = Math.min(Math.max(vw * 0.075, 70), 110), lh = lw * H / W;
+    const lw = introLogoW(vw), lh = lw * H / W;
     // en qué punto del scroll el logo termina de salir por arriba (el zoom
     // crece hacia arriba desde su borde de abajo, que sube con SI_LIFT)
     const out = (vh / 2 + lh / 2 + 4) / SI_LIFT;
@@ -2760,7 +2787,7 @@
     const ctx = loaderCanvas.getContext('2d');
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, bw, bh);
-    const lw0 = Math.min(Math.max(vw * 0.075, 70), 110), lh0 = lw0 * H / W;
+    const lw0 = introLogoW(vw), lh0 = lw0 * H / W;
     const lw = lw0 * scale, lh = lh0 * scale;
     const bottom = vh / 2 + lh0 / 2 - rise;
     const top = bottom - lh;
@@ -3643,7 +3670,7 @@
   const nepFlow    = document.getElementById('nepFlow');
   const nepBg      = document.getElementById('nepBg');
   const NEP_VIDEO_DELAY = 400;   // el video arranca cuando el fundido de entrada ya casi se fue
-  const NEP_ZOOM_LEAD = 2.9;     // el zoom a las caras arranca cuando al video le faltan 2.9s
+  const NEP_ZOOM_LEAD = 2.3;     // el zoom a las caras arranca cuando al video le faltan 2.3s (y es más rápido)
   const NEP_FADE_LEAD = 1.0;     // el fundido a blanco arranca cuando le falta 1s
   const NEP_FADE_MS = 780;       // y es rápido (igual que en el CSS): termina antes de que el video frene
   const NEP_FACES = [932, 400];  // punto medio entre las caras de las chicas, en el cuadro de 1920×1080
@@ -3810,7 +3837,7 @@
   const NB_SPINE = 1000, NB_TOP = 150, NB_H = 1000, NB_FRONT_W = 631, NB_PAGE_W = 655;
   const NB_FLIP_MS = 720;     // pasar una página: sutil pero no lento
   const NB_FAST_MS = 170;     // cada página al cerrar rápido
-  const IA_RATIO = 2000 / 1116;   // la foto de la IA
+  const IA_W = 2240, IA_H = 1460, IA_PW = 2000, IA_PH = 1116;   // la foto de la IA, con su fondo completado alrededor
   const NB_WEIGHT = 1.25;   // toda la sección es un poco más pesada que el resto: el cuaderno se mueve más sutil
   const NB_SHRINK = 0.85;   // al ir a su lugar, el cuaderno se achica un 15%
   const nbSec   = document.getElementById('nepBookSec');
@@ -3824,6 +3851,7 @@
   const nbScroll = document.getElementById('nepBookScroll');
   const nbT1a = document.getElementById('nepBt1a'), nbT1b = document.getElementById('nepBt1b');
   const nbIa = document.getElementById('nepIa');
+  const nbProc = document.getElementById('nepProcImg');
   const nbImg = n => 'url("assets/nada-es-plano-cuaderno-' + NB_PAGES[n - 1] + '.webp")';
   const nb = { cur: 1, busy: false, ready: false, closing: false, k: 1, phases: null, hover: false, tx: 0, lc: 0 };
 
@@ -3870,22 +3898,32 @@
     const c0 = stop + vh * 0.1;                          // un respiro y el cuaderno empieza a avanzar
     const C = vh * 0.8, Dh = vh * 0.55, E = vh * 1.0;
     const c1 = c0 + C, e0 = c1 + Dh, e1 = e0 + E;
-    // la foto de la IA: entra desde el margen izquierdo (S), queda en el centro
-    // (H) y, quieta, el fondo vuelve a blanco (W); a poco más de la mitad de
-    // ese blanco, la sección se suelta y asoma la siguiente
-    const S = vh * 0.9, H = vh * 0.45, W = vh * 0.9;
-    const s0 = e1 - E * 0.1, s1 = s0 + S, w0 = s1 + H;
-    const iaH = Math.min(vh * 0.62, vw * 0.66 / IA_RATIO), iaW = iaH * IA_RATIO;
+    // la foto de la IA: entra desde el margen izquierdo (S) y queda en el
+    // centro (H); después se suelta la sección y la foto se va hacia arriba
+    // con el scroll, junto con su fondo
+    const S = vh * 0.9, H = vh * 0.45;
+    const s0 = e1 - E * 0.1, s1 = s0 + S;
+    // tamaño: la foto (sin su fondo completado) mide un 72% del alto de la
+    // pantalla: un punto intermedio, apenas más grande, entre la versión a
+    // pantalla completa (~81%) y la más chica (62%)
+    const ph = Math.min(vh * 0.72, vw * 0.8 * IA_PH / IA_PW);
+    const iaH = ph * IA_H / IA_PH, iaW = ph * IA_W / IA_PH;
     nbIa.style.width = iaW.toFixed(1) + 'px';
     nbIa.style.height = iaH.toFixed(1) + 'px';
-    nb.phases = { A, G, w1a, h1a, h1b, c0, C, c1, Dh, e0, E, e1, S, s0, s1, H, W, w0, iaW, iaH, D: w0 + W * 0.55 };
+    // bocetos del margen derecho: suben con los párrafos; arrancan apenas por
+    // debajo del borde de arriba cuando los dos primeros están en el centro y
+    // llegan hasta abajo cuando los otros dos frenan en el centro
+    const procY0 = A + vh * 0.06;
+    nbProc.style.height = (vh + stop - procY0).toFixed(1) + 'px';
+    nb.phases = { A, G, w1a, h1a, h1b, stop, procY0, c0, C, c1, Dh, e0, E, e1, S, s0, s1, H, iaW, iaH, D: s1 + H };
     nbSec.style.height = (vh + nb.phases.D * NB_WEIGHT) + 'px';
-    // se acomoda solo: el cuaderno en su lugar (para pasar las páginas) y la foto en el centro
-    const t40 = 0.4 * iaW / ((vw - iaW) / 2 + iaW + 20);   // la foto ya se ve en un 40%
+    // se acomoda solo: con el primer scroll después de que los dos últimos
+    // párrafos frenan, el cuaderno va a su lugar; y desde ahí, con el próximo
+    // scroll, va hasta la foto de la IA en el centro
     const top = nbSec.offsetTop;
     nb.snaps = [
-      { at: top + c1 * NB_WEIGHT, before: C * 0.45 * NB_WEIGHT, after: Dh * 0.5 * NB_WEIGHT },
-      { at: top + s1 * NB_WEIGHT, before: S * (1 - t40) * NB_WEIGHT, after: H * 0.6 * NB_WEIGHT }
+      { at: top + c1 * NB_WEIGHT, before: (c1 - stop) * NB_WEIGHT - 2, after: Dh * 0.5 * NB_WEIGHT },
+      { at: top + s1 * NB_WEIGHT, before: (s1 - c1) * NB_WEIGHT - 2, after: H * 0.6 * NB_WEIGHT }
     ];
   }
 
@@ -3897,7 +3935,7 @@
     const local = workCurrent - nbSec.offsetTop;
     const pinR = Math.min(Math.max(local, 0), P.D * NB_WEIGHT);
     nbStage.style.transform = 'translateY(' + pinR.toFixed(1) + 'px)';
-    const pin = pinR / NB_WEIGHT, le = local / NB_WEIGHT;
+    const pin = pinR / NB_WEIGHT;
     // posiciones del lomo en la pantalla
     const xOut   = -800 * k - 30;                         // cuaderno fuera de la pantalla, a la izquierda
     const xPeek  = -0.45 * NB_FRONT_W * k;                // asomado: se ve un poco más de la mitad de la tapa
@@ -3917,6 +3955,7 @@
     if(xs - NB_PAGE_W * k * sc > vw + 4 && nb.cur > 1 && !nb.busy) nbReset();
     // los dos primeros párrafos: entran por abajo y salen por arriba, al ritmo del scroll
     nbT1a.style.transform = 'translate(' + ((vw - P.w1a) / 2).toFixed(1) + 'px,' + (vh - pin).toFixed(1) + 'px)';
+    nbProc.style.transform = 'translateY(' + (P.procY0 - pin).toFixed(1) + 'px)';
     // los otros dos: los siguen, frenan en el centro y el cuaderno, al avanzar,
     // los empuja (manteniendo la distancia con la que quedan al final) hasta la
     // columna de la derecha; al irse, se van a la par de él
@@ -3927,21 +3966,23 @@
     nb.ready = pin >= P.c1 - 2 && pin <= P.e0 + 2;
     nbBook.classList.toggle('ready', nb.ready && nb.cur < NB_N);
     nbHint.classList.toggle('show', (nb.ready && nb.hover && !nb.busy && nb.cur < NB_N) || (nepPhHover && !nepLbOpen));
-    // en la contratapa: "[ Scroll ]" debajo de ella (se va ni bien se sigue bajando)
-    nbScroll.style.left = (xs - 624 * k * sc / 2).toFixed(1) + 'px';
-    // (por debajo de las telas que cuelgan del cuaderno)
-    nbScroll.style.top = Math.min(vh / 2 + 850 * k * sc + 16, vh - 40).toFixed(1) + 'px';
-    nbScroll.classList.toggle('show', nb.cur === NB_N && !nb.busy && pin >= P.c1 - 2 && pin <= P.e0 + vh * 0.04);
+    // "[ Scroll ]": detrás de la tapa, centrado en el lado derecho; queda a la
+    // vista cuando se pasa la última página y ese lado se destapa (se va ni
+    // bien se sigue bajando)
+    nbScroll.style.left = (xs + NB_FRONT_W * k * sc / 2).toFixed(1) + 'px';
+    nbScroll.style.top = (vh / 2).toFixed(1) + 'px';
+    nbScroll.classList.toggle('show', nb.cur >= NB_N - 1 && pin >= P.c1 - 2 && pin <= P.e0 + vh * 0.04);
     // la foto de la IA: entra desde el margen izquierdo hasta el centro
     const iaX0 = -P.iaW - 20, iaX1 = (vw - P.iaW) / 2;
     const iaX = iaX0 + (iaX1 - iaX0) * Math.min(Math.max((pin - P.s0) / P.S, 0), 1);
-    nbIa.style.transform = 'translate(' + iaX.toFixed(1) + 'px,' + ((vh - P.iaH) / 2 - 10).toFixed(1) + 'px)';
-    // el fondo pasa a ser el de la foto mientras el cuaderno se va, y vuelve a
-    // blanco con la foto ya quieta en el centro (la foto no se funde)
+    nbIa.style.transform = 'translate(' + iaX.toFixed(1) + 'px,' + ((vh - P.iaH) / 2).toFixed(1) + 'px)';
+    // el fondo pasa a ser el de la foto mientras el cuaderno se va; cuando la
+    // sección se suelta, la foto y su fondo se van juntos hacia arriba (sin
+    // fundirse) y debajo del fondo aparece el blanco de a poco
     const fIn = nbEase((pin - P.e0) / P.E);
-    const fOut = nbEase((le - P.w0) / P.W);
-    const bgOp = Math.round(fIn * (1 - fOut) * 1000) / 1000;
+    const bgOp = Math.round(fIn * 1000) / 1000;
     if(nepBg.style.opacity !== String(bgOp)) nepBg.style.opacity = bgOp;
+    nepBg.style.transform = 'translateY(' + (-Math.max(local - P.D * NB_WEIGHT, 0)).toFixed(1) + 'px)';
   }
 
   function nbEaseInOut(x){ return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
@@ -4040,7 +4081,7 @@
     nepVideo.classList.add('off');
     nepInicial.classList.add('show');
     clearTimeout(nepNavTimer);
-    nepNavTimer = setTimeout(() => root.classList.remove('work-nav-hidden'), 520);
+    nepNavTimer = setTimeout(() => root.classList.remove('work-nav-hidden'), 300);
   }
   // mira el tiempo del video en cada cuadro
   function nepWatch(){
@@ -4062,10 +4103,11 @@
   // scrolleando normalmente. Cada punto: { at, before, after } en px de scroll.
   const NEP_GLIDE_MS = 1100;
   let nepGlide = null, nepGlideEnd = 0;
-  function nepGlideTo(to){ nepGlide = { from: workCurrent, to, t0: performance.now() }; }
+  // recorridos largos (del cuaderno a la foto de la IA) tardan un poco más
+  function nepGlideTo(to){ nepGlide = { from: workCurrent, to, t0: performance.now(), ms: Math.min(NEP_GLIDE_MS + Math.abs(to - workCurrent) * 0.35, 2800) }; }
   function nepGlideFrame(){
     if(!nepGlide) return;
-    const t = Math.min((performance.now() - nepGlide.t0) / NEP_GLIDE_MS, 1);
+    const t = Math.min((performance.now() - nepGlide.t0) / nepGlide.ms, 1);
     const e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     workTarget = nepGlide.from + (nepGlide.to - nepGlide.from) * e;
     if(t >= 1){ nepGlide = null; nepGlideEnd = performance.now(); }
@@ -4107,24 +4149,49 @@
   const nepBgRed = document.getElementById('nepBgRed');
   const nepLb = document.getElementById('nepLb'), nepLbImg = document.getElementById('nepLbImg');
   let nepLbOpen = false, nepPhHover = false;
+  let nepPhPos = [];
   function nepPhLayout(){
     const vw = window.innerWidth, vh = window.innerHeight;
-    const step = vh * 0.47;
-    let y = vh * 0.25, bottom = 0;
+    const step = vh * 0.36;
+    let y = vh * 0.2, bottom = 0;
     // un leve corrimiento distinto para cada una (siempre el mismo), así no queda una grilla
     const jit = [0.2, 0.75, 0.45, 0.1, 0.9, 0.35, 0.6, 0.05, 0.8, 0.5];
-    nepPhImgs.forEach((im, i) => {
+    nepPhPos = nepPhImgs.map((im, i) => {
       const vert = im.classList.contains('nep-ph-v');
-      const h = vert ? vh * 0.7 : Math.min(vw * 0.46, vh * 1.05) / 1.5;
+      // un 30% más chicas que la primera versión
+      const h = (vert ? vh * 0.7 : Math.min(vw * 0.46, vh * 1.05) / 1.5) * 0.7;
       const w = vert ? h / 1.5 : h * 1.5;
       const left = i % 2 === 0;
-      const x = left ? vw * (0.05 + 0.06 * jit[i]) : vw * (0.95 - 0.06 * jit[i]) - w;
+      const x = left ? vw * (0.06 + 0.08 * jit[i]) : vw * (0.94 - 0.08 * jit[i]) - w;
+      const t = y + vh * 0.06 * jit[(i + 3) % 10];
       im.style.width = w.toFixed(1) + 'px'; im.style.height = h.toFixed(1) + 'px';
-      im.style.left = x.toFixed(1) + 'px'; im.style.top = (y + vh * 0.06 * jit[(i + 3) % 10]).toFixed(1) + 'px';
-      bottom = Math.max(bottom, y + h);
+      im.style.left = x.toFixed(1) + 'px'; im.style.top = t.toFixed(1) + 'px';
+      bottom = Math.max(bottom, t + h);
       y += step;
+      return { im, x, t, w, h, left };
     });
-    nepPh.style.height = (bottom + vh * 0.35).toFixed(1) + 'px';
+    // termina justo debajo de la última foto: así, cuando el texto empieza a
+    // salir, las últimas fotos todavía están en la pantalla
+    nepPh.style.height = (bottom + vh * 0.08).toFixed(1) + 'px';
+  }
+  // mientras el texto manuscrito sale del fondo, las fotos que quedan en la
+  // pantalla se frenan y se van corriendo hacia los costados para dejarle
+  // lugar (juntándose apenas hacia el centro de la pantalla); pueden quedar
+  // cortadas por los bordes
+  function nepPhFrame(){
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const pinH = Math.min(Math.max(workCurrent - nepHandSec.offsetTop, 0), nepHand.R || 1);
+    const e = nbEase(pinH / (nepHand.R || 1));
+    const hw = (nepHandImg.offsetWidth || vw * 0.6) / 2, gap = 36;
+    const base = nepPh.offsetTop;
+    nepPhPos.forEach(p => {
+      const sy = base + p.t - workCurrent + pinH;     // dónde está en la pantalla (ya frenada)
+      if(sy > vh + 40 || sy + p.h < -40){ if(p.on !== false){ p.im.style.transform = 'translate(0,' + pinH.toFixed(1) + 'px)'; p.on = false; } return; }
+      p.on = true;
+      const sx = p.left ? Math.min(0, vw / 2 - hw - gap - (p.x + p.w)) : Math.max(0, vw / 2 + hw + gap - p.x);
+      const dy = (vh / 2 - (sy + p.h / 2)) * 0.12;
+      p.im.style.transform = 'translate(' + (sx * e).toFixed(1) + 'px,' + (pinH + dy * e).toFixed(1) + 'px)';
+    });
   }
   nepPhImgs.forEach(im => {
     im.addEventListener('click', () => {
@@ -4155,7 +4222,8 @@
     const vh = window.innerHeight;
     nepHand.R = vh * 0.9;
     nepHandSec.style.height = (vh + nepHand.R) + 'px';
-    nepHand.snap = { at: nepHandSec.offsetTop + nepHand.R, before: nepHand.R + vh * 0.55, after: 0 };
+    // se acomoda solo ni bien se empieza a scrollear para que salga
+    nepHand.snap = { at: nepHandSec.offsetTop + nepHand.R, before: nepHand.R + vh * 0.12, after: 0 };
     nepHand.r = -1;
   }
   function nepHandMask(r){
@@ -4234,17 +4302,19 @@
   function nepRestLayout(){
     nepPhLayout();
     nepHandLayout();
-    if(nepL) nepL.snap = { at: nepConcept.offsetTop + nepL.Q1, before: nepL.Q1 * 0.4, after: nepL.Qd * 0.6 };
+    if(nepL) nepL.snap = { at: nepConcept.offsetTop + nepL.Q1, before: nepL.Q1 * 0.7, after: nepL.Qd * 0.6 };
   }
   function nepRestFrame(){
     nepGlideFrame();
     const vh = window.innerHeight;
-    // el fondo pasa a bordó mientras pasan las fotos
-    const f = nbEase((workCurrent - (nepPh.offsetTop - vh * 0.6)) / (nepPh.offsetHeight * 0.7));
+    // el fondo pasa a bordó al empezar las fotos, en un tramo corto (así casi no
+    // se ve el rosado intermedio)
+    const f = nbEase((workCurrent - (nepPh.offsetTop - vh * 0.55)) / (vh * 0.3));
     const op = Math.round(f * 1000) / 1000;
     if(nepBgRed.style.opacity !== String(op)) nepBgRed.style.opacity = op;
     root.classList.toggle('nep-nav-light', f > 0.5);
     nepHandFrame();
+    nepPhFrame();
   }
 
   function nepSetup(){
@@ -4253,7 +4323,7 @@
     nepFading = false;
     nepGlide = null;
     clearTimeout(nepFadeTimer); clearTimeout(nepNavTimer);
-    if(nepBg) nepBg.style.opacity = '0';
+    if(nepBg){ nepBg.style.opacity = '0'; nepBg.style.transform = ''; }
     if(nepBgRed) nepBgRed.style.opacity = '0';
     document.querySelectorAll('.nep-card.flipped').forEach(c => c.classList.remove('flipped'));
     document.querySelectorAll('.nep-pz.on').forEach(c => c.classList.remove('on'));
@@ -4276,7 +4346,7 @@
     nepVideoOn = false; nepFading = false; nepGlide = null;
     if(nepVideo){ nepVideo.pause(); nepVideo.classList.remove('fade', 'zoom'); }
     if(nepInicial) nepInicial.classList.remove('show');
-    if(nepBg) nepBg.style.opacity = '0';
+    if(nepBg){ nepBg.style.opacity = '0'; nepBg.style.transform = ''; }
     if(nepBgRed) nepBgRed.style.opacity = '0';
     root.classList.remove('nep-nav-light');
     if(nepLbOpen) nepLbClose();
