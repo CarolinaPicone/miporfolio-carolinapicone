@@ -436,10 +436,13 @@
     background:url("assets/nada-es-plano-ia-creativa-fondo.jpg") center / cover no-repeat; }
   /* el de la foto de la IA: cuando la foto se va con el scroll, este fondo se
      va con ella (son una sola cosa) y abajo se funde de a poco con el blanco */
-  .nep-bg-ia{ bottom:auto; height:140vh; will-change:transform;
-    /* el fondo (la foto con el fondo recreado, sin figuras) lo ubica el JS */
-    -webkit-mask-image:linear-gradient(to bottom, #000 100vh, transparent 140vh);
-            mask-image:linear-gradient(to bottom, #000 100vh, transparent 140vh); }
+  /* el fondo: liso, sacado de los bordes de la foto ya extendida (sin figuras
+     ni manchas); debajo continúa en su mismo color y se funde muy de a poco
+     con el blanco */
+  .nep-bg-ia{ bottom:auto; height:165vh; will-change:transform;
+    background:url("assets/nada-es-plano-ia-creativa-fondo.jpg") 0 0 / 100% 100vh no-repeat, #b5ad9c;
+    -webkit-mask-image:linear-gradient(to bottom, #000 100vh, rgba(0,0,0,.82) 112vh, rgba(0,0,0,.55) 126vh, rgba(0,0,0,.28) 140vh, rgba(0,0,0,.09) 154vh, transparent 165vh);
+            mask-image:linear-gradient(to bottom, #000 100vh, rgba(0,0,0,.82) 112vh, rgba(0,0,0,.55) 126vh, rgba(0,0,0,.28) 140vh, rgba(0,0,0,.09) 154vh, transparent 165vh); }
 
   /* ---- 1. INICIAL ---- */
   .nep-inicial{ height:100vh; overflow:hidden; }
@@ -447,8 +450,8 @@
   /* al final: primero empieza a acercarse de a poco a las caras de las chicas
      (el punto de apoyo del zoom lo calcula el JS) y, en el último segundo, se
      funde en blanco (rápido: termina antes de que el video frene) */
-  .nep-video.zoom{ transform:scale(1.35); transition:transform 1.6s cubic-bezier(.4,0,.6,1); }
-  .nep-video.zoom.fade{ opacity:0; transition:transform 1.6s cubic-bezier(.4,0,.6,1), opacity .78s cubic-bezier(.45,0,.75,1); }
+  .nep-video.zoom{ transform:scale(1.35); transition:transform 1.1s cubic-bezier(.4,0,.6,1); }
+  .nep-video.zoom.fade{ opacity:0; transition:transform 1.1s cubic-bezier(.4,0,.6,1), opacity .78s cubic-bezier(.45,0,.75,1); }
   .nep-video.off{ display:none; }
   .nep-head{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); text-align:center; white-space:nowrap; }
   .nep-title{ font-size:clamp(34px,4.6vw,64px); font-weight:500; line-height:1.02; letter-spacing:-.015em; color:var(--ink); }
@@ -572,9 +575,9 @@
      fondo completado, así el fundido nunca toca a las personas */
   .nep-ia{ position:absolute; left:0; top:0; will-change:transform; }
   .nep-ia-img{ width:100%; height:100%; display:block;
-    -webkit-mask-image:linear-gradient(to right, transparent 0, #000 12%, #000 88%, transparent 100%), linear-gradient(to bottom, transparent 0, #000 16%, #000 84%, transparent 100%);
+    -webkit-mask-image:linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%), linear-gradient(to bottom, transparent 0, #000 14%, #000 86%, transparent 100%);
     -webkit-mask-composite:source-in;
-            mask-image:linear-gradient(to right, transparent 0, #000 12%, #000 88%, transparent 100%), linear-gradient(to bottom, transparent 0, #000 16%, #000 84%, transparent 100%);
+            mask-image:linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%), linear-gradient(to bottom, transparent 0, #000 14%, #000 86%, transparent 100%);
             mask-composite:intersect; }
   /* pie de foto: mismo estilo que los de las tarjetas (en un tono que se lea sobre el fondo de la foto) */
   .nep-ia-cap{ position:absolute; left:0; top:0; font-size:11px; letter-spacing:.04em; color:#6f685c; white-space:nowrap; }
@@ -610,7 +613,8 @@
   .nep-pz-front{ left:0; z-index:2; filter:drop-shadow(7px 5px 9px rgba(21,20,15,.16)); }
   .nep-pz-back{ right:0; top:-3% !important; z-index:1; }
   /* el texto: del ancho de la prenda con su espalda, y bien separado de ella */
-  .nep-pz-text{ position:absolute; left:0; width:max(86%, 190px); opacity:0; pointer-events:none;
+  /* centrado en el espacio de la delantera con la espalda, un poco más angosto */
+  .nep-pz-text{ position:absolute; left:5%; width:90%; opacity:0; pointer-events:none;
     transition:opacity .45s ease, transform 1.15s cubic-bezier(.3,0,.2,1); }
   /* el texto de las partes de arriba termina a 40px de la prenda ya bajada y crece hacia arriba */
   .nep-pz-top .nep-pz-text{ top:auto; bottom:calc(100vh - var(--pz-top) - var(--pz-d) + 40px); transform:translateY(-12px); }
@@ -640,8 +644,8 @@
   .nep-bg-red{ background:#6e1d1e; }
   .nep-ph{ position:relative; }
   /* una leve profundidad: no se ven como algo pegado al fondo */
-  .nep-ph-img{ position:absolute; display:block; cursor:pointer; will-change:transform;
-    box-shadow:0 18px 34px -10px rgba(0,0,0,.45), 0 4px 10px rgba(0,0,0,.22); }
+  .nep-ph-img{ position:absolute; display:block; cursor:pointer; will-change:transform; border-radius:3px;
+    box-shadow:0 8px 18px -8px rgba(0,0,0,.32), 0 2px 5px rgba(0,0,0,.14); }
   html.nep-nav-light nav.links button{ color:#fff; }
   html.nep-nav-light .lang-toggle, html.nep-nav-light .lang-toggle span.active{ color:#fff; }
   /* foto ampliada: lo más grande posible dejando aire, con el fondo difuminado */
@@ -1298,14 +1302,14 @@
                 <img class="nep-pz-back" src="assets/nada-es-plano-prenda-3-espalda.webp" alt="">
                 <img class="nep-pz-front" src="assets/nada-es-plano-prenda-3-frente.webp" alt="Camisa Matices">
               </div>
-              <div class="nep-pz-text"><h3>Camisa Matices</h3><p>Camisa corta de cuello clásico y mangas de volumen moderado. La silueta se ajusta mediante un sistema de ataduras y se construye con recortes curvos y diagonales. Una base de microfibra suave funciona como primera capa, sobre la que se superponen dos capas de plumetí, aportando profundidad y movimiento.</p><button class="nep-pz-dl" type="button" data-file="assets/nada-es-plano-ficha-camisa-matices.pdf" data-name="Ficha técnica - Camisa Matices.pdf"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.5v6.2M3.3 5.2 6 7.9l2.7-2.7M2 10.5h8" fill="none" stroke="currentColor" stroke-width="1"/></svg><span>Ficha técnica</span></button></div>
+              <div class="nep-pz-text"><h3>Camisa Matices</h3><p>Camisa corta de cuello clásico y mangas de volumen moderado. La silueta se ajusta mediante un sistema de ataduras. Una base de microfibra suave funciona como primera capa, sobre la que se superponen dos capas de plumetí, aportando profundidad y movimiento.</p><button class="nep-pz-dl" type="button" data-file="assets/nada-es-plano-ficha-camisa-matices.pdf" data-name="Ficha técnica - Camisa Matices.pdf"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.5v6.2M3.3 5.2 6 7.9l2.7-2.7M2 10.5h8" fill="none" stroke="currentColor" stroke-width="1"/></svg><span>Ficha técnica</span></button></div>
             </div>
             <div class="nep-pz nep-pz-bottom" style="--gw:404;--gh:795">
               <div class="nep-pz-fig">
                 <img class="nep-pz-back" src="assets/nada-es-plano-prenda-4-espalda.webp" alt="">
                 <img class="nep-pz-front" src="assets/nada-es-plano-prenda-4-frente.webp" alt="Pantalón Dual">
               </div>
-              <div class="nep-pz-text"><h3>Pantalón Dual</h3><p>Pantalón de tiro bajo y silueta amplia, confeccionado en sastrero pesado. La moldería se estructura mediante recortes longitudinales, con una composición central estampada y encaje superpuesto en los laterales. La silueta se amplía desde la cadera y se estrecha suavemente hacia el bajo.</p><button class="nep-pz-dl" type="button" data-file="assets/nada-es-plano-ficha-pantalon-dual.pdf" data-name="Ficha técnica - Pantalón Dual.pdf"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.5v6.2M3.3 5.2 6 7.9l2.7-2.7M2 10.5h8" fill="none" stroke="currentColor" stroke-width="1"/></svg><span>Ficha técnica</span></button></div>
+              <div class="nep-pz-text"><h3>Pantalón Dual</h3><p>Pantalón de tiro bajo y silueta amplia, confeccionado en sastrero pesado. La moldería se estructura mediante recortes longitudinales, con encaje superpuesto en los laterales. La silueta se amplía desde la cadera y se estrecha suavemente hacia el bajo.</p><button class="nep-pz-dl" type="button" data-file="assets/nada-es-plano-ficha-pantalon-dual.pdf" data-name="Ficha técnica - Pantalón Dual.pdf"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.5v6.2M3.3 5.2 6 7.9l2.7-2.7M2 10.5h8" fill="none" stroke="currentColor" stroke-width="1"/></svg><span>Ficha técnica</span></button></div>
             </div>
           </section>
 
@@ -3697,7 +3701,7 @@
   const nepFlow    = document.getElementById('nepFlow');
   const nepBg      = document.getElementById('nepBg');
   const NEP_VIDEO_DELAY = 400;   // el video arranca cuando el fundido de entrada ya casi se fue
-  const NEP_ZOOM_LEAD = 1.9;     // el zoom a las caras arranca cuando al video le faltan 1.9s
+  const NEP_ZOOM_LEAD = 1.4;     // el zoom a las caras arranca cuando al video le faltan 1.4s
   const NEP_FADE_LEAD = 1.0;     // el fundido a blanco arranca cuando le falta 1s
   const NEP_FADE_MS = 780;       // y es rápido (igual que en el CSS): termina antes de que el video frene
   const NEP_FACES = [932, 400];  // punto medio entre las caras de las chicas, en el cuadro de 1920×1080
@@ -3864,7 +3868,7 @@
   const NB_SPINE = 1000, NB_TOP = 150, NB_H = 1000, NB_FRONT_W = 631, NB_PAGE_W = 655;
   const NB_FLIP_MS = 720;     // pasar una página: sutil pero no lento
   const NB_FAST_MS = 170;     // cada página al cerrar rápido
-  const IA_W = 2720, IA_H = 1716, IA_PW = 2000, IA_PH = 1116, IA_X = 360, IA_Y = 300;   // la foto de la IA, con su fondo recreado alrededor
+  const IA_W = 2400, IA_H = 1840, IA_PW = 2000, IA_PH = 1116, IA_X = 200, IA_Y = 362;   // la foto de la IA, extendida con su fondo recreado hasta cubrir la pantalla
   const NB_WEIGHT = 1.25;   // toda la sección es un poco más pesada que el resto: el cuaderno se mueve más sutil
   const NB_SHRINK = 0.85;   // al ir a su lugar, el cuaderno se achica un 15%
   const nbSec   = document.getElementById('nepBookSec');
@@ -3931,15 +3935,15 @@
     const stop = vh + procH - procBottom;                // bocetos y últimos dos párrafos frenan juntos
     const yb0 = vh / 2 - h1b / 2 + stop;                 // dónde arrancan los dos últimos párrafos
     const ya0 = yb0 - G - h1a;                           // y los dos primeros (misma separación que antes)
-    const a0 = vh * 0.18, A = a0 + vh * 0.75;            // el cuaderno entra y queda asomado (más tramo quieto)
+    const a0 = (ya0 - vh) * 0.68, A = a0 + vh * 0.6;     // el cuaderno entra más cerca de la aparición del texto que de los bocetos
     const c0 = stop + vh * 0.1;                          // un respiro y el cuaderno empieza a avanzar
-    const C = vh * 0.8, Dh = vh * 0.55, E = vh * 0.5;    // el camino hacia la foto de la IA: la mitad que antes
+    const C = vh * 0.8, Dh = vh * 0.55, E = vh * 0.3;    // el camino hacia la foto de la IA: corto
     const c1 = c0 + C, e0 = c1 + Dh, e1 = e0 + E;
     nbProc.style.height = procH.toFixed(1) + 'px';
     // la foto de la IA: entra desde el margen izquierdo (S) y queda en el
     // centro (H); después se suelta la sección y la foto se va hacia arriba
     // con el scroll, junto con su fondo
-    const S = vh * 0.45, H = vh * 0.45;
+    const S = vh * 0.3, H = vh * 0.45;
     const s0 = e1 - E * 0.1, s1 = s0 + S;
     // tamaño: la foto (sin su fondo completado) mide un 30% más que la versión
     // anterior (72% del alto de la pantalla), sin pasarse del 95% del ancho
@@ -3947,11 +3951,8 @@
     const iaH = ph * IA_H / IA_PH, iaW = ph * IA_W / IA_PH;
     nbIa.style.width = iaW.toFixed(1) + 'px';
     nbIa.style.height = iaH.toFixed(1) + 'px';
-    // el fondo: la misma foto con las figuras borradas y el fondo recreado,
-    // ubicado exactamente donde queda la foto en el centro (así no hay corte)
+    // la foto (con su fondo recreado) cubre toda la pantalla al quedar en el centro
     const iaL = (vw - iaW) / 2, iaT = (vh - iaH) / 2;
-    nepBg.style.background = 'linear-gradient(to bottom, rgba(180,173,156,0) ' + (vh * 0.9).toFixed(0) + 'px, #b4ad9c ' + vh + 'px) 0 0 / 100% ' + vh + 'px no-repeat, ' +
-      'url("assets/nada-es-plano-ia-creativa-fondo.jpg") ' + iaL.toFixed(1) + 'px ' + iaT.toFixed(1) + 'px / ' + iaW.toFixed(1) + 'px ' + iaH.toFixed(1) + 'px no-repeat, #b4ad9c';
     // pie de foto: en la esquina de abajo a la izquierda de la foto, siempre dentro de la pantalla
     nbIaCap.style.left = Math.max(IA_X / IA_W * iaW, 24 - iaL).toFixed(1) + 'px';
     nbIaCap.style.top = Math.min((IA_Y + IA_PH) / IA_H * iaH + 12, vh - 34 - iaT).toFixed(1) + 'px';
@@ -3964,8 +3965,8 @@
     // (y a la inversa al subir). El paso del cuaderno a la foto es largo y lento
     nb.snaps = [
       { at: top + stop * NB_WEIGHT, before: 0, after: (c1 - stop) * NB_WEIGHT - 2, msDown: 1700, msUp: 1700 },
-      { at: top + c1 * NB_WEIGHT, before: (c1 - stop) * NB_WEIGHT - 2, after: (s1 - c1) * NB_WEIGHT - 2, msDown: 1700, msUp: 3000 },
-      { at: top + s1 * NB_WEIGHT, before: (s1 - c1) * NB_WEIGHT - 2, after: (H + 0.6 * vh) * NB_WEIGHT, msDown: 3000, msUp: 1400 }
+      { at: top + c1 * NB_WEIGHT, before: (c1 - stop) * NB_WEIGHT - 2, after: (s1 - c1) * NB_WEIGHT - 2, msDown: 1700, msUp: 2000 },
+      { at: top + s1 * NB_WEIGHT, before: (s1 - c1) * NB_WEIGHT - 2, after: (H + 0.6 * vh) * NB_WEIGHT, msDown: 2000, msUp: 1400 }
     ];
   }
 
@@ -4021,6 +4022,8 @@
     const iaX0 = -P.iaW - 20, iaX1 = (vw - P.iaW) / 2;
     const iaX = iaX0 + (iaX1 - iaX0) * Math.min(Math.max((pin - P.s0) / P.S, 0), 1);
     nbIa.style.transform = 'translate(' + iaX.toFixed(1) + 'px,' + ((vh - P.iaH) / 2).toFixed(1) + 'px)';
+    // y se va fundiendo desde el fondo mientras entra (sus bordes también se funden)
+    nbIa.style.opacity = Math.min(Math.max((pin - P.s0) / (P.S * 0.6), 0), 1).toFixed(3);
     // el fondo pasa a ser el de la foto mientras el cuaderno se va; cuando la
     // sección se suelta, la foto y su fondo se van juntos hacia arriba (sin
     // fundirse) y debajo del fondo aparece el blanco de a poco
@@ -4238,71 +4241,69 @@
   let nepPhPos = [];
   function nepPhLayout(){
     const vw = window.innerWidth, vh = window.innerHeight;
-    // más chicas que antes: las verticales al 42% del alto de la pantalla y las
-    // horizontales apenas más chicas que ellas (su lado largo, un poco menos
-    // que el alto de las verticales). Más juntas y más desordenadas, a los costados
-    const step = vh * 0.12;
-    let y = vh * 0.18, bottom = 0;
-    const side = [0, 1, 1, 0, 1, 0, 0, 1, 0, 1];                         // 0 izquierda, 1 derecha
-    const jx   = [0.15, 0.7, 0.05, 0.55, 0.9, 0.3, 0.95, 0.4, 0.6, 0.1];  // corrimiento dentro de su lado (siempre el mismo)
-    const jy   = [0.3, 0.8, 0.1, 0.6, 0.45, 0.9, 0.2, 0.7, 0.05, 0.5];
+    // verticales al 42% del alto de la pantalla; horizontales apenas más chicas
+    // (su lado largo, 40%). Concentradas: entre todas ocupan poco más de una
+    // pantalla de alto, desordenadas y sin pisarse. Se acomodan de a una, lo
+    // más arriba posible donde entren (con un desorden fijo, siempre el mismo)
+    let seed = 7;
+    const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const y0 = vh * 0.15, gap = 22;
     const placed = [];
+    let bottom = 0;
     nepPhPos = nepPhImgs.map((im, i) => {
       const vert = im.classList.contains('nep-ph-v');
       const h = vert ? vh * 0.42 : vh * 0.4 / 1.5;
       const w = vert ? h / 1.5 : vh * 0.4;
-      const left = side[i] === 0;
-      // cada lado ocupa casi media pantalla (las fotos pueden llegar cerca del centro)
-      const lo = left ? vw * 0.02 : vw * 0.51, hi = Math.max(left ? vw * 0.49 - w : vw * 0.98 - w, lo);
-      const want = lo + (hi - lo) * jx[i];
-      let t = y + vh * 0.08 * jy[i], x = want;
-      // sin pisarse con las de su mismo lado: se prueba a lo ancho del lado y,
-      // si no entra, se baja un poco
-      for(let tries = 0; tries < 40; tries++){
-        let best = null;
-        for(let k = 0; k <= 16; k++){
-          const cx = lo + (hi - lo) * k / 16;
-          let gap = Infinity;
-          placed.forEach(q => {
-            if(q.left !== left || q.t > t + h + 24 || q.t + q.h + 24 < t) return;
-            gap = Math.min(gap, Math.max(q.x - (cx + w), cx - (q.x + q.w)));
-          });
-          const score = Math.min(gap, 200) - Math.abs(cx - want) * 0.05;
-          if(gap >= 24 && (!best || score > best.score)) best = { x: cx, score };
-        }
-        if(best){ x = best.x; break; }
-        t += vh * 0.04;
+      const want = vw * (i % 2 === 0 ? 0.05 + 0.3 * rnd() : 0.65 + 0.3 * rnd());   // una hacia cada lado, para que no se amontonen
+      let best = null;
+      for(let c = 0; c < 400; c++){
+        const x = vw * 0.02 + rnd() * (vw * 0.96 - w);
+        const t = y0 + rnd() * Math.max(bottom - y0 + h * 0.6, h * 0.6);
+        const hit = placed.some(q => x < q.x + q.w + gap && x + w + gap > q.x && t < q.t + q.h + gap && t + h + gap > q.t);
+        if(hit) continue;
+        const score = t + Math.abs(x + w / 2 - want) * 0.12;
+        if(!best || score < best.score) best = { x, t, score };
       }
+      if(!best) best = { x: vw * 0.02 + rnd() * (vw * 0.96 - w), t: bottom + gap };
+      const pos = { im, x: best.x, t: best.t, w, h };
       im.style.width = w.toFixed(1) + 'px'; im.style.height = h.toFixed(1) + 'px';
-      im.style.left = x.toFixed(1) + 'px'; im.style.top = t.toFixed(1) + 'px';
-      bottom = Math.max(bottom, t + h);
-      y = Math.max(y + step, t + step * 0.5);
-      const pos = { im, x, t, w, h, left };
+      im.style.left = pos.x.toFixed(1) + 'px'; im.style.top = pos.t.toFixed(1) + 'px';
+      bottom = Math.max(bottom, pos.t + h);
       placed.push(pos);
       return pos;
     });
-    // termina justo debajo de la última foto: el texto aparece en medio de las
-    // últimas fotos y ahí termina el trabajo
-    nepPh.style.height = (bottom + vh * 0.06).toFixed(1) + 'px';
+    // termina justo debajo de la última foto: el texto aparece en el medio de
+    // las fotos y ahí termina el trabajo
+    nepPh.style.height = (bottom + vh * 0.05).toFixed(1) + 'px';
   }
   // mientras el texto manuscrito sale del fondo, las fotos que quedan en la
-  // pantalla se frenan y se van corriendo hacia los costados para dejarle
-  // lugar (juntándose apenas hacia el centro de la pantalla); pueden quedar
-  // cortadas por los bordes
+  // pantalla se frenan y se corren para dejarle lugar, cada una hacia su lado
+  // más natural (alejándose del centro del texto: a un costado, arriba o
+  // abajo), muy suave; pueden quedar cortadas por los bordes
   function nepPhFrame(){
     const vw = window.innerWidth, vh = window.innerHeight;
     const pinH = Math.min(Math.max(workCurrent - nepHandSec.offsetTop, 0), nepHand.R || 1);
     const u = pinH / (nepHand.R || 1);
     const e = u * u * u * (u * (u * 6 - 15) + 10);   // muy suave al empezar y al terminar
-    const hw = (nepHandImg.offsetWidth || vw * 0.44) / 2, gap = 40;
+    const gap = 36;
+    const hw = (nepHandImg.offsetWidth || vw * 0.44) / 2 + gap, hh = (nepHandImg.offsetHeight || vh * 0.17) / 2 + gap;
+    const cx = vw / 2, cy = vh / 2;
     const base = nepPh.offsetTop;
     nepPhPos.forEach(p => {
       const sy = base + p.t - workCurrent + pinH;     // dónde está en la pantalla (ya frenada)
       if(sy > vh + 40 || sy + p.h < -40){ if(p.on !== false){ p.im.style.transform = 'translate(0,' + pinH.toFixed(1) + 'px)'; p.on = false; } return; }
       p.on = true;
-      const sx = p.left ? Math.min(0, vw / 2 - hw - gap - (p.x + p.w)) : Math.max(0, vw / 2 + hw + gap - p.x);
-      const dy = (vh / 2 - (sy + p.h / 2)) * 0.05;
-      p.im.style.transform = 'translate(' + (sx * e).toFixed(1) + 'px,' + (pinH + dy * e).toFixed(1) + 'px)';
+      const l = p.x, r = p.x + p.w, t = sy, b = sy + p.h;
+      let dx = (l + r) / 2 - cx, dy = (t + b) / 2 - cy;
+      const len = Math.hypot(dx, dy) || 1; dx /= len; dy /= len;
+      if(len < 1){ dx = 0; dy = -1; }
+      let sh = 0;
+      if(l < cx + hw && r > cx - hw && t < cy + hh && b > cy - hh){
+        const sx = dx > 0.001 ? (cx + hw - l) / dx : dx < -0.001 ? (r - (cx - hw)) / -dx : Infinity;
+        const sv = dy > 0.001 ? (cy + hh - t) / dy : dy < -0.001 ? (b - (cy - hh)) / -dy : Infinity;
+        sh = Math.min(sx, sv);
+      }
+      p.im.style.transform = 'translate(' + (dx * sh * e).toFixed(1) + 'px,' + (pinH + dy * sh * e).toFixed(1) + 'px)';
     });
   }
   nepPhImgs.forEach(im => {
@@ -4375,12 +4376,14 @@
       nepHandBtn.classList.remove('show');
     }
   }
-  // el video: aparece sutil sobre negro; al terminar se funde en negro y el
-  // negro se va como una transparencia, de vuelta al texto
+  // el video: aparece sutil sobre negro (la barra del menú se va); al terminar
+  // (o con un click en cualquier lugar, en cualquier momento) se funde en negro
+  // y el negro se va como una transparencia, de vuelta al texto
   function nepVidOpenFn(){
     if(nepVidOpen) return;
     nepVidOpen = true; nepVidFading = false;
     nepVid.classList.add('on');
+    root.classList.add('work-nav-hidden');         // mientras se ve el video, la barra del menú se va
     nepVidEl.preload = 'auto';
     try{ nepVidEl.currentTime = 0; } catch(e){}
     setTimeout(() => {
@@ -4398,6 +4401,7 @@
     nepVid.classList.remove('play');               // la imagen se funde en negro
     setTimeout(() => {
       nepVid.classList.remove('on');               // y el negro se va
+      root.classList.remove('work-nav-hidden');
       setTimeout(() => { nepVidEl.pause(); nepVidOpen = false; nepVidFading = false; nepHandBtn.blur(); }, 1250);
     }, 1250);
   }
