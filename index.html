@@ -114,7 +114,7 @@
   .sig-h{ width:auto; display:block; }
   .variant[data-variant="1"] .sig-h{ height: var(--sig-h-v1); }
   .variant[data-variant="2"] .sig-h:first-child{ height: calc(var(--sig-h) * 0.78); }
-  .variant[data-variant="2"] .sig-h:last-child{ height: var(--sig-h); margin-top:4px; }
+  .variant[data-variant="2"] .sig-h:last-child{ height: calc(var(--sig-h) * 1092 / 1246); margin-top:4px; }   /* el punto de la "i" se acercó a la mitad de distancia: la imagen perdió ese espacio arriba (las letras quedan del mismo tamaño) y "Carolina" queda más cerca */
 
   .home-role-label{ margin-top:14px; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink); }
   .home-copy.v1-active .home-role-label{ margin-top:6px; }
@@ -172,6 +172,19 @@
   html.work-open .panel{ overflow:hidden; }
   html.work-open header{ transition:opacity .7s ease; }
   html.work-nav-hidden header{ opacity:0; pointer-events:none; }
+  /* "[ Volver al home ]": al llegar al final (tope de abajo) de cada trabajo, muy sutil,
+     en el centro del margen de abajo; piedra en los trabajos claros, blanco tenue en los oscuros */
+  .work-home{ position:fixed; left:50%; bottom:22px; transform:translate(-50%,6px); z-index:320; background:none; border:none; padding:6px 10px; cursor:pointer;
+    font-family:inherit; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--stone); white-space:nowrap;
+    opacity:0; pointer-events:none; transition:opacity .9s ease, transform .9s cubic-bezier(.22,1,.36,1), color .3s ease; }
+  .work-home::before{ content:'[ '; } .work-home::after{ content:' ]'; }
+  .work-home.show{ opacity:.8; transform:translate(-50%,0); pointer-events:auto; }
+  .work-home.show:hover{ color:var(--ink); }
+  html.work-dark .work-home{ color:rgba(255,255,255,.5); }
+  html.work-dark .work-home.show:hover{ color:#fff; }
+  .work-home:focus{ outline:none; }
+  /* el margen de abajo de cada trabajo, donde va "[ Volver al home ]" (en Nada es Plano lo tienen las fotos) */
+  .work-track:not(.nep-track):not(#albTrack)::after{ content:''; display:block; height:64px; }   /* en 7600 el final es el video, que se acomoda solo a pantalla completa: ahí va encima */
   html.work-open, html.work-open .panel{ cursor:default; }
 
   /* clase genérica: cualquier trabajo con scroll propio (peso/inercia) usa esto,
@@ -435,7 +448,7 @@
   /* el video queda encima de la foto de la IA: al final se funde y queda la foto, con su fondo liso.
      Ese fondo sigue hacia abajo (debajo del final de la foto) y se aclara muy de a poco hasta el blanco:
      el concepto recién arranca cuando ya es todo blanco */
-  .nep{ --nep-ini-g: 75vh; }
+  .nep{ --nep-ini-g: 58vh; }   /* el degradé al blanco, un poco más corto que antes (75vh) */
   .nep-inicial{ height:100vh; overflow:visible; }
   .nep-ini-bg{ position:absolute; left:0; top:0; width:100%; height:calc(100vh + var(--nep-ini-g)); overflow:hidden; pointer-events:none;
     background:linear-gradient(to bottom, rgb(180,173,155) 0, rgb(180,173,155) calc(125vh + var(--nep-ini-g) * 0.000 - 25vh * 0.000), rgb(181,175,157) calc(125vh + var(--nep-ini-g) * 0.083 - 25vh * 0.083), rgb(186,179,162) calc(125vh + var(--nep-ini-g) * 0.167 - 25vh * 0.167), rgb(192,186,171) calc(125vh + var(--nep-ini-g) * 0.250 - 25vh * 0.250), rgb(199,194,181) calc(125vh + var(--nep-ini-g) * 0.333 - 25vh * 0.333), rgb(208,204,193) calc(125vh + var(--nep-ini-g) * 0.417 - 25vh * 0.417), rgb(218,214,205) calc(125vh + var(--nep-ini-g) * 0.500 - 25vh * 0.500), rgb(227,224,217) calc(125vh + var(--nep-ini-g) * 0.583 - 25vh * 0.583), rgb(236,234,229) calc(125vh + var(--nep-ini-g) * 0.667 - 25vh * 0.667), rgb(243,242,239) calc(125vh + var(--nep-ini-g) * 0.750 - 25vh * 0.750), rgb(249,249,248) calc(125vh + var(--nep-ini-g) * 0.833 - 25vh * 0.833), rgb(254,253,253) calc(125vh + var(--nep-ini-g) * 0.917 - 25vh * 0.917), rgb(255,255,255) calc(125vh + var(--nep-ini-g) * 1.000 - 25vh * 1.000)); }
@@ -452,11 +465,12 @@
   /* el paso a la foto, en dos tiempos y sin que se crucen las dos imágenes: el video
      se aclara hacia los tonos de la foto y se cubre con su color liso (el fondo de la
      foto); recién después ese color se va y aparece la foto */
-  .nep-video.zoom.fade{ filter:brightness(1.22) saturate(.85); transition:transform 1.1s cubic-bezier(.4,0,.6,1), filter .75s ease; }
+  .nep-video.zoom.fade{ filter:brightness(1.22) saturate(.85); transition:transform 1.1s cubic-bezier(.4,0,.6,1), filter .3s ease; }
   .nep-ini-veil{ position:absolute; inset:0; opacity:0; pointer-events:none;
     background:url("assets/nada-es-plano-ia-creativa-fondo.jpg") 0 0 / 100% 100% no-repeat; }
-  .nep-inicial.pre .nep-ini-veil{ opacity:1; transition:opacity .75s cubic-bezier(.45,0,.6,1); }
-  .nep-inicial.pre.show .nep-ini-veil{ opacity:0; transition:opacity 1s ease; }
+  /* rápido y continuo: el color apenas llega a cubrir y ya se va (sin quedarse quieto) */
+  .nep-inicial.pre .nep-ini-veil{ opacity:1; transition:opacity .3s cubic-bezier(.4,0,.2,1); }
+  .nep-inicial.pre.show .nep-ini-veil{ opacity:0; transition:opacity .5s cubic-bezier(.4,0,.6,1); }
   .nep-video.off{ display:none; }
   /* título y subtítulo: arriba de las cabezas de las dos chicas agachadas, centrados entre las que están
      paradas (el lugar lo pone el JS, sobre la foto) */
@@ -464,10 +478,11 @@
   .nep-title{ font-size:clamp(34px,4.6vw,64px); font-weight:500; line-height:1.02; letter-spacing:-.015em; color:var(--ink); }
   .nep-sub{ margin-top:14px; font-size:clamp(13px,1.25vw,15px); color:#5e594f; }   /* el año, un poco más oscuro que el piedra (sobre la foto) */
   .nep-sub em{ font-style:normal; color:var(--ink); }
-  .nep-roles{ position:absolute; left:var(--nep-m); bottom:clamp(28px,6vh,60px); font-size:11.5px; letter-spacing:.06em; line-height:2.05; color:#5e594f; z-index:3; }   /* también un poco más oscuros */
-  /* pie de la foto de la IA: abajo, a la misma altura que los servicios; del borde derecho,
-     la misma distancia que hay entre el borde de arriba y las letras del menú (32px) */
-  .nep-ia-cap{ position:absolute; right:32px; bottom:clamp(28px,6vh,60px); font-size:11px; letter-spacing:.04em; line-height:2.05; color:#6f685c; white-space:nowrap; z-index:3; }
+  /* servicios y pie de foto intercambiados: los servicios abajo a la derecha (alineados a la derecha) */
+  .nep-roles{ position:absolute; right:32px; bottom:clamp(28px,6vh,60px); text-align:right; font-size:11.5px; letter-spacing:.06em; line-height:2.05; color:#5e594f; z-index:3; }   /* también un poco más oscuros */
+  /* pie de la foto de la IA: abajo a la izquierda, donde estaban los servicios (se intercambiaron);
+     los servicios quedan a la derecha, a 32px del borde (lo mismo que las letras del menú del borde de arriba) */
+  .nep-ia-cap{ position:absolute; left:var(--nep-m); bottom:clamp(28px,6vh,60px); font-size:11px; letter-spacing:.04em; line-height:2.05; color:#6f685c; white-space:nowrap; z-index:3; }
   /* entran "desde el fondo": apenas más chicos y transparentes. Primero el
      título; después el subtítulo y, a la vez, los servicios */
   .nep-in{ opacity:0; transform:scale(.94); }
@@ -475,7 +490,7 @@
   /* el título y el subtítulo ya están en su lugar, por debajo del video, cuando
      el video se va: aparecen justo cuando ya casi es todo blanco (sin cruzarse
      con la imagen) y sin animación de entrada */
-  .nep-inicial.pre .nep-in{ opacity:1; transform:none; animation:none !important; transition:opacity .6s ease 1.35s; }
+  .nep-inicial.pre .nep-in{ opacity:1; transform:none; animation:none !important; transition:opacity .6s ease .6s; }
   @keyframes nepFromBack{ to{ opacity:1; transform:scale(1); } }
 
   .nep-gap{ width:100vw; }
@@ -595,7 +610,14 @@
   /* ---- 5. LA COLECCIÓN ---- */
   /* imagen grande a la izquierda y el texto a la derecha */
   .nep-coll{ height:100vh; --coll-w: min(53.2vw, 79.8vh * 1.414); }   /* un 5% más chica que la primera versión grande */
-  .nep-coll-img{ position:absolute; top:50%; left:5vw; transform:translateY(-50%); width:var(--coll-w); height:auto; display:block; }
+  /* las quince prendas, cada una por separado (en el mismo lugar que en la lámina completa de 2000×1414):
+     de a una y al azar, se levantan apenas y vuelven a bajar (como el logo de la intro al pasar el
+     cursor, pero con un recorrido mucho más corto); pueden moverse varias a la vez */
+  .nep-coll-img{ position:absolute; top:50%; left:5vw; transform:translateY(-50%); width:var(--coll-w); aspect-ratio:2000 / 1414; display:block; }
+  .nep-coll-p{ position:absolute; height:auto; display:block; will-change:transform;
+    transition:transform 1.6s cubic-bezier(.45,0,.25,1), filter 1.6s cubic-bezier(.45,0,.25,1);
+    filter:drop-shadow(0 0 0 rgba(21,20,15,0)); }
+  .nep-coll-p.up{ transform:translateY(-4px) scale(1.025); z-index:2; filter:drop-shadow(0 5px 6px rgba(21,20,15,.10)); }
   .nep-coll-text{ position:absolute; top:50%; transform:translateY(-50%); left:calc(9vw + var(--coll-w)); width:calc(85vw - var(--coll-w)); max-width:46ch; }
 
   /* ---- 6. LAS CUATRO PRENDAS ---- */
@@ -900,7 +922,7 @@
   .expr-arrow{ position:absolute; left:0; top:0; z-index:3; pointer-events:none; overflow:visible; }
   .expr-arrow path{ fill:none; stroke:#15140f; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
 
-  /* ---- 6. GEOMETRAL DEL PROTOTIPO: se levanta al pasar el mouse, el texto se abre con un click ---- */
+  /* ---- 6. GEOMETRAL DEL PROTOTIPO: el texto queda fijo a su derecha, siempre a la vista ---- */
   .expr-geometral{
     --expr-geo-gap: clamp(20px,3vw,48px);
     --expr-geo-card-w: 380px;
@@ -914,7 +936,6 @@
     position:absolute; top:50%;
     left:calc(50% - (var(--expr-geo-card-w) + var(--expr-geo-gap)) / 4);
     transform:translate(-50%,-50%);
-    cursor:pointer;
   }
   .expr-geo-wrap > img{ height:78vh; width:auto; display:block; }
   .expr-geo-text{
@@ -1055,12 +1076,12 @@
   @keyframes ciFade{ to{ opacity:1; } }
   @keyframes ciRise{ from{ opacity:0; transform:translate(-50%,-46%); } to{ opacity:1; transform:translate(-50%,-50%); } }
   @keyframes ciSlide{ from{ opacity:0; transform:translate(-54%,-50%); } to{ opacity:1; transform:translate(-50%,-50%); } }
-  .panel.open .ci-fade{ animation: ciFade 1.1s ease forwards; }
-  .panel.open .ci-rise{ animation: ciRise 1.1s cubic-bezier(.22,1,.36,1) forwards; }
-  .panel.open .ci-slide{ animation: ciSlide 1.1s cubic-bezier(.22,1,.36,1) forwards; }
+  .panel.open .ci-fade{ animation: ciFade .85s ease forwards; }
+  .panel.open .ci-rise{ animation: ciRise .85s cubic-bezier(.22,1,.36,1) forwards; }
+  .panel.open .ci-slide{ animation: ciSlide .85s cubic-bezier(.22,1,.36,1) forwards; }
 
   /* zoom del logo en contacto */
-  .logo3d.zoom{ transition: transform 4200ms cubic-bezier(.165,.84,.44,1); }
+  .logo3d.zoom{ transition: transform 3400ms cubic-bezier(.165,.84,.44,1); }   /* un poco más rápido que antes (4200ms) */
 
 
   #clickReveal{
@@ -1183,17 +1204,17 @@
 
     <div class="panel-page" data-page="contact">
       <div class="contact-layer">
-        <div class="ci-email ci-anim ci-fade" style="animation-delay:150ms">
+        <div class="ci-email ci-anim ci-fade" style="animation-delay:100ms">
           <a href="mailto:carolinapicone.t@gmail.com">carolinapicone.t@gmail.com</a>
           <span>www.carolinapicone.com</span>
         </div>
 
-        <div class="ci-social ci-anim ci-slide" style="animation-delay:340ms">
+        <div class="ci-social ci-anim ci-slide" style="animation-delay:240ms">
           <a href="https://www.instagram.com/caropicone/" target="_blank" rel="noopener">Instagram</a>
           <a href="https://www.linkedin.com/in/carolina-picone-680a20331/" target="_blank" rel="noopener">LinkedIn</a>
         </div>
 
-        <div class="ci-location ci-anim ci-rise" style="animation-delay:520ms">
+        <div class="ci-location ci-anim ci-rise" style="animation-delay:380ms">
           <div>Based in <b>Mar del Plata, Argentina</b></div>
           <div>Available <b>Worldwide</b></div>
         </div>
@@ -1278,7 +1299,23 @@
 
           <!-- 5. LA COLECCIÓN: los geometrales de las 15 prendas a la izquierda y el texto a la derecha -->
           <section class="nep-part nep-coll">
-            <img class="nep-coll-img" src="assets/nada-es-plano-coleccion.webp" alt="Geometrales de la colección">
+            <div class="nep-coll-img" id="nepColl" role="img" aria-label="Geometrales de la colección">
+              <img class="nep-coll-p" src="assets/nada-es-plano-coleccion-01.webp" alt="" style="left:1.300%;top:3.182%;width:28.500%">
+              <img class="nep-coll-p" src="assets/nada-es-plano-coleccion-02.webp" alt="" style="left:29.700%;top:2.546%;width:27.450%">
+              <img class="nep-coll-p" src="assets/nada-es-plano-coleccion-03.webp" alt="" style="left:57.850%;top:2.687%;width:24.450%">
+              <img class="nep-coll-p" src="assets/nada-es-plano-coleccion-04.webp" alt="" style="left:83.400%;top:5.446%;width:14.100%">
+              <img class="nep-coll-p" src="assets/nada-es-plano-coleccion-05.webp" alt="" style="left:2.650%;top:26.025%;width:18.600%">
+              <img class="nep-coll-p" src="assets/nada-es-plano-coleccion-06.webp" alt="" style="left:22.850%;top:25.389%;width:24.650%">
+              <img class="nep-coll-p" src="assets/nada-es-plano-coleccion-07.webp" alt="" style="left:50.600%;top:32.461%;width:25.400%">
+              <img class="nep-coll-p" src="assets/nada-es-plano-coleccion-08.webp" alt="" style="left:80.200%;top:32.603%;width:15.050%">
+              <img class="nep-coll-p" src="assets/nada-es-plano-coleccion-09.webp" alt="" style="left:2.250%;top:43.706%;width:26.500%">
+              <img class="nep-coll-p" src="assets/nada-es-plano-coleccion-10.webp" alt="" style="left:32.900%;top:45.827%;width:15.800%">
+              <img class="nep-coll-p" src="assets/nada-es-plano-coleccion-11.webp" alt="" style="left:55.250%;top:49.505%;width:22.550%">
+              <img class="nep-coll-p" src="assets/nada-es-plano-coleccion-12.webp" alt="" style="left:2.850%;top:66.054%;width:30.400%">
+              <img class="nep-coll-p" src="assets/nada-es-plano-coleccion-13.webp" alt="" style="left:34.850%;top:72.065%;width:21.550%">
+              <img class="nep-coll-p" src="assets/nada-es-plano-coleccion-14.webp" alt="" style="left:57.500%;top:77.228%;width:20.300%">
+              <img class="nep-coll-p" src="assets/nada-es-plano-coleccion-15.webp" alt="" style="left:79.600%;top:72.348%;width:17.950%">
+            </div>
             <div class="nep-bt nep-coll-text"><p>La colección reúne quince prendas desarrolladas a partir de una búsqueda simultánea de color, texturas, estampados y moldería. Estas exploraciones se fueron transformando entre sí hasta construir el lenguaje visual y material de la colección. Las estampas incorporaron también obras de arte como referencias e inspiración.</p><p>Los prototipos permitieron llevar estas búsquedas al cuerpo y ajustar cada diseño hasta alcanzar su resolución definitiva. De las quince prendas, cuatro fueron materializadas por condensar especialmente la identidad y complejidad de la colección.</p></div>
           </section>
 
@@ -1781,6 +1818,8 @@
   <div class="about-copyright-caption" id="aboutCopyrightCaption">© 2026 Carolina Picone</div>
 </div>
 
+<!-- "[ Volver al home ]": aparece abajo, en el centro, al llegar al final de cada trabajo -->
+<button class="work-home" id="workHome" type="button"><span data-es>Volver al home</span><span data-en>Back to home</span></button>
 <div id="clickReveal"></div>
 
 <script>
@@ -2310,13 +2349,11 @@
     if(aboutIntroActive || aboutLeaving) return;
     e.preventDefault();
     aboutTarget += e.deltaY;
-    if(aboutTarget < -90){
-      aboutLeaving = true;
-      sectionTransition(goHome);
-      return;
-    }
-    if(aboutTarget < 0) aboutTarget = Math.max(aboutTarget, -90);
-    if(aboutTarget > aboutMax) aboutTarget = aboutMax;
+    // ya no se vuelve solo al home (ni arriba ni abajo): el scroll frena en los
+    // topes, arriba en el principio y abajo cuando termina el texto
+    if(aboutTarget < 0) aboutTarget = 0;
+    const stop = Math.max(aboutMax - window.innerHeight * 0.55, 0);
+    if(aboutTarget > stop) aboutTarget = stop;
   }, { passive:false });
   window.addEventListener('resize', () => { if(panel.classList.contains('show-about')) setupAbout(); });
   window.addEventListener('load', setupAbout);
@@ -2389,11 +2426,6 @@
         }
       }
 
-      // al pasar de largo el final (pantalla en blanco), vuelve solo a Trabajos
-      if(!aboutIntroActive && !aboutLeaving && aboutCurrent > aboutMax - 4){
-        aboutLeaving = true;
-        sectionTransition(goHome);
-      }
     }
     requestAnimationFrame(aboutLoop);
   }
@@ -2495,8 +2527,8 @@
     requestAnimationFrame(() => {
       logo3d.style.transform = `translate(-50%, calc(-50% + ${dy}px)) scale(${s})`;
     });
-    setTimeout(() => { document.documentElement.classList.add('contact-nav-white'); }, 2600);
-    setTimeout(() => { panel.classList.add('contact-ready'); }, 3300);
+    setTimeout(() => { document.documentElement.classList.add('contact-nav-white'); }, 2100);
+    setTimeout(() => { panel.classList.add('contact-ready'); }, 2500);   // el texto aparece antes (antes 3.3s)
   }
 
   function resetLogoTransform(){
@@ -2510,7 +2542,10 @@
     aboutIntroActive = true;
     const startCurrent = aboutCurrent;
     const endCurrent = -(aboutRest + 200); // se va del todo por abajo
-    const T = 2000;                        // más lento, sigue sin desacelerar
+    // si no se scrolleó el texto (está en su lugar del principio), no hay que
+    // esperar nada: el zoom arranca enseguida
+    if(startCurrent <= 12){ aboutIntroActive = false; if(cb) cb(); return; }
+    const T = Math.min(1300, 400 + (startCurrent - endCurrent) * 0.35);   // más rápido que antes (2000ms), sin desacelerar
     const t0 = performance.now();
     function step(now){
       const t = Math.min((now - t0) / T, 1);
@@ -3060,28 +3095,8 @@
     // placeholder conservan el gesto de estirar y sostener (si no, no habría cómo salir)
     if(panel.classList.contains('show-work') && workTrack) return;
 
-    const isContact = panel.classList.contains('show-contact');
-    const stretch = isContact ? 10 : STRETCH_MAX; // en contacto, casi no se mueve
-
-    if(overTop || overBottom){
-      e.preventDefault();
-      if(!pullStart) pullStart = Date.now();
-      const t = Math.min((Date.now() - pullStart) / HOLD_MS, 1);
-      const dir = overTop ? 1 : -1;
-      panelInner.style.transition = 'none';
-      panelInner.style.transform = `translateY(${stretch * t * dir}px)`;
-
-      clearTimeout(inactivityTimer);
-      inactivityTimer = setTimeout(resetPull, 480);
-
-      if(t >= 1 && !panelLeaving){
-        panelLeaving = true;
-        panelInner.style.transform = 'translateY(0px)';
-        sectionTransition(() => { panelLeaving = false; goHome(); });
-      }
-    } else {
-      resetPull();
-    }
+    // ya no se estira ni vuelve al home con el scroll (tampoco en Contacto)
+    if(overTop || overBottom) e.preventDefault();
   }, { passive:false });
 
   function goHome(){
@@ -3708,7 +3723,7 @@
   const NEP_VIDEO_DELAY = 400;   // el video arranca cuando el fundido de entrada ya casi se fue
   const NEP_ZOOM_LEAD = 1.4;     // el zoom a las caras arranca cuando al video le faltan 1.4s
   const NEP_FADE_LEAD = 1.15;    // el fundido con la foto de la IA arranca cuando le falta un poco más de 1s
-  const NEP_FADE_MS = 750;       // el video se cubre con el color de la foto (igual que en el CSS); después se descubre la foto
+  const NEP_FADE_MS = 300;       // el video se cubre con el color de la foto (.3s, igual que en el CSS) y enseguida, sin quedarse, se descubre la foto
   const NEP_FACES = [932, 400];  // punto medio entre las caras de las chicas, en el cuadro de 1920×1080
   let nepVideoOn = false, nepVideoTimer = null, nepFadeTimer = null, nepNavTimer = null, nepFading = false;
   let nepL = null;               // medidas del concepto
@@ -3870,14 +3885,14 @@
   //     vuelve al centro. Si está en una página del medio, primero se cierra
   //     hacia la tapa. Para subir, primero se cierra y vuelve a quedar asomado.
   //     Cuando ya salió de la pantalla, vuelve solo a la tapa (y asomado).
-  const NB_PAGES = [1, 2, 3, 4, 6, 8];   // qué foto corresponde a cada estado
+  const NB_PAGES = [1, 2, 3, 6, 4, 8];   // qué foto corresponde a cada estado (la 6, con la foto impresa, va antes que la 4: se intercambiaron)
   const NB_N = NB_PAGES.length;
   const NB_SPINE = 1000, NB_TOP = 150, NB_H = 1000, NB_FRONT_W = 631, NB_PAGE_W = 655;
   const NB_FLIP_MS = 720;     // pasar una página: sutil pero no lento
   const NB_FAST_MS = 170;     // cada página al cerrar rápido
   const NB_OPEN_MS = 1700;    // con el click: de asomado a su lugar (y de vuelta)
   const IA_W = 2400, IA_H = 1840, IA_PW = 2000, IA_PH = 1116, IA_X = 200, IA_Y = 362;   // la foto de la IA, extendida con su fondo recreado hasta cubrir la pantalla
-  const NEP_HEAD_X = 1615, NEP_HEAD_BOTTOM = 700, NEP_HEAD_GAP = 585;   // título: centrado entre las chicas paradas (a la altura de sus cabezas, donde hay más lugar: 585 entre el pelo de una y el de la otra), arriba de las cabezas de las dos agachadas (en la foto extendida)
+  const NEP_HEAD_X = 1628, NEP_HEAD_BOTTOM = 700, NEP_HEAD_GAP = 585;   // título: centrado entre las chicas paradas (a la altura de sus cabezas, donde hay más lugar: 585 entre el pelo de una y el de la otra), arriba de las cabezas de las dos agachadas (en la foto extendida)
   const NB_WEIGHT = 1.25;   // toda la sección es un poco más pesada que el resto: el cuaderno se mueve más sutil
   const NB_SHRINK = 0.85;   // al ir a su lugar, el cuaderno se achica un 15%
   const nbSec   = document.getElementById('nepBookSec');
@@ -3963,10 +3978,10 @@
     const yb0 = ya0 + h1a + G;                           // dónde arrancan los otros dos (misma separación que antes)
     const t2 = yb0 - (vh / 2 - h1b / 2);                 // ... y quedan en el centro
     const stop = t2;                                     // los bocetos frenan
-    // el cuaderno entra un poco antes: llega asomado justo cuando los dos primeros
-    // párrafos quedan en el centro; mientras entra, los va empujando (desde más a
-    // la izquierda) hasta el centro
-    const A = t1, a0 = t1 - vh * 0.55;
+    // el cuaderno empieza a salir cuando los dos primeros párrafos ya están casi
+    // en el centro, y llega asomado cuando los otros dos quedan en el centro;
+    // mientras entra, empuja a los primeros (que arrancan más a la izquierda)
+    const A = t2, a0 = t1 - vh * 0.08;
     const E = A - a0;                                    // al irse, el mismo recorrido
     const D = t2;                                        // la sección se suelta con los otros dos en el centro
     nbProc.style.height = procH.toFixed(1) + 'px';
@@ -3977,13 +3992,15 @@
     // Después el scroll sigue normal y el cuaderno se va por donde entró
     const top = nbSec.offsetTop;
     nb.snaps = [
-      { at: top + t1 * NB_WEIGHT, before: vh * 0.35, after: (t2 - t1) * NB_WEIGHT - 2, msDown: 1600, msUp: 1700 },
-      { at: top + t2 * NB_WEIGHT, before: (t2 - t1) * NB_WEIGHT - 2, after: 0, msDown: 1700, msUp: 1700 }
+      { at: top + t1 * NB_WEIGHT, before: vh * 0.35, after: (t2 - t1) * NB_WEIGHT - 2, msDown: 1600, msUp: 2000 },
+      { at: top + t2 * NB_WEIGHT, before: (t2 - t1) * NB_WEIGHT - 2, after: 0, msDown: 2100, msUp: 2000 }
     ];
     nepIaLayout();
   }
 
   function nbEase(x){ x = Math.min(Math.max(x, 0), 1); return x * x * (3 - 2 * x); }
+  // más sutil: arranca y frena muy de a poco
+  function nbSoft(x){ x = Math.min(Math.max(x, 0), 1); return x * x * x * (x * (x * 6 - 15) + 10); }
 
   // con el click: de asomado a su lugar (to = 1) o de vuelta (to = 0)
   function nbOpenTo(to){
@@ -3999,7 +4016,7 @@
     const pin = pinR / NB_WEIGHT;
     // ya suelta la sección (scroll normal): cuánto avanzó el cuaderno en irse
     const over = Math.max(local - P.D * NB_WEIGHT, 0);
-    const ex = nbEase(over / (P.E * NB_WEIGHT));
+    const ex = nbSoft(over / (P.E * NB_WEIGHT));
     nb.pin = pin; nb.over = over;
     if(nb.mT){
       const t = nb.mT.ms > 0 ? Math.min((performance.now() - nb.mT.t0) / nb.mT.ms, 1) : 1;
@@ -4015,9 +4032,12 @@
     const scHome = 1 - (1 - NB_SHRINK) * em;              // y en su lugar, un poco más chico
     let xs, sc;
     if(pin <= P.a0){ xs = xOut; sc = 1; }
-    else if(pin < P.A){ const e = nbEase((pin - P.a0) / (P.A - P.a0)); xs = xOut + (xHome - xOut) * e; sc = 1 + (scHome - 1) * e; }
+    else if(pin < P.A){ const e = nbSoft((pin - P.a0) / (P.A - P.a0)); xs = xOut + (xHome - xOut) * e; sc = 1 + (scHome - 1) * e; }
     else { xs = xHome + (xOut - xHome) * ex; sc = scHome + (1 - scHome) * ex; }
-    const top = vh / 2 - (NB_TOP + NB_H / 2) * k;
+    // al irse, se queda a la misma altura en la pantalla (sale en línea recta,
+    // igual que entró), aunque el resto ya sube con el scroll normal
+    const lift = ex < 1 ? over : 0;
+    const top = vh / 2 - (NB_TOP + NB_H / 2) * k + lift;
     nbBook.style.transform = 'translate(' + (xs - NB_SPINE * k).toFixed(1) + 'px,' + top.toFixed(1) + 'px) scale(' + sc.toFixed(4) + ')';
     // ya se fue de la pantalla: vuelve solo a la tapa
     // (si se había hecho click, queda en ese lugar: así el texto no salta al volver)
@@ -4039,11 +4059,15 @@
     nbT1a.style.transform = 'translate(' + x1a.toFixed(1) + 'px,' + (P.ya0 - pin).toFixed(1) + 'px)';
     const y1b = Math.max(P.yb0 - pin, vh / 2 - P.h1b / 2);
     nbT1b.style.transform = 'translate(' + x1b.toFixed(1) + 'px,' + y1b.toFixed(1) + 'px)';
-    // los bocetos: suben hasta frenar y ahí se quedan
-    nbProc.style.transform = 'translate(0px,' + (vh - Math.min(pin, P.stop)).toFixed(1) + 'px)';
+    // los bocetos: suben hasta frenar y ahí se quedan; si el cuaderno va a su
+    // lugar (y empuja el texto), se corren a la derecha hasta salir de la pantalla
+    const procOut = ex > 0 ? (nb.exitEm !== undefined ? nb.exitEm : em) : em;
+    if(ex <= 0) nb.exitEm = undefined; else if(nb.exitEm === undefined) nb.exitEm = em;
+    nbProc.style.transform = 'translate(' + (procOut * (nbProc.offsetWidth + 40)).toFixed(1) + 'px,' + (vh - Math.min(pin, P.stop)).toFixed(1) + 'px)';
     // se puede hacer click con el cuaderno quieto en su lugar (asomado: va a su
     // lugar; ahí: pasa una página, salvo en la contratapa)
-    const still = pin >= P.A - 20 && over < 4 && !nepGlide;
+    // (solo con los otros dos párrafos en el centro: ahí se puede abrir)
+    const still = Math.abs(pin - P.t2) < 20 && over < 4 && !nepGlide;
     nb.clickable = still && !nb.busy && !nb.mT && (nb.m === 0 || (nb.m === 1 && nb.cur < NB_N));
     nbBook.classList.toggle('ready', nb.clickable);
     nbHint.classList.toggle('show', (nb.clickable && nb.hover) || (nepPhHover && !nepLbOpen));
@@ -4051,7 +4075,7 @@
     // vista cuando se pasa la última página y ese lado se destapa (se desvanece
     // rápido ni bien se sigue bajando)
     nbScroll.style.left = (xs + NB_FRONT_W * k * sc * 0.7).toFixed(1) + 'px';
-    nbScroll.style.top = (vh / 2).toFixed(1) + 'px';
+    nbScroll.style.top = (vh / 2 + lift).toFixed(1) + 'px';
     nbScroll.classList.toggle('show', nb.cur >= NB_N - 1 && nb.m >= 1 && pin >= P.A - 20 && over < vh * 0.02);
   }
 
@@ -4063,9 +4087,12 @@
   function nbWheel(dir){
     if(!nb.phases) return false;
     const P = nb.phases;
-    if(nb.pin < P.A - 20 || nb.over > 4) return false;
+    if(nb.pin < P.t1 - 20 || nb.over > 4) return false;
     if(nb.mT || nb.busy) return true;
-    if(dir < 0 && Math.abs(nb.pin - P.t1) < 20){
+    // para subir desde los otros dos párrafos con el cuaderno abierto: primero se
+    // cierra y vuelve a quedar asomado (así nunca queda en el medio de la pantalla
+    // encima de los primeros párrafos)
+    if(dir < 0 && Math.abs(nb.pin - P.t2) < 20){
       if(nb.cur > 1){ nbCloseFast(); return true; }
       if(nb.m > 0){ nbOpenTo(0); return true; }
       return false;
@@ -4164,7 +4191,7 @@
     nepInicial.classList.add('pre');
     nepVideo.classList.add('fade');
     clearTimeout(nepFadeTimer);
-    nepFadeTimer = setTimeout(nepShowTexts, NEP_FADE_MS + 120);
+    nepFadeTimer = setTimeout(nepShowTexts, NEP_FADE_MS);
   }
   // ya con la foto: el título, el subtítulo, los servicios y el pie de foto
   function nepShowTexts(){
@@ -4322,8 +4349,8 @@
       if(b === 0) nepEnd.seam = y0 + H + G / 2;      // la línea recta entre los dos bloques
       y0 += H + G;
     });
-    // abajo queda la misma separación que entre las fotos
-    nepPh.style.height = y0.toFixed(1) + 'px';
+    // abajo queda un margen blanco, para "[ Volver al home ]"
+    nepPh.style.height = (y0 + 64).toFixed(1) + 'px';
     nepHandBtn.style.top = nepEnd.seam.toFixed(1) + 'px';
   }
   nepPhImgs.forEach(im => {
@@ -4348,8 +4375,9 @@
   // terminar, o con un click en cualquier lugar (o Esc), se funde en blanco y
   // queda la pantalla del texto manuscrito, en negro, que aparece rápido y
   // suave (de difuminado a nítido, subiendo apenas): ese pasa a ser el final
-  // del trabajo. Desde ahí, un solo movimiento
-  // para arriba vuelve solo al final de las fotos (con "[ Ver video ]" abierto)
+  // del trabajo. Desde ahí, un solo movimiento para arriba vuelve solo al final
+  // de las fotos (con "[ Ver video ]" abierto) y la pantalla del texto se
+  // bloquea otra vez: solo se vuelve a llegar viendo el video
   const NEP_END_OPEN = 50;        // cuánto se abren los dos bloques (px), además de los 10 de siempre
   const NEP_END_MS = 1300;        // "[ Ver video ]": se abre así de suave
   const nepHandSec = document.getElementById('nepHand');
@@ -4372,6 +4400,12 @@
     // estando en la pantalla del texto, queda abierto (al volver, ya está)
     if(workCurrent < nepEnd.tope - vh * 0.6) nepEnd.target = 0;
     else if(workCurrent > nepEnd.tope + 2) nepEnd.target = 1;
+    // la pantalla del texto solo se ve después del video: al volver a las fotos,
+    // se bloquea otra vez (hay que volver a ver el video para llegar)
+    if(nepHand.on && !nepVidOpen && !nepGlide && workCurrent <= nepEnd.tope + 2){
+      nepHandHide(); measureWork(); nepEndLayout();
+      if(workTarget > workMax) workTarget = workMax;
+    }
     // se abre (o se cierra) con el tiempo, muy suave
     const dt = Math.min(now - (nepEnd.t || now), 50); nepEnd.t = now;
     const step = dt / NEP_END_MS;
@@ -4478,9 +4512,26 @@
     }
     nepPzLayout();
   }
+  // la colección: de a una y al azar, cada prenda se levanta apenas y vuelve a
+  // bajar (pueden cruzarse: varias a la vez). Solo mientras se ve en la pantalla
+  const nepCollEl = document.getElementById('nepColl');
+  const nepCollPs = nepCollEl ? Array.from(nepCollEl.querySelectorAll('.nep-coll-p')).map(el => ({ el, next: 0, down: 0 })) : [];
+  function nepCollFrame(){
+    if(!nepCollEl) return;
+    const now = performance.now(), vh = window.innerHeight;
+    const sec = nepCollEl.parentElement, top = sec.offsetTop - workCurrent;
+    const visible = top < vh && top + sec.offsetHeight > 0;
+    nepCollPs.forEach(p => {
+      if(!visible){ if(p.el.classList.contains('up')) p.el.classList.remove('up'); p.next = 0; return; }
+      if(!p.next) p.next = now + 400 + Math.random() * 5000;
+      if(p.down && now >= p.down){ p.el.classList.remove('up'); p.down = 0; p.next = now + 2200 + Math.random() * 6500; }
+      else if(!p.down && now >= p.next){ p.el.classList.add('up'); p.down = now + 1700 + Math.random() * 900; }
+    });
+  }
   function nepRestFrame(){
     nepGlideFrame();
     nepEndFrame();
+    nepCollFrame();
   }
 
   function nepSetup(){
@@ -4539,21 +4590,7 @@
   const exprGeoText = document.getElementById('exprGeoText');
   const exprGeoSection = document.querySelector('.expr-geometral');
   let exprGeoOpen = false;
-  if(exprGeoWrap){
-    exprGeoWrap.addEventListener('mouseenter', () => {
-      if(exprGeoHint) exprGeoHint.classList.add('show');
-    });
-    exprGeoWrap.addEventListener('mouseleave', () => {
-      if(exprGeoHint) exprGeoHint.classList.remove('show');
-    });
-    exprGeoWrap.addEventListener('click', () => {
-      if(exprGeoHint) exprGeoHint.classList.remove('show');
-      if(exprGeoOpen) return;   // ya esta abierto: un click de mas no lo cierra
-      exprGeoOpen = true;
-      exprPrepareReveal(exprGeoText);
-      exprPlayReveal(exprGeoText, 45);
-    });
-  }
+  // (ya no se abre con un click: el texto del geometral está fijo, siempre a la vista)
 
   // ================= UN MUNDO PARA EXPRIMIR: frutas rodando =================
   // Motor a mano cuadro a cuadro (no @keyframes) porque hace falta: invertir
@@ -5319,19 +5356,20 @@
       exprDir = 1; exprMode = 'solo'; exprRoundT0 = performance.now(); exprOverride = {}; exprBoom = null;
       exprConceptTextState = 'hidden';
       exprFruitsTextState = 'hidden';
-      exprGeoOpen = false;
+      exprGeoOpen = true;
       // se preparan (parten en lineas) ya mismo, ocultas: asi no se ven hasta
-      // que corresponda (scrollear hasta ahi, o clickear en el geometral)
+      // que corresponda (scrollear hasta ahi). El del geometral queda fijo, a la vista
       exprPrepareReveal(exprConceptText);
       exprResetReveal(exprConceptText);
       exprPrepareReveal(document.getElementById('exprFruitsText'));
       exprResetReveal(document.getElementById('exprFruitsText'));
       exprPrepareReveal(exprGeoText);
-      exprResetReveal(exprGeoText);
+      exprGeoText.querySelectorAll('.expr-rl-inner').forEach(sp => { sp.style.transitionDelay = ''; sp.classList.add('show'); });
     }
   }
 
   function teardownWorkProject(){
+    const wh = document.getElementById('workHome'); if(wh) wh.classList.remove('show');
     root.classList.remove('work-open','work-dark','work-nav-hidden','df-nav-light',
                           'smb-click-on','smb-lb-open','smb-vig-top','smb-vig-bottom');
     workPages.forEach(p => p.classList.remove('is-active'));
@@ -5398,21 +5436,7 @@
     // y con el cuaderno en su lugar: primero se cierra (ver nbWheel)
     if(workTrack === nepTrackEl && (nbWheel(dir) || nepEndWheel(dir))) return;
 
-    // ya estirando: seguir empujando para el mismo lado sostiene el estirado;
-    // para el otro lado lo suelta y vuelve al scroll normal
-    if(workPull){
-      if(dir === workPull.dir){ workPull.last = now; return; }
-      workPull = null;
-    }
-
-    // en el tope, un movimiento nuevo (después de una pausa, no el envión del
-    // scroll que venía) empieza a estirar
-    const lim = dir > 0 ? workMax : 0;
-    const enTope = (dir > 0 ? workTarget >= workMax : workTarget <= 0) && Math.abs(workCurrent - lim) < 30;
-    if(enTope && gap > PULL_GAP){
-      workPull = { dir, t0: now, last: now };
-      return;
-    }
+    // (ya no se sale del trabajo estirando en los topes: abajo aparece "[ Volver al home ]")
 
     const nt = Math.min(Math.max(workTarget + e.deltaY, 0), workMax);
     if(workTrack === nepTrackEl && nepSnapCheck(dir, nt, now)) return;
@@ -5469,6 +5493,14 @@
     });
   });
 
+  const workHomeBtn = document.getElementById('workHome');
+  if(workHomeBtn) workHomeBtn.addEventListener('click', () => {
+    if(workLeaving) return;
+    workLeaving = true;
+    workHomeBtn.classList.remove('show');
+    workHomeBtn.blur();
+    sectionTransition(goHome, root.classList.contains('work-dark'));
+  });
   function workLoop(){
     if(workTrack && panel.classList.contains('open') && panel.classList.contains('show-work')){
       workCurrent += (workTarget - workCurrent) * 0.075;
@@ -5490,6 +5522,11 @@
 
       if(workTrack === dfTrackEl) dfFrame(vh);
       if(workTrack === nepTrackEl){ nepRestFrame(); nepFrame(); nbFrame(); }
+      // "[ Volver al home ]" al llegar al tope de abajo
+      if(workHomeBtn){
+        const atEnd = workMax > 0 && workCurrent >= workMax - 3 && !workLeaving && !(workTrack === nepTrackEl && nepVidOpen);
+        if(workHomeBtn.classList.contains('show') !== atEnd) workHomeBtn.classList.toggle('show', atEnd);
+      }
 
       if(workTrack === exprTrackEl){
         exprRenderFruits(performance.now());
@@ -5540,13 +5577,7 @@
           }
         }
 
-        // geometral: el click lo abre; si se scrollea (para cualquier lado) y
-        // deja de verse completo, se cierra igual que los otros textos, y hay
-        // que volver a clickear para verlo de nuevo
-        if(exprGeoOpen && exprGeoSection && !exprFullyVisible(exprGeoSection)){
-          exprGeoOpen = false;
-          exprPlayHide(exprGeoText, 45, !exprScrollingDown);
-        }
+        // (el texto del geometral queda siempre a la vista)
       }
 
       // el video final solo corre mientras está a la vista: si se va de pantalla
