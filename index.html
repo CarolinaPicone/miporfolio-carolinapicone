@@ -170,7 +170,7 @@
   html.work-dark .lang-toggle{ color:#6b665d; }
   html.work-dark .lang-toggle span.active{ color:#fff; }
   html.work-open .panel{ overflow:hidden; }
-  html.work-open header{ transition:opacity .7s ease; }
+  html.work-open header{ transition:opacity .9s ease; }
   html.work-nav-hidden header{ opacity:0; pointer-events:none; }
   /* "[ Volver al home ]": al llegar al final (tope de abajo) de cada trabajo, muy sutil,
      en el centro del margen de abajo; piedra en los trabajos claros, blanco tenue en los oscuros */
@@ -461,15 +461,17 @@
   /* al final: primero empieza a acercarse de a poco a las caras de las chicas
      (el punto de apoyo del zoom lo calcula el JS) y, en el último segundo, se
      funde en blanco (rápido: termina antes de que el video frene) */
-  .nep-video.zoom{ transform:scale(1.35); transition:transform 1.1s cubic-bezier(.4,0,.6,1); }
+  /* el zoom nunca frena antes del paso a la foto: sigue andando mientras el color lo cubre
+     (si frenaba justo cuando arrancaba el paso, se notaba el corte) */
+  .nep-video.zoom{ transform:scale(1.42); transition:transform 1.7s cubic-bezier(.42,0,.7,.75); }
   /* el paso a la foto, en dos tiempos y sin que se crucen las dos imágenes: el video
      se aclara hacia los tonos de la foto y se cubre con su color liso (el fondo de la
      foto); recién después ese color se va y aparece la foto */
-  .nep-video.zoom.fade{ filter:brightness(1.22) saturate(.85); transition:transform 1.1s cubic-bezier(.4,0,.6,1), filter .3s ease; }
+  .nep-video.zoom.fade{ filter:brightness(1.22) saturate(.85) blur(1.5px); transition:transform 1.7s cubic-bezier(.42,0,.7,.75), filter .36s ease; }
   .nep-ini-veil{ position:absolute; inset:0; opacity:0; pointer-events:none;
     background:url("assets/nada-es-plano-ia-creativa-fondo.jpg") 0 0 / 100% 100% no-repeat; }
   /* rápido y continuo: el color apenas llega a cubrir y ya se va (sin quedarse quieto) */
-  .nep-inicial.pre .nep-ini-veil{ opacity:1; transition:opacity .3s cubic-bezier(.4,0,.2,1); }
+  .nep-inicial.pre .nep-ini-veil{ opacity:1; transition:opacity .36s cubic-bezier(.4,0,.6,1); }
   .nep-inicial.pre.show .nep-ini-veil{ opacity:0; transition:opacity .5s cubic-bezier(.4,0,.6,1); }
   .nep-video.off{ display:none; }
   /* título y subtítulo: arriba de las cabezas de las dos chicas agachadas, centrados entre las que están
@@ -616,9 +618,9 @@
      cursor, pero con un recorrido mucho más corto); pueden moverse varias a la vez */
   .nep-coll-img{ position:absolute; top:50%; left:5vw; transform:translateY(-50%); width:var(--coll-w); aspect-ratio:2000 / 1414; display:block; }
   .nep-coll-p{ position:absolute; height:auto; display:block; will-change:transform;
-    transition:transform 1.6s cubic-bezier(.45,0,.25,1), filter 1.6s cubic-bezier(.45,0,.25,1);
+    transition:transform 1.3s cubic-bezier(.45,0,.25,1), filter 1.3s cubic-bezier(.45,0,.25,1);
     filter:drop-shadow(0 0 0 rgba(21,20,15,0)); }
-  .nep-coll-p.up{ transform:translateY(-4px) scale(1.025); z-index:2; filter:drop-shadow(0 5px 6px rgba(21,20,15,.10)); }
+  .nep-coll-p.up{ transform:translateY(-3px) scale(1.012); z-index:2; filter:drop-shadow(0 4px 5px rgba(21,20,15,.09)); }
   .nep-coll-text{ position:absolute; top:50%; transform:translateY(-50%); left:calc(9vw + var(--coll-w)); width:calc(85vw - var(--coll-w)); max-width:46ch; }
 
   /* ---- 6. LAS CUATRO PRENDAS ---- */
@@ -674,8 +676,8 @@
      Tamaño y lugar: el JS (dos bloques en columnas, que arrancan y terminan en línea recta) */
   .nep-ph{ position:relative; }
   .nep-ph-img{ position:absolute; display:block; cursor:pointer; will-change:transform; border-radius:3px; object-fit:cover; }
-  /* crédito de la modelo: centrado debajo de la foto, en el margen de abajo, gris muy clarito */
-  .nep-ph-cap{ position:absolute; transform:translateX(-50%); font-size:11px; letter-spacing:.04em; color:#b3ada0; white-space:nowrap; pointer-events:none; will-change:transform; }
+  /* crédito de la modelo: encima de la foto, centrado cerca del borde de abajo, en un piedra muy clarito */
+  .nep-ph-cap{ position:absolute; transform:translateX(-50%); font-size:11px; letter-spacing:.04em; color:#d9d5cc; white-space:nowrap; pointer-events:none; will-change:transform; z-index:1; }
   /* foto ampliada: lo más grande posible dejando aire, con el fondo difuminado */
   .nep-lb{ position:fixed; inset:0; z-index:330; display:flex; align-items:center; justify-content:center; cursor:pointer;
     background:rgba(255,255,255,.5); -webkit-backdrop-filter:blur(22px); backdrop-filter:blur(22px);
@@ -1096,6 +1098,8 @@
   [data-en]{ display:none; }
   html[lang="en"] [data-es]{ display:none; }
   html[lang="en"] [data-en]{ display:inline; }
+  /* Nada es Plano: los textos de varios párrafos van en un bloque por idioma */
+  html[lang="en"] .nep div[data-en]{ display:block; }
 </style>
 </head>
 <body class="loading">
@@ -1154,7 +1158,7 @@
     <div class="scatter-viewport">
       <button class="scatter-item dark"  data-project="1" id="p1"><span class="item-inner"><span class="ph" style="background-image:url(&quot;assets/nada-es-plano-thumb.jpg&quot;); background-size:cover; background-position:center;"></span></span></button>
       <button class="scatter-item light" data-project="2" id="p2"><span class="item-inner"><span class="ph" style="background-image:url(&quot;assets/dualidad-thumb.jpg&quot;); background-size:cover; background-position:center;"></span></span></button>
-      <button class="scatter-item dark"  data-project="3" id="p3"><span class="item-inner"><span class="ph" style="background-image:url(&quot;assets/exprimir-thumb-bocetos.jpg&quot;); background-size:cover; background-position:center;"></span></span></button>
+      <button class="scatter-item dark"  data-project="3" id="p3"><span class="item-inner"><span class="ph" style="background-image:url(&quot;assets/exprimir-thumb.jpg&quot;); background-size:cover; background-position:center;"></span></span></button>
       <button class="scatter-item light" data-project="4" id="p4"><span class="item-inner"><span class="ph" style="background-image:url(&quot;assets/trabajo-04-thumb.jpg&quot;); background-size:cover; background-position:center;"></span></span></button>
       <button class="scatter-item dark"  data-project="5" id="p5"><span class="item-inner"><span class="ph" style="background-image:url(&quot;assets/7600-thumb-sax.jpg&quot;); background-size:cover; background-position:30% center;"></span></span></button>
     </div>
@@ -1245,13 +1249,13 @@
             <div class="nep-video-clip"><video class="nep-video" id="nepVideo" src="assets/nada-es-plano-video.mp4" muted playsinline preload="auto"></video><div class="nep-ini-veil"></div></div>
             <div class="nep-head" id="nepHead">
               <h1 class="nep-title nep-in">Nada es Plano</h1>
-              <div class="nep-sub nep-in" style="animation-delay:300ms"><em>Colecci&oacute;n de indumentaria</em> &nbsp;2026</div>
+              <div class="nep-sub nep-in" style="animation-delay:300ms"><em><span data-es>Colecci&oacute;n de indumentaria</span><span data-en>Fashion collection</span></em> &nbsp;2026</div>
             </div>
             <div class="nep-roles nep-in" style="animation-delay:300ms">
               <span data-es>Direcci&oacute;n Creativa<br>Desarrollo Conceptual<br>Direcci&oacute;n de Arte<br>Identidad Visual<br>Desarrollo de Colecci&oacute;n</span>
               <span data-en>Creative Direction<br>Concept Development<br>Art Direction<br>Visual Identity<br>Collection Development</span>
             </div>
-            <div class="nep-ia-cap nep-in" style="animation-delay:300ms">IA creativa @studio.joaquina</div>
+            <div class="nep-ia-cap nep-in" style="animation-delay:300ms"><span data-es>IA creativa</span><span data-en>Creative AI</span> @studio.joaquina</div>
           </section>
 
           <!-- 2. CONCEPTO: queda fijo en la pantalla mientras el scroll recorre el texto (arranca cuando el fondo
@@ -1260,9 +1264,9 @@
             <div class="nep-stage" id="nepStage">
               <div class="nep-window" id="nepWindow">
                 <div class="nep-flow" id="nepFlow">
-                  <p class="nep-question" data-text="¿Cómo es posible que aquello que nos resulta naturalmente propio termine desplazado?">¿Cómo es posible que aquello que nos resulta naturalmente propio termine desplazado?</p>
-                  <p class="nep-p" id="nepP1" data-text="Como proyecto final de la carrera, la colección parte de esta pregunta. Con el paso del tiempo, las normas, expectativas y formas aprendidas de encajar pueden alejarnos de una manera más genuina de sentir, crear y expresarnos, hasta volver extraño aquello que alguna vez nos fue natural.">Como proyecto final de la carrera, la colección parte de esta pregunta. Con el paso del tiempo, las normas, expectativas y formas aprendidas de encajar pueden alejarnos de una manera más genuina de sentir, crear y expresarnos, hasta volver extraño aquello que alguna vez nos fue natural.</p>
-                  <p class="nep-p" data-text="Frente a esa distancia, la propuesta busca volver sobre lo propio sin intentar regresar al pasado. La infancia aparece como referencia a ese estado de espontaneidad y libertad, mientras la memoria abre la posibilidad de reencontrarse con aquello que permanece. El color, entendido como lenguaje de expresión emocional, permite hacer visible lo que no siempre puede decirse con palabras. Así, aquello que en un primer momento puede sentirse extraño también resulta familiar: la colección propone reconocer lo extraño como propio y encontrar, en esa reconciliación, una forma auténtica de existir.">Frente a esa distancia, la propuesta busca volver sobre lo propio sin intentar regresar al pasado. La infancia aparece como referencia a ese estado de espontaneidad y libertad, mientras la memoria abre la posibilidad de reencontrarse con aquello que permanece. El color, entendido como lenguaje de expresión emocional, permite hacer visible lo que no siempre puede decirse con palabras. Así, aquello que en un primer momento puede sentirse extraño también resulta familiar: la colección propone reconocer lo extraño como propio y encontrar, en esa reconciliación, una forma auténtica de existir.</p>
+                  <p class="nep-question" data-en-text="How is it possible that what feels naturally our own ends up displaced?" data-text="¿Cómo es posible que aquello que nos resulta naturalmente propio termine desplazado?">¿Cómo es posible que aquello que nos resulta naturalmente propio termine desplazado?</p>
+                  <p class="nep-p" id="nepP1" data-en-text="As the final project of my degree, the collection starts from this question. Over time, norms, expectations and learned ways of fitting in can pull us away from a more genuine way of feeling, creating and expressing ourselves, until what once came naturally to us becomes strange." data-text="Como proyecto final de la carrera, la colección parte de esta pregunta. Con el paso del tiempo, las normas, expectativas y formas aprendidas de encajar pueden alejarnos de una manera más genuina de sentir, crear y expresarnos, hasta volver extraño aquello que alguna vez nos fue natural.">Como proyecto final de la carrera, la colección parte de esta pregunta. Con el paso del tiempo, las normas, expectativas y formas aprendidas de encajar pueden alejarnos de una manera más genuina de sentir, crear y expresarnos, hasta volver extraño aquello que alguna vez nos fue natural.</p>
+                  <p class="nep-p" data-en-text="In the face of that distance, the proposal seeks to return to what is our own without trying to go back to the past. Childhood appears as a reference to that state of spontaneity and freedom, while memory opens up the possibility of reconnecting with what remains. Color, understood as a language of emotional expression, makes visible what cannot always be put into words. In this way, what may at first feel strange also turns out to be familiar: the collection proposes recognizing the strange as our own and finding, in that reconciliation, an authentic way of existing." data-text="Frente a esa distancia, la propuesta busca volver sobre lo propio sin intentar regresar al pasado. La infancia aparece como referencia a ese estado de espontaneidad y libertad, mientras la memoria abre la posibilidad de reencontrarse con aquello que permanece. El color, entendido como lenguaje de expresión emocional, permite hacer visible lo que no siempre puede decirse con palabras. Así, aquello que en un primer momento puede sentirse extraño también resulta familiar: la colección propone reconocer lo extraño como propio y encontrar, en esa reconciliación, una forma auténtica de existir.">Frente a esa distancia, la propuesta busca volver sobre lo propio sin intentar regresar al pasado. La infancia aparece como referencia a ese estado de espontaneidad y libertad, mientras la memoria abre la posibilidad de reencontrarse con aquello que permanece. El color, entendido como lenguaje de expresión emocional, permite hacer visible lo que no siempre puede decirse con palabras. Así, aquello que en un primer momento puede sentirse extraño también resulta familiar: la colección propone reconocer lo extraño como propio y encontrar, en esa reconciliación, una forma auténtica de existir.</p>
                 </div>
               </div>
             </div>
@@ -1277,9 +1281,9 @@
               <img class="nep-proc-img" id="nepProcImg" src="assets/nada-es-plano-proceso-bocetos.webp" alt="Bocetos del proceso">
               <div class="nep-bt1-wrap nep-bt1-mask">
                 <!-- los dos primeros párrafos pasan por el centro con el scroll -->
-                <div class="nep-bt nep-bt1a" id="nepBt1a"><p>La investigación sobre color, emoción, memoria e identidad dio lugar a una extensa experimentación textil. La psicología del color funcionó como punto de partida para explorar distintas relaciones cromáticas, mientras la búsqueda de materiales permitió comprender cómo cada superficie modificaba la percepción del color y su expresión.</p><p>A través de pruebas de color, combinaciones y sublimados, se desarrollaron múltiples variantes sobre los textiles seleccionados hasta encontrar las relaciones precisas para cada material. El proceso convirtió la investigación conceptual en decisiones concretas de producto, construyendo un lenguaje cromático propio para la colección.</p></div>
+                <div class="nep-bt nep-bt1a" id="nepBt1a"><div data-es><p>La investigación sobre color, emoción, memoria e identidad dio lugar a una extensa experimentación textil. La psicología del color funcionó como punto de partida para explorar distintas relaciones cromáticas, mientras la búsqueda de materiales permitió comprender cómo cada superficie modificaba la percepción del color y su expresión.</p><p>A través de pruebas de color, combinaciones y sublimados, se desarrollaron múltiples variantes sobre los textiles seleccionados hasta encontrar las relaciones precisas para cada material. El proceso convirtió la investigación conceptual en decisiones concretas de producto, construyendo un lenguaje cromático propio para la colección.</p></div><div data-en><p>Research into color, emotion, memory and identity led to extensive textile experimentation. Color psychology served as the starting point for exploring different chromatic relationships, while the search for materials made it possible to understand how each surface changed the perception of color and its expression.</p><p>Through color tests, combinations and sublimation prints, multiple variations were developed on the selected textiles until the right relationships were found for each material. The process turned conceptual research into concrete product decisions, building a chromatic language of the collection’s own.</p></div></div>
                 <!-- los otros dos frenan en el centro (y si se abre el cuaderno, los empuja hacia la derecha) -->
-                <div class="nep-bt nep-bt1b" id="nepBt1b"><p>La experimentación se extendió a estampas, texturas, transparencias y superposiciones, explorando distintas formas de hacer visible la multiplicidad que atraviesa el concepto. Cada recurso fue desarrollado en relación con los materiales y con su comportamiento sobre la prenda, buscando que lo visual y lo material construyeran una misma expresión.</p><p>El resultado surge de un proceso de prueba y ajuste en el que la exploración no fue un paso previo al diseño, sino parte de su propia construcción.</p></div>
+                <div class="nep-bt nep-bt1b" id="nepBt1b"><div data-es><p>La experimentación se extendió a estampas, texturas, transparencias y superposiciones, explorando distintas formas de hacer visible la multiplicidad que atraviesa el concepto. Cada recurso fue desarrollado en relación con los materiales y con su comportamiento sobre la prenda, buscando que lo visual y lo material construyeran una misma expresión.</p><p>El resultado surge de un proceso de prueba y ajuste en el que la exploración no fue un paso previo al diseño, sino parte de su propia construcción.</p></div><div data-en><p>The experimentation extended to prints, textures, transparencies and layering, exploring different ways of making visible the multiplicity that runs through the concept. Each resource was developed in relation to the materials and to how they behave on the garment, so that the visual and the material would build a single expression.</p><p>The result comes from a process of testing and adjusting, in which exploration was not a step prior to design, but part of its very construction.</p></div></div>
               </div>
               <!-- "[ Scroll ]" detrás de la tapa: se destapa al pasar la última página -->
               <div class="nep-book-scroll" id="nepBookScroll">[ Scroll ]</div>
@@ -1319,7 +1323,7 @@
               <img class="nep-coll-p" src="assets/nada-es-plano-coleccion-14.webp" alt="" style="left:57.500%;top:77.228%;width:20.300%">
               <img class="nep-coll-p" src="assets/nada-es-plano-coleccion-15.webp" alt="" style="left:79.600%;top:72.348%;width:17.950%">
             </div>
-            <div class="nep-bt nep-coll-text"><p>La colección reúne quince prendas desarrolladas a partir de una búsqueda simultánea de color, texturas, estampados y moldería. Estas exploraciones se fueron transformando entre sí hasta construir el lenguaje visual y material de la colección. Las estampas incorporaron también obras de arte como referencias e inspiración.</p><p>Los prototipos permitieron llevar estas búsquedas al cuerpo y ajustar cada diseño hasta alcanzar su resolución definitiva. De las quince prendas, cuatro fueron materializadas por condensar especialmente la identidad y complejidad de la colección.</p></div>
+            <div class="nep-bt nep-coll-text"><div data-es><p>La colección reúne quince prendas desarrolladas a partir de una búsqueda simultánea de color, texturas, estampados y moldería. Estas exploraciones se fueron transformando entre sí hasta construir el lenguaje visual y material de la colección. Las estampas incorporaron también obras de arte como referencias e inspiración.</p><p>Los prototipos permitieron llevar estas búsquedas al cuerpo y ajustar cada diseño hasta alcanzar su resolución definitiva. De las quince prendas, cuatro fueron materializadas por condensar especialmente la identidad y complejidad de la colección.</p></div><div data-en><p>The collection brings together fifteen garments developed through a simultaneous exploration of color, texture, print and patternmaking. These explorations kept transforming one another until they built the visual and material language of the collection. The prints also drew on works of art as references and inspiration.</p><p>The prototypes made it possible to bring these explorations onto the body and refine each design until it reached its final resolution. Of the fifteen garments, four were produced because they especially condense the identity and complexity of the collection.</p></div></div>
           </section>
 
           <!-- 6. LAS CUATRO PRENDAS MATERIALIZADAS: en una fila, cada una con su espalda por detrás. Al pasar
@@ -1331,28 +1335,28 @@
                 <img class="nep-pz-back" src="assets/nada-es-plano-prenda-1-espalda.webp" alt="">
                 <img class="nep-pz-front" src="assets/nada-es-plano-prenda-1-frente.webp" alt="Chaqueta Vestigio">
               </div>
-              <div class="nep-pz-text"><h3>Chaqueta Vestigio</h3><p>Chaqueta corta de cuerpo recto y delantero asimétrico, abierto desde el cuello. Confeccionada en un sastrero pesado, presenta mangas de gran volumen construidas a partir de recortes verticales e inserciones romboidales que generan amplitud y una forma expansiva.</p><button class="nep-pz-dl" type="button" data-file="assets/nada-es-plano-ficha-chaqueta-vestigio.pdf" data-name="Ficha técnica - Chaqueta Vestigio.pdf"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.5v6.2M3.3 5.2 6 7.9l2.7-2.7M2 10.5h8" fill="none" stroke="currentColor" stroke-width="1"/></svg><span>Ficha técnica</span></button></div>
+              <div class="nep-pz-text"><h3><span data-es>Chaqueta Vestigio</span><span data-en>Vestigio Jacket</span></h3><p><span data-es>Chaqueta corta de cuerpo recto y delantero asimétrico, abierto desde el cuello. Confeccionada en un sastrero pesado, presenta mangas de gran volumen construidas a partir de recortes verticales e inserciones romboidales que generan amplitud y una forma expansiva.</span><span data-en>Cropped jacket with a straight body and an asymmetric front that opens from the neckline. Made in a heavy suiting fabric, it features voluminous sleeves built from vertical panels and diamond-shaped inserts that create fullness and an expansive shape.</span></p><button class="nep-pz-dl" type="button" data-file="assets/nada-es-plano-ficha-chaqueta-vestigio.pdf" data-name="Ficha técnica - Chaqueta Vestigio.pdf"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.5v6.2M3.3 5.2 6 7.9l2.7-2.7M2 10.5h8" fill="none" stroke="currentColor" stroke-width="1"/></svg><span data-es>Ficha técnica</span><span data-en>Technical sheet</span></button></div>
             </div>
             <div class="nep-pz nep-pz-bottom" style="--gw:436;--gh:768">
               <div class="nep-pz-fig">
                 <img class="nep-pz-back" src="assets/nada-es-plano-prenda-2-espalda.webp" alt="">
                 <img class="nep-pz-front" src="assets/nada-es-plano-prenda-2-frente.webp" alt="Pantalón Vestigio">
               </div>
-              <div class="nep-pz-text"><h3>Pantalón Vestigio</h3><p>Pantalón de tiro bajo y silueta amplia, confeccionado en sastrero pesado. La cintura asimétrica y los recortes verticales con inserciones romboidales dan forma a una silueta que se expande a través de sus líneas y volúmenes.</p><button class="nep-pz-dl" type="button" data-file="assets/nada-es-plano-ficha-pantalon-vestigio.pdf" data-name="Ficha técnica - Pantalón Vestigio.pdf"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.5v6.2M3.3 5.2 6 7.9l2.7-2.7M2 10.5h8" fill="none" stroke="currentColor" stroke-width="1"/></svg><span>Ficha técnica</span></button></div>
+              <div class="nep-pz-text"><h3><span data-es>Pantalón Vestigio</span><span data-en>Vestigio Trousers</span></h3><p><span data-es>Pantalón de tiro bajo y silueta amplia, confeccionado en sastrero pesado. La cintura asimétrica y los recortes verticales con inserciones romboidales dan forma a una silueta que se expande a través de sus líneas y volúmenes.</span><span data-en>Low-rise, wide-leg trousers made in a heavy suiting fabric. The asymmetric waist and the vertical panels with diamond-shaped inserts shape a silhouette that expands through its lines and volumes.</span></p><button class="nep-pz-dl" type="button" data-file="assets/nada-es-plano-ficha-pantalon-vestigio.pdf" data-name="Ficha técnica - Pantalón Vestigio.pdf"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.5v6.2M3.3 5.2 6 7.9l2.7-2.7M2 10.5h8" fill="none" stroke="currentColor" stroke-width="1"/></svg><span data-es>Ficha técnica</span><span data-en>Technical sheet</span></button></div>
             </div>
             <div class="nep-pz nep-pz-top" style="--gw:428;--gh:564">
               <div class="nep-pz-fig">
                 <img class="nep-pz-back" src="assets/nada-es-plano-prenda-3-espalda.webp" alt="">
                 <img class="nep-pz-front" src="assets/nada-es-plano-prenda-3-frente.webp" alt="Camisa Matices">
               </div>
-              <div class="nep-pz-text"><h3>Camisa Matices</h3><p>Camisa corta de cuello clásico y mangas de volumen moderado. La silueta se ajusta mediante un sistema de ataduras. Una base de microfibra suave funciona como primera capa, sobre la que se superponen dos capas de plumetí, aportando profundidad y movimiento.</p><button class="nep-pz-dl" type="button" data-file="assets/nada-es-plano-ficha-camisa-matices.pdf" data-name="Ficha técnica - Camisa Matices.pdf"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.5v6.2M3.3 5.2 6 7.9l2.7-2.7M2 10.5h8" fill="none" stroke="currentColor" stroke-width="1"/></svg><span>Ficha técnica</span></button></div>
+              <div class="nep-pz-text"><h3><span data-es>Camisa Matices</span><span data-en>Matices Shirt</span></h3><p><span data-es>Camisa corta de cuello clásico y mangas de volumen moderado. La silueta se ajusta mediante un sistema de ataduras. Una base de microfibra suave funciona como primera capa, sobre la que se superponen dos capas de plumetí, aportando profundidad y movimiento.</span><span data-en>Cropped shirt with a classic collar and moderately voluminous sleeves. The silhouette is adjusted through a system of ties. A soft microfiber base works as the first layer, over which two layers of plumetis are laid, adding depth and movement.</span></p><button class="nep-pz-dl" type="button" data-file="assets/nada-es-plano-ficha-camisa-matices.pdf" data-name="Ficha técnica - Camisa Matices.pdf"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.5v6.2M3.3 5.2 6 7.9l2.7-2.7M2 10.5h8" fill="none" stroke="currentColor" stroke-width="1"/></svg><span data-es>Ficha técnica</span><span data-en>Technical sheet</span></button></div>
             </div>
             <div class="nep-pz nep-pz-bottom" style="--gw:404;--gh:795">
               <div class="nep-pz-fig">
                 <img class="nep-pz-back" src="assets/nada-es-plano-prenda-4-espalda.webp" alt="">
                 <img class="nep-pz-front" src="assets/nada-es-plano-prenda-4-frente.webp" alt="Pantalón Dual">
               </div>
-              <div class="nep-pz-text"><h3>Pantalón Dual</h3><p>Pantalón de tiro bajo y silueta amplia, confeccionado en sastrero pesado. La moldería se estructura mediante recortes longitudinales, con encaje superpuesto en los laterales. La silueta se amplía desde la cadera y se estrecha suavemente hacia el bajo.</p><button class="nep-pz-dl" type="button" data-file="assets/nada-es-plano-ficha-pantalon-dual.pdf" data-name="Ficha técnica - Pantalón Dual.pdf"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.5v6.2M3.3 5.2 6 7.9l2.7-2.7M2 10.5h8" fill="none" stroke="currentColor" stroke-width="1"/></svg><span>Ficha técnica</span></button></div>
+              <div class="nep-pz-text"><h3><span data-es>Pantalón Dual</span><span data-en>Dual Trousers</span></h3><p><span data-es>Pantalón de tiro bajo y silueta amplia, confeccionado en sastrero pesado. La moldería se estructura mediante recortes longitudinales, con encaje superpuesto en los laterales. La silueta se amplía desde la cadera y se estrecha suavemente hacia el bajo.</span><span data-en>Low-rise, wide-leg trousers made in a heavy suiting fabric. The pattern is structured through lengthwise panels, with lace layered along the sides. The silhouette widens from the hip and gently narrows toward the hem.</span></p><button class="nep-pz-dl" type="button" data-file="assets/nada-es-plano-ficha-pantalon-dual.pdf" data-name="Ficha técnica - Pantalón Dual.pdf"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.5v6.2M3.3 5.2 6 7.9l2.7-2.7M2 10.5h8" fill="none" stroke="currentColor" stroke-width="1"/></svg><span data-es>Ficha técnica</span><span data-en>Technical sheet</span></button></div>
             </div>
           </section>
 
@@ -1372,10 +1376,10 @@
             <img class="nep-ph-img nep-ph-v" data-b="0" data-c="1" src="assets/nada-es-plano-foto-05.jpg" alt="Nada es Plano">
             <img class="nep-ph-img nep-ph-v" data-b="0" data-c="2" src="assets/nada-es-plano-foto-07.jpg" alt="Nada es Plano">
             <img class="nep-ph-img nep-ph-h" data-b="0" data-c="2" src="assets/nada-es-plano-foto-06.jpg" alt="Nada es Plano">
-            <img class="nep-ph-img nep-ph-v" data-b="1" data-c="0" data-cap="modelo @wandita.s.r_" src="assets/nada-es-plano-foto-09.jpg" alt="Nada es Plano">
+            <img class="nep-ph-img nep-ph-v" data-b="1" data-c="0" data-cap="@wandita.s.r_" src="assets/nada-es-plano-foto-09.jpg" alt="Nada es Plano">
             <img class="nep-ph-img nep-ph-h" data-b="1" data-c="1" src="assets/nada-es-plano-foto-08.jpg" alt="Nada es Plano">
-            <img class="nep-ph-img nep-ph-v" data-b="1" data-c="2" data-cap="modelo @iridisenteh" src="assets/nada-es-plano-foto-01.jpg" alt="Nada es Plano">
-            <button class="nep-hand-video" id="nepHandVideo" type="button">Ver video</button>
+            <img class="nep-ph-img nep-ph-v" data-b="1" data-c="2" data-cap="@iridisenteh" src="assets/nada-es-plano-foto-01.jpg" alt="Nada es Plano">
+            <button class="nep-hand-video" id="nepHandVideo" type="button"><span data-es>Ver video</span><span data-en>Watch video</span></button>
           </section>
 
           <!-- 8. TEXTO MANUSCRITO (en negro, sobre blanco): la pantalla final, a la que se llega después de ver
@@ -3015,6 +3019,8 @@
     exprRefreshLanguage();
     // Dualidad: al cambiar de idioma cambian los altos de los textos
     if(typeof dfTrackEl !== 'undefined' && workTrack === dfTrackEl){ dfLayout(); measureWork(); }
+    // Nada es Plano: el concepto se rearma en el idioma nuevo y se vuelven a medir los textos
+    if(typeof nepTrackEl !== 'undefined' && workTrack === nepTrackEl){ nepLayout(); measureWork(); }
   });
 
   const roleSpans = document.querySelectorAll('#roles span');
@@ -3725,8 +3731,8 @@
   const nepFlow    = document.getElementById('nepFlow');
   const NEP_VIDEO_DELAY = 400;   // el video arranca cuando el fundido de entrada ya casi se fue
   const NEP_ZOOM_LEAD = 1.4;     // el zoom a las caras arranca cuando al video le faltan 1.4s
-  const NEP_FADE_LEAD = 0.3;     // el paso a la foto arranca recién al final (le faltan .3s): se ve el video hasta el final (la chica de la derecha mira hacia adelante) y el color lo cubre justo cuando termina
-  const NEP_FADE_MS = 300;       // el video se cubre con el color de la foto (.3s, igual que en el CSS) y enseguida, sin quedarse, se descubre la foto
+  const NEP_FADE_LEAD = 0.42;    // el paso a la foto arranca apenas antes del final (le faltan .42s): el color termina de cubrir justo antes de que el video llegue al último cuadro (así nunca se ve el video frenado), con el zoom todavía andando
+  const NEP_FADE_MS = 360;       // el video se cubre con el color de la foto (.36s, igual que en el CSS) y enseguida, sin quedarse, se descubre la foto
   const NEP_FACES = [932, 400];  // punto medio entre las caras de las chicas, en el cuadro de 1920×1080
   let nepVideoOn = false, nepVideoTimer = null, nepFadeTimer = null, nepNavTimer = null, nepFading = false;
   let nepL = null;               // medidas del concepto
@@ -3777,9 +3783,20 @@
     ).join(' ');
   }
 
+  // idioma del concepto: la pregunta y los párrafos se arman desde data-text
+  // (la versión en castellano queda guardada la primera vez)
+  function nepApplyLang(){
+    const en = document.documentElement.lang === 'en';
+    nepFlow.querySelectorAll('[data-en-text]').forEach(el => {
+      if(!el.dataset.esText) el.dataset.esText = el.dataset.text;
+      el.dataset.text = en ? el.dataset.enText : el.dataset.esText;
+    });
+  }
+
   function nepLayout(){
     if(!nepFlow || workTrack !== nepTrackEl) return;
     const vh = window.innerHeight;
+    nepApplyLang();
     nepFlow.style.transform = 'none';
     const q = nepFlow.querySelector('.nep-question');
     nepSplitLetters(q);
@@ -3984,7 +4001,7 @@
     // el cuaderno empieza a salir cuando los dos primeros párrafos ya están casi
     // en el centro, y llega asomado cuando los otros dos quedan en el centro;
     // mientras entra, empuja a los primeros (que arrancan más a la izquierda)
-    const A = t2, a0 = t1 - vh * 0.08;
+    const A = t2, a0 = t1 - vh * 0.5;
     const E = A - a0;                                    // al irse, el mismo recorrido
     const D = t2;                                        // la sección se suelta con los otros dos en el centro
     nbProc.style.height = procH.toFixed(1) + 'px';
@@ -4357,11 +4374,11 @@
           im.style.left = x.toFixed(2) + 'px'; im.style.top = y.toFixed(2) + 'px';
           im.style.width = w.toFixed(2) + 'px'; im.style.height = h.toFixed(2) + 'px';
           nepPhPos.push({ im, b });
-          // crédito de la modelo (si tiene), centrado debajo de la foto
+          // crédito de la modelo (si tiene), encima de la foto, centrado cerca del borde de abajo
           if(im.dataset.cap){
             let cap = im.nextElementSibling && im.nextElementSibling.classList.contains('nep-ph-cap') ? im.nextElementSibling : null;
-            if(!cap){ cap = document.createElement('div'); cap.className = 'nep-ph-cap'; cap.textContent = im.dataset.cap; im.after(cap); }
-            cap.style.left = (x + w / 2).toFixed(2) + 'px'; cap.style.top = (y + h + 14).toFixed(2) + 'px';
+            if(!cap){ cap = document.createElement('div'); cap.className = 'nep-ph-cap'; cap.innerHTML = '<span data-es>modelo</span><span data-en>model</span> ' + im.dataset.cap; im.after(cap); }
+            cap.style.left = (x + w / 2).toFixed(2) + 'px'; cap.style.top = (y + h - 14 - 13).toFixed(2) + 'px';
             nepPhPos.push({ im: cap, b, cap: true });
           }
           y += h + G;
@@ -4372,8 +4389,11 @@
       y0 += H + G;
     });
     // abajo queda un margen blanco, para "[ Volver al home ]"
-    nepPh.style.height = (y0 + 64).toFixed(1) + 'px';
-    nepHandBtn.style.top = nepEnd.seam.toFixed(1) + 'px';
+    // (un poco más alto que en los otros trabajos: entran los dos, uno arriba del otro)
+    nepPh.style.height = (y0 + 92).toFixed(1) + 'px';
+    // "[ Ver video ]": en el margen de abajo, apenas debajo de la última foto, centrado
+    // ("[ Volver al home ]" queda más abajo, en el mismo margen)
+    nepHandBtn.style.top = (y0 - G + 24).toFixed(1) + 'px';
   }
   nepPhImgs.forEach(im => {
     im.addEventListener('click', () => {
@@ -4400,7 +4420,7 @@
   // del trabajo. Desde ahí, un solo movimiento para arriba vuelve solo al final
   // de las fotos (con "[ Ver video ]" abierto) y la pantalla del texto se
   // bloquea otra vez: solo se vuelve a llegar viendo el video
-  const NEP_END_OPEN = 50;        // cuánto se abren los dos bloques (px), además de los 10 de siempre
+  const NEP_END_OPEN = 0;         // cuánto se abren los dos bloques (px), además de los 10 de siempre (0: con "[ Ver video ]" en el margen de abajo, ya no hace falta abrir un hueco)
   const NEP_END_MS = 1300;        // "[ Ver video ]": se abre así de suave
   const nepHandSec = document.getElementById('nepHand');
   const nepHandImg = document.getElementById('nepHandImg'), nepHandBtn = document.getElementById('nepHandVideo');
@@ -4418,6 +4438,9 @@
   }
   function nepEndFrame(){
     const vh = window.innerHeight, now = performance.now();
+    // al entrar a las fotos, la barra del menú se va, sutil (y vuelve al subir);
+    // mientras se ve el video, la maneja el video
+    if(!nepVidOpen) root.classList.toggle('work-nav-hidden', workCurrent >= nepPh.offsetTop - vh * 0.3);
     // se cierra al salir de la última pantalla de las fotos (para arriba); y
     // estando en la pantalla del texto, queda abierto (al volver, ya está)
     if(workCurrent < nepEnd.tope - vh * 0.6) nepEnd.target = 0;
@@ -4504,7 +4527,7 @@
       nepVidEl.pause();
       nepHandShow();                               // debajo del blanco: la pantalla del texto
       nepVid.classList.remove('on');               // el blanco se va (sobre blanco, no se nota)
-      root.classList.remove('work-nav-hidden');
+      // la barra del menú sigue escondida (la pantalla del texto está después de las fotos)
       setTimeout(() => { nepVid.classList.remove('white'); nepVidOpen = false; nepVidFading = false; nepHandBtn.blur(); }, 1250);
     }, 1300);
   }
@@ -4556,7 +4579,7 @@
       const idle = nepCollPs.filter(p => !p.down && now - (p.last || 0) > 6000);
       if(idle.length){
         const p = idle[Math.floor(Math.random() * idle.length)];
-        p.el.classList.add('up'); p.down = now + 1700 + Math.random() * 700; p.last = now;
+        p.el.classList.add('up'); p.down = now + 1400 + Math.random() * 550; p.last = now;
       }
       // la próxima: a veces casi enseguida (se cruzan dos), casi siempre después de una pausa
       nepCollNext = now + (Math.random() < 0.25 ? 500 + Math.random() * 500 : 2200 + Math.random() * 2600);
