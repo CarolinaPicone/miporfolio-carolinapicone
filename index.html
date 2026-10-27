@@ -96,7 +96,6 @@
   .lang-toggle{ grid-column:3; justify-self:end; font-size:11.5px; letter-spacing:.08em; display:flex; gap:6px; cursor:pointer; background:none; border:none; color:var(--stone); }
   .lang-toggle span{ opacity:.55; }
   .lang-toggle span.active{ opacity:1; font-weight:600; color:var(--ink); }
-  @media (max-width:760px){ nav.links{ display:none; } }
 
   #home{ position:relative; }
   .home-sticky{ position:sticky; top:0; height:100vh; overflow:hidden; background:var(--white); }
@@ -140,10 +139,37 @@
   .scatter-item.dark .ph{ background:var(--dark-block); }
   .scatter-item.light .ph{ background: repeating-linear-gradient(135deg, #e9e6de 0px, #e9e6de 1px, transparent 1px, transparent 13px), var(--light-block); }
 
+  /* ---- CELULAR (hasta 760px de ancho) ----
+     Menú: la misma fila, alineada a la izquierda (no entra centrada al lado de ES/EN).
+     Home: los trabajos son lo central. La firma queda chica arriba a la izquierda
+     (sin el rol ni la url); "Based in…" en la esquina de abajo, como en la web.
+     Después de la intro, la firma aparece primero en el centro con "Diseñadora de
+     Indumentaria", se queda un momento y se achica hasta su esquina (el subtítulo
+     se va mientras tanto; lo maneja el JS) */
   @media (max-width:760px){
-    .home-copy{ max-width:80vw; }
-    .home-info{ display:none; }
+    :root{ --nav-h:60px; --sig-h:40px; }
+    header{ grid-template-columns:1fr auto; padding:0 20px; }
+    nav.links{ display:flex; grid-column:1; justify-self:start; gap:18px; white-space:nowrap; }
+    .lang-toggle{ grid-column:2; }
+    .home-copy{ left:20px; top:calc(var(--nav-h) + 6px); max-width:none; }
+    .variant[data-variant="2"]{ margin-top:0; }
+    .home-role-label, .home-role, .home-url{ display:none; }
+    html.mob-sig-c:not([lang="en"]) .home-role-label[data-es], html.mob-sig-c[lang="en"] .home-role-label[data-en]{ display:block; }
+    html.mob-sig-c .home-role-label{ animation-delay:950ms !important; }
+    html.mob-sig-go .home-role-label{ animation:fadeOut .55s ease forwards !important; }
+    .home-info{ right:20px; bottom:26px; }
+    .scatter-item{ width:min(52vw, 250px); height:calc(min(52vw, 250px) * 274 / 342); }
   }
+  /* celulares angostos (iPhone SE y similares): el menú entra en una fila */
+  @media (max-width:370px){
+    header{ padding:0 16px; }
+    nav.links{ gap:12px; }
+    nav.links button{ letter-spacing:.07em; font-size:11px; }
+    .lang-toggle{ font-size:11px; gap:4px; }
+    .home-copy{ left:16px; }
+    .home-info{ right:16px; }
+  }
+  @keyframes fadeOut{ from{opacity:1;} to{opacity:0;} }
 
   .panel{ position:fixed; inset:0; background:var(--white); z-index:150; opacity:0; pointer-events:none; overflow-y:auto; overscroll-behavior:contain; }
   .panel.open{ opacity:1; pointer-events:auto; }
@@ -1973,7 +1999,7 @@
       const rects = sphPts.map(p => {
         const x = (M[0]*p[0] + M[1]*p[1] + M[2]*p[2]) * R, y = (M[3]*p[0] + M[4]*p[1] + M[5]*p[2]) * R, z = (M[6]*p[0] + M[7]*p[1] + M[8]*p[2]) * R;
         const f = (D - R) / (D - z), w = w0 * f, h = h0 * f;
-        return { l: vw * SPH_CX + x * f - w / 2, t: vh / 2 + y * f - h / 2, w, h };
+        return { l: sphCX() + x * f - w / 2, t: sphCY() + y * sphYS() * f - h / 2, w, h };
       });
       let cost = 0;
       for(let a = 0; a < rects.length; a++){
@@ -2003,8 +2029,34 @@
     sphFocus = { ax: r.ax, ay: r.ay, az: r.az, angle: r.ang, done: 0, t0: performance.now() };
   }
 
-  function sphRadius(){ return Math.min(Math.max(window.innerWidth * 0.2592, 243), 462); }   // otro 10% más chica (antes 28.8vw, entre 270 y 513; al principio 32vw, entre 300 y 570)
+  // celular (hasta 760px de ancho): la esfera y los recuadros, a la medida de la pantalla
+  function isMob(){ return window.matchMedia('(max-width:760px)').matches; }
+  function sphRadius(){
+    if(isMob()) return window.innerWidth * 0.5;
+    return Math.min(Math.max(window.innerWidth * 0.2592, 243), 462);   // otro 10% más chica (antes 28.8vw, entre 270 y 513; al principio 32vw, entre 300 y 570)
+  }
   const SPH_CX = 0.56;   // centro de la esfera: un poco a la derecha del centro de la pantalla (56% del ancho)
+  // en el celular, centrada a lo ancho y apenas más abajo de la mitad (arriba está la firma)
+  function sphCX(){ return window.innerWidth * (isMob() ? 0.5 : SPH_CX); }
+  // en el celular: el lugar libre entre la firma (arriba) y "Based in…" (abajo)
+  function mobFree(){
+    const copy = document.querySelector('.home-copy'), info = document.querySelector('.home-info');
+    const top = copy.offsetTop + copy.querySelector('.name-variants').offsetHeight + 14;
+    const bot = info.offsetTop - 14;
+    return { top, bot };
+  }
+  function sphCY(){
+    if(!isMob()) return window.innerHeight * 0.5;
+    const f = mobFree(); return (f.top + f.bot) / 2;
+  }
+  // a lo alto, la esfera se estira para ocupar ese lugar libre (la pantalla del celular
+  // es alta y angosta), sin cortarse a los costados; en pantallas bajas, casi redonda
+  function sphYS(){
+    if(!isMob()) return 1;
+    const f = mobFree(), h = items[0].offsetHeight || 150;
+    const half = (f.bot - f.top) / 2 - h * 0.42;
+    return Math.min(Math.max(half / sphRadius(), 0.85), 1.45);
+  }
 
   function sphApply(dx, dy){
     const d = Math.hypot(dx, dy);
@@ -2037,7 +2089,7 @@
       const z = (M[6]*px + M[7]*py + M[8]*pz) * R;
       const f = (D - R) / (D - z);          // adelante = tamaño actual; atrás, la mitad
       const w = item.offsetWidth, h = item.offsetHeight;
-      const sx = vw * SPH_CX + x * f - w / 2, sy = vh / 2 + y * f - h / 2;
+      const sx = sphCX() + x * f - w / 2, sy = sphCY() + y * sphYS() * f - h / 2;
       // 0 = atrás de todo, 1 = adelante de todo. Se limita a ese rango: al traer
       // un trabajo justo al centro, el redondeo podía dar 1.0000001 y el fundido
       // se calculaba mal (quedaba todo blanco)
@@ -2138,6 +2190,44 @@
     sphIntroT0 = performance.now();
     sphPendX = sphPendY = sphVelX = sphVelY = 0;
     if(!sphLoopOn){ sphLoopOn = true; requestAnimationFrame(loop); }
+  }
+
+  // ---- Celular: después de la intro, la firma aparece en el centro ----
+  // (más grande, con "Diseñadora de Indumentaria" centrado debajo), se queda un
+  // momento y se achica hasta su lugar arriba a la izquierda; el subtítulo se
+  // va mientras tanto. Los trabajos entran girando cuando la firma se va
+  const MOB_SIG_HOLD  = 2600;   // ms desde que termina la intro hasta que la firma se va a su esquina
+  const MOB_SIG_MOVE  = 1150;   // lo que tarda en llegar
+  const MOB_SIG_SCALE = 1.45;   // tamaño en el centro (respecto del de la esquina)
+  function mobSigIntro(){
+    const root = document.documentElement;
+    const copy = document.querySelector('.home-copy');
+    const sig = document.getElementById('nameVariants');
+    root.classList.add('mob-sig-c');
+    const label = Array.from(copy.querySelectorAll('.home-role-label')).find(el => el.offsetParent);
+    copy.style.transition = 'none'; copy.style.transform = 'none';
+    if(label){ label.style.transition = 'none'; label.style.transform = 'none'; }
+    const r = copy.getBoundingClientRect();
+    // el ancho real de la firma (la imagen más ancha de las dos líneas)
+    const sw = Math.max(...Array.from(sig.querySelectorAll('.v-active img')).map(im => im.getBoundingClientRect().width));
+    const vw = window.innerWidth, vh = window.innerHeight, k = MOB_SIG_SCALE;
+    // la firma centrada a lo ancho; el bloque (firma + subtítulo) centrado en alto
+    const tx = (vw - sw * k) / 2 - r.left, ty = (vh - r.height * k) / 2 - r.top;
+    copy.style.transformOrigin = '0 0';
+    copy.style.transform = 'translate(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px) scale(' + k + ')';
+    if(label){ label.style.display = 'inline-block'; label.style.transform = 'translateX(' + ((sw - label.offsetWidth) / 2).toFixed(1) + 'px)'; }
+    setTimeout(() => {
+      const ease = 'cubic-bezier(.65,0,.35,1)';
+      copy.style.transition = 'transform ' + MOB_SIG_MOVE + 'ms ' + ease;
+      copy.style.transform = 'none';
+      if(label){ label.style.transition = 'transform ' + MOB_SIG_MOVE + 'ms ' + ease; label.style.transform = 'none'; }
+      root.classList.add('mob-sig-go');
+      setTimeout(() => {
+        root.classList.remove('mob-sig-c', 'mob-sig-go');
+        copy.style.transition = copy.style.transform = '';
+        if(label) label.style.transition = label.style.transform = label.style.display = '';
+      }, MOB_SIG_MOVE + 50);
+    }, MOB_SIG_HOLD);
   }
 
   // ---- Firma en una línea: se ajusta para terminar a la altura de la "b" de Trabajos ----
@@ -2780,7 +2870,10 @@
       const root = document.documentElement;
       root.classList.remove('loading');
       root.classList.add('revealed');
-      startIntroReverse();
+      // en el celular: primero la firma en el centro; los trabajos entran girando
+      // cuando la firma se va a su esquina
+      if(isMob()){ mobSigIntro(); setTimeout(startIntroReverse, MOB_SIG_HOLD); }
+      else startIntroReverse();
       loader.style.display = 'none';
       loader.removeEventListener('mousemove', lhMove);
       loader.removeEventListener('click', lhClick);

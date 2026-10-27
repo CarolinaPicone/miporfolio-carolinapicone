@@ -272,6 +272,19 @@ Zoom: el logo se agranda con `scale()` hasta que una banda vertical específica 
   - **Inglés (primera versión, a revisar por Carolina):** ya está cargado (botón ES/EN). Concepto: `data-en-text` en la pregunta y los párrafos (el JS los rearma al cambiar de idioma, `nepApplyLang`); proceso y colección: un `<div data-es>` y un `<div data-en>` con los párrafos; prendas, subtítulo, pie de foto, créditos, "Ver video" y "Ficha técnica": `<span data-es>` / `<span data-en>`. El título "Nada es Plano" y los nombres propios de las prendas (Vestigio, Matices, Dual) quedan en castellano: "Vestigio Jacket", "Vestigio Trousers", "Matices Shirt", "Dual Trousers".
 - **05 7600 — portada congelada y cortina negra:** al scrollear, la portada queda fija y la cortina negra sube desde abajo hasta dejar la portada visible solo en **menos de un cuarto de la pantalla, arriba** (el negro pleno arranca al 19% del alto; antes 24%, se achicó un poco más). El fundido entre portada y negro mantiene siempre la misma curva; su largo (`--alb-g`, hasta 340px) se ajusta al alto de la pantalla y, si hace falta, arranca apenas por encima de la pantalla para no comprimirse.
 
+### 3.9 Celular (versión móvil, hasta 760px de ancho) — se hace por partes
+
+Regla: en el celular **no se cambia ningún contenido ni información**, solo ubicación y tamaño cuando hace falta, respetando estrictamente la estética. Vista previa aparte para Carolina: un Artifact "Portfolio en el celular" que muestra la web dentro de un celular (iPhone 15 393×852, iPhone SE 375×667, Android 412×915) con botón para verla de nuevo desde la intro (la web va como `sitio.html` y las fotos/videos se copian de la vista previa principal).
+
+- **Parte 1 (hecha): intro, menú y home.**
+  - **Menú:** la misma fila (TRABAJOS · SOBRE MÍ · CONTACTO), alineada a la izquierda a 20px, con ES/EN a la derecha (centrada no entra). Barra de 60px de alto. En celulares angostos (≤370px, iPhone SE) las palabras van un poco más juntas (11px, .07em) para que entre en una fila.
+  - **Home:** los trabajos son lo central. Después de la intro, la **firma aparece en el centro** (1.45 veces su tamaño final) con **"Diseñadora de Indumentaria" centrado debajo**, se queda un momento (hasta 2.6s, `MOB_SIG_HOLD`) y **se achica hasta su lugar arriba a la izquierda** (1.15s); el subtítulo se va mientras tanto y no queda en la esquina (sería demasiado chico al lado de la firma). Recién ahí **entran los trabajos girando**. Al volver de una sección, la firma ya está en su esquina (entrada normal). El **rol rotativo y la url no se muestran** en el home del celular (para que no compitan con los trabajos). **"Based in… / Available…"** en la esquina de abajo a la derecha, como en la web.
+  - **Esfera:** se gira con el dedo igual que con el mouse (mismo peso e inercia; tocar uno de atrás lo trae al centro, tocar el de adelante lo abre). En el celular está **centrada a lo ancho**, en el medio del lugar libre entre la firma y "Based in"; radio = 50% del ancho; recuadros de 52% del ancho (máx. 250px, misma proporción); y **estirada a lo alto** para ocupar ese lugar libre (entre 0.85 y 1.45 veces, `sphYS`), sin cortarse a los costados ni pisar los textos de abajo.
+- **Decisiones ya tomadas para las partes que siguen:**
+  - **Las cuatro prendas de Nada es Plano:** una por pantalla, **se pasan deslizando hacia el costado**; tiene que notarse que se puede deslizar: **las otras prendas asoman muy levemente a los costados**, sin quitarle protagonismo a la del centro. El texto se abre al tocar.
+  - **La Sombrerera:** el aura de luz del texto **sigue al dedo** (aparece donde se apoya y lo sigue; al soltar se queda un momento y se apaga despacio).
+- **Pendiente:** Sobre mí y Contacto, y los cinco trabajos (todavía funcionan con la ruedita del mouse: en el celular hay que hacer que se recorran con el dedo).
+
 ---
 
 ## 4. Tono y estilo de escritura
