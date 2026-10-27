@@ -128,7 +128,7 @@
   .home-info b{ color:var(--ink); font-weight:600; }
 
   .scatter-viewport{ position:absolute; inset:0; overflow:hidden; z-index:1; }   /* siempre por debajo de los textos (z-index 20) */
-  .scatter-item{ position:absolute; top:0; left:0; width:342px; height:274px; overflow:visible; cursor:pointer; display:block; border:none; padding:0; background:none; will-change:transform; }
+  .scatter-item{ position:absolute; top:0; left:0; width:308px; height:247px; overflow:visible; cursor:pointer; display:block; border:none; padding:0; background:none; will-change:transform; }
   .item-inner{ width:100%; height:100%; display:block; overflow:hidden; border-radius:6px; transition: transform .2s ease; }
   .scatter-item.is-front:hover .item-inner{ transform: scale(1.1); }   /* solo se eleva el que está adelante */
   /* lo que queda atrás en la esfera se funde en blanco (no se vuelve transparente:
@@ -140,32 +140,42 @@
   .scatter-item.light .ph{ background: repeating-linear-gradient(135deg, #e9e6de 0px, #e9e6de 1px, transparent 1px, transparent 13px), var(--light-block); }
 
   /* ---- CELULAR (hasta 760px de ancho) ----
-     Menú: la misma fila, alineada a la izquierda (no entra centrada al lado de ES/EN).
+     Menú: la misma fila, centrada, a la misma distancia del borde de arriba que en la web.
+     Idioma: fijo abajo a la izquierda, solo con el idioma al que se puede cambiar
+     (en castellano dice "EN"; en inglés, "ES"), en el gris clarito de siempre.
      Home: los trabajos son lo central. La firma queda chica arriba a la izquierda
      (sin el rol ni la url); "Based in…" en la esquina de abajo, como en la web.
-     Después de la intro, la firma aparece primero en el centro con "Diseñadora de
-     Indumentaria", se queda un momento y se achica hasta su esquina (el subtítulo
-     se va mientras tanto; lo maneja el JS) */
+     Después de la intro, la firma aparece en el centro, centrada, con "Diseñadora de
+     Indumentaria" más chico debajo (entrada muy sutil), se queda un momento y se achica
+     hasta su esquina, alineándose a la izquierda (el subtítulo se va mientras tanto;
+     lo maneja el JS) */
   @media (max-width:760px){
-    :root{ --nav-h:60px; --sig-h:40px; }
-    header{ grid-template-columns:1fr auto; padding:0 20px; }
-    nav.links{ display:flex; grid-column:1; justify-self:start; gap:18px; white-space:nowrap; }
-    .lang-toggle{ grid-column:2; }
+    :root{ --sig-h:40px; }
+    header{ grid-template-columns:1fr; padding:0 20px; }
+    nav.links{ display:flex; grid-column:1; justify-self:center; gap:22px; white-space:nowrap; }
+    .lang-toggle{ position:fixed; left:20px; bottom:26px; font-size:11.5px; line-height:1.9; padding:0; }
+    .lang-toggle{ font-size:0; gap:0; }
+    .lang-toggle span{ font-size:11.5px; letter-spacing:.08em; }
+    .lang-toggle span.active{ display:none; }
+    .lang-toggle span:not(.active){ opacity:.55; color:var(--stone); font-weight:400; }
+    html.work-dark .lang-toggle span:not(.active){ opacity:.4; color:#6b665d; }
+    html.df-nav-light .lang-toggle span:not(.active){ color:#fff; opacity:.5; }
     .home-copy{ left:20px; top:calc(var(--nav-h) + 6px); max-width:none; }
     .variant[data-variant="2"]{ margin-top:0; }
     .home-role-label, .home-role, .home-url{ display:none; }
     html.mob-sig-c:not([lang="en"]) .home-role-label[data-es], html.mob-sig-c[lang="en"] .home-role-label[data-en]{ display:block; }
-    html.mob-sig-c .home-role-label{ animation-delay:950ms !important; }
+    html.mob-sig-c .home-role-label{ font-size:8px; margin-top:10px; animation:fadeIn 1.4s ease 1.2s forwards !important; }
+    html.mob-sig-c .name-variants{ animation:fadeIn 1.6s ease .3s forwards !important; }
     html.mob-sig-go .home-role-label{ animation:fadeOut .55s ease forwards !important; }
     .home-info{ right:20px; bottom:26px; }
-    .scatter-item{ width:min(52vw, 250px); height:calc(min(52vw, 250px) * 274 / 342); }
+    .scatter-item{ width:min(44vw, 220px); height:calc(min(44vw, 220px) * 274 / 342); }
   }
   /* celulares angostos (iPhone SE y similares): el menú entra en una fila */
   @media (max-width:370px){
     header{ padding:0 16px; }
-    nav.links{ gap:12px; }
-    nav.links button{ letter-spacing:.07em; font-size:11px; }
-    .lang-toggle{ font-size:11px; gap:4px; }
+    nav.links{ gap:14px; }
+    nav.links button{ letter-spacing:.08em; font-size:11px; }
+    .lang-toggle{ left:16px; }
     .home-copy{ left:16px; }
     .home-info{ right:16px; }
   }
@@ -260,8 +270,8 @@
   .smb-quote p{ font-size:clamp(15px,1.55vw,22px); line-height:1.65; font-style:italic; letter-spacing:-.005em; }
   .smb-veil{
     position:absolute; inset:0; z-index:2; pointer-events:none; background:#000; opacity:.62;
-    -webkit-mask-image: radial-gradient(circle 190px at var(--smb-mx,-500px) var(--smb-my,-500px), transparent 0%, rgba(0,0,0,.45) 55%, #000 100%);
-    mask-image: radial-gradient(circle 190px at var(--smb-mx,-500px) var(--smb-my,-500px), transparent 0%, rgba(0,0,0,.45) 55%, #000 100%);
+    -webkit-mask-image: radial-gradient(circle var(--smb-r,190px) at var(--smb-mx,-500px) var(--smb-my,-500px), transparent 0%, rgba(0,0,0,.45) 55%, #000 100%);
+    mask-image: radial-gradient(circle var(--smb-r,190px) at var(--smb-mx,-500px) var(--smb-my,-500px), transparent 0%, rgba(0,0,0,.45) 55%, #000 100%);
   }
 
   /* ---- 3. PROCESO ---- */
@@ -324,6 +334,28 @@
     .smb-proceso{ flex-direction:column; height:auto; gap:clamp(24px,5vh,48px); padding:clamp(30px,7vh,60px) clamp(20px,5vw,40px); }
     .smb-proceso-text{ max-width:none; }
     .smb-quote{ max-width:none; }
+  }
+  /* celular: la foto de la portada un poco más chica (los textos quedan alineados con
+     su borde, separados del borde de la pantalla, y con la misma distancia a la foto);
+     el texto conceptual más chico y sin tocar los márgenes; el de proceso alineado a la
+     izquierda; las fotos y videos que van pasando, a todo el ancho y sin recortar (el
+     alto sale de su proporción); las fotos finales aparecen de a poco desde el negro
+     (sin "click": en el celular no se amplían) */
+  @media (max-width:760px){
+    .smb{ --smb-m:8vw; }
+    .smb-hero{ padding-top:calc(var(--nav-h) + 4px); }
+    .smb-hero img{ width:calc(100vw - var(--smb-m) * 2); }
+    .smb-info{ padding:22px var(--smb-m) 48px; }
+    .smb-quote{ margin:0 var(--smb-m); }
+    .smb-quote p{ font-size:13.5px; line-height:1.7; }
+    .smb-proceso{ padding:30px 0; }
+    .smb-proceso-text{ padding:0 var(--smb-m); }
+    .smb-proceso-text p{ text-align:left; }
+    .smb-media-col{ align-self:stretch; align-items:stretch; }
+    .smb-media-caption{ padding-right:var(--smb-m); }
+    .smb-media-arrow{ display:none; }
+    .smb-final{ cursor:default; }
+    .smb-cursor{ display:none; }
   }
 
   /* =============== 7600 (álbum de jazz) =============== */
@@ -439,6 +471,14 @@
   /* ---- 4. FINAL: video a pantalla completa + referencia a YouTube ---- */
   .alb-final{ width:100vw; height:100vh; position:relative; background:#000; display:flex; align-items:center; justify-content:center; }
   .alb-final video{ width:100%; height:100%; object-fit:cover; display:block; transition:opacity 1.2s ease; }
+  /* celular: la portada ocupa toda la pantalla como intro (es cuadrada: se recorta a
+     los costados, centrada) y la cortina sube desde el primer scroll; las fotos y
+     videos del proceso, a todo el ancho sin recortar; en el video final, la persona
+     que habla queda centrada (el JS calcula el encuadre para cada pantalla) */
+  @media (max-width:760px){
+    .alb-inicial-cover img.alb-cover-main, .alb-cover-pin img{ width:100vw; height:100vh; object-fit:cover; object-position:50% 50%; }
+    .alb-media-col{ align-self:stretch; }
+  }
   .alb-final-placeholder{ color:var(--alb-stone); font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; text-align:center; }
   .alb-yt-btn{
     position:absolute; left:50%; top:50%; transform:translate(-50%,calc(-50% + 10px));
@@ -456,6 +496,10 @@
     .alb-concept-cols{ flex-direction:column; gap:clamp(20px,5vh,40px); width:auto; }
     .alb-proceso{ flex-direction:column; height:auto; gap:clamp(24px,5vh,48px); padding:clamp(30px,7vh,60px) clamp(20px,5vw,40px); }
     .alb-proceso-text{ max-width:none; }
+  }
+  @media (max-width:760px){
+    .alb-proceso{ padding-left:0; padding-right:0; }
+    .alb-proceso-text{ padding:0 clamp(20px,5vw,40px); }
   }
 
   /* =============== NADA ES PLANO (proyecto 01) =============== */
@@ -609,6 +653,12 @@
   .nep-bt p:last-child{ margin-bottom:0; }
   /* los cuatro párrafos del mismo ancho (un punto medio entre los que tenían antes) */
   .nep-bt1a, .nep-bt1b{ position:absolute; left:0; top:0; will-change:transform; width:min(49ch,37vw); }
+  /* celular: los párrafos del proceso más anchos (como los de La Sombrerera), alineados
+     a la izquierda; al abrir el cuaderno se van (se funden) en vez de correrse */
+  @media (max-width:760px){
+    .nep-bt1a, .nep-bt1b{ width:78vw; transition:opacity .6s ease; }
+    .nep-book-hint{ display:none; }
+  }
   .nep-bt1-wrap{ position:absolute; inset:0; pointer-events:none; }
   .nep-bt1-mask{ -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 22vh, #000 calc(100vh - 22vh), transparent 100vh);
                  mask-image:linear-gradient(to bottom, transparent 0, #000 22vh, #000 calc(100vh - 22vh), transparent 100vh); }
@@ -631,6 +681,17 @@
             mask-image:linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%), linear-gradient(to bottom, transparent 0, #000 14%, #000 86%, transparent 100%);
             mask-composite:intersect; }
   .nep-inicial.pre .nep-ia-img, .nep-inicial.show .nep-ia-img{ transform:none; }
+  /* celular: la foto de la IA aparece en grande y se retrae hasta su tamaño (como el
+     logo de la intro); el título y el subtítulo, del tamaño de los de Un Mundo para
+     Exprimir, centrados en el espacio que queda arriba de la foto; los servicios donde
+     están y el crédito de la IA más chico, justo debajo de las personas, a la izquierda
+     (los lugares los pone el JS) */
+  @media (max-width:760px){
+    .nep-ia-img, .nep-inicial.pre .nep-ia-img{ transform:scale(2.3); transition:transform 2.6s cubic-bezier(.165,.84,.44,1); }
+    .nep-inicial.pre.show .nep-ia-img, .nep-inicial.show .nep-ia-img{ transform:none; }
+    .nep-head{ white-space:normal; width:calc(100vw - 40px); }
+    .nep-ia-cap{ bottom:auto; font-size:9.5px; line-height:1.6; }
+  }
   /* bocetos del proceso, en el margen derecho (alto y lugar: el JS) */
   .nep-proc-img{ position:absolute; right:0; top:0; width:auto; display:block; will-change:transform; pointer-events:none;
     /* el final se funde con el fondo, sin un corte */
@@ -697,6 +758,28 @@
   .nep-pz-top.on .nep-pz-fig{ transform:translateY(var(--pz-d)); }
   .nep-pz-bottom.on .nep-pz-fig{ transform:translateY(calc(var(--pz-d) * -1)); }
 
+  /* celular:
+     - colección: los geometrales a todo el ancho y el texto debajo, del mismo ancho
+       que los otros párrafos
+     - prendas: de a una por pantalla, en una fila que se desliza de costado; las de
+       los costados asoman en los márgenes (así se entiende que hay más). Al tocar una,
+       se mueve como en la compu y aparece su texto con la ficha técnica; la primera,
+       al llegar al centro, se levanta apenas y vuelve (para invitar a tocarla) */
+  @media (max-width:760px){
+    .nep-coll{ height:auto; padding:6vh 0; }
+    .nep-coll-img{ position:relative; top:auto; left:auto; transform:none; width:100vw; --coll-w:100vw; }
+    .nep-coll-text{ position:relative; top:auto; left:8vw; transform:none; width:78vw; max-width:none; margin-top:5vh; }
+    .nep-pz-row{ justify-content:flex-start; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; touch-action:pan-x;
+      scrollbar-width:none; -webkit-overflow-scrolling:touch; padding:0 13vw; box-sizing:border-box;
+      --pz-k: min(calc(74vw / (496 * 1.3)), calc(52vh / 795)); }
+    .nep-pz-row::-webkit-scrollbar{ display:none; }
+    .nep-pz{ flex:0 0 74vw; width:74vw !important; scroll-snap-align:center; }
+    .nep-pz-fig{ left:calc(50% - var(--pz-k) * var(--gw) * .65); width:calc(var(--pz-k) * var(--gw) * 1.3); }
+    .nep-pz-text, .nep-pz:last-child .nep-pz-text{ left:calc(50% - var(--pz-k) * var(--gw) * .65); width:calc(var(--pz-k) * var(--gw) * 1.3); }
+    .nep-pz-fig.nudge{ animation:pzNudge 1.2s cubic-bezier(.45,0,.25,1); }
+  }
+  @keyframes pzNudge{ 0%{ transform:translateY(0); } 40%{ transform:translateY(-12px); } 100%{ transform:translateY(0); } }
+
   /* ---- 7. FOTOS ---- */
   /* sobre blanco, de borde a borde, separadas 10px (como las fotos finales de Un Mundo para Exprimir).
      Tamaño y lugar: el JS (dos bloques en columnas, que arrancan y terminan en línea recta) */
@@ -729,6 +812,8 @@
     transition:opacity 1.4s cubic-bezier(.45,0,.35,1), transform 1.8s cubic-bezier(.25,.6,.25,1), filter 1.6s cubic-bezier(.4,0,.3,1); }
   /* aparece muy sutil, sin golpe: de difuminado a nítido, de a poco, subiendo apenas */
   .nep-hand.in .nep-hand-img{ opacity:.92; transform:translate(-50%,-50%); filter:brightness(0) blur(0); }
+  /* celular: el texto manuscrito más grande, casi a todo el ancho (con sus márgenes) */
+  @media (max-width:760px){ .nep-hand-img{ width:calc(100vw - 48px); } }
   /* el video: aparece sutil sobre negro; al terminar (o con un click) se funde en blanco */
   .nep-vid{ position:fixed; inset:0; z-index:330; background:#000; opacity:0; pointer-events:none; transition:opacity 1.2s ease, background-color 1.2s ease; overflow:hidden; }
   .nep-vid.on{ opacity:1; pointer-events:auto; }
@@ -736,6 +821,10 @@
   /* ocupa todo el ancho de la pantalla (si la pantalla es muy ancha, se recorta apenas arriba y abajo) */
   .nep-vid video{ position:absolute; left:0; top:50%; width:100vw; height:auto; transform:translateY(-50%); display:block; opacity:0; transition:opacity 1.2s ease; }
   .nep-vid.play video{ opacity:1; }
+  /* celular girado: el video ocupa toda la pantalla, entero */
+  @media (orientation:landscape) and (pointer:coarse) and (max-height:520px){
+    .nep-vid video{ top:0; height:100vh; width:100vw; object-fit:contain; transform:none; }
+  }
 
   @media (max-width:900px){
     .nep-cards{ height:auto; padding:10vh 0; }
@@ -872,6 +961,38 @@
     .df-minis{ display:none; }
     .df-head{ white-space:normal; width:90vw; }
   }
+  /* celular:
+     - portada: ocupa toda la pantalla, con la foto entera de alto (se recorta a los
+       costados); título y subtítulo apoyados justo encima de la prenda, servicios
+       sobre el casco, como en la compu
+     - moodboard: imágenes más chicas y más espacio entre párrafos, para que se
+       repartan entre los textos (pueden pisarlos apenas)
+     - proceso: el primer párrafo centrado, como un punto aparte; después el figurín
+       grande solo, en una pantalla; y en la siguiente, los otros cinco más chicos en
+       una fila que se desliza de costado (hacia los dos lados), con los otros dos
+       párrafos alineados a la izquierda
+     - video más grande; con un toque se ve en pantalla completa */
+  @media (max-width:760px){
+    .df-inicial{ aspect-ratio:auto; height:100vh; }
+    .df-hero{ width:100%; height:100%; aspect-ratio:auto; margin-top:0; object-fit:cover; object-position:50% 50%; }
+    .df-head{ top:40.5%; }
+    /* (sobre la prenda blanca no se leían: van abajo a la derecha, sobre el muelle, en gris oscuro) */
+    .df-roles{ left:auto; right:20px; top:auto; bottom:26px; transform:none; text-align:right; color:#4a463f; }
+    .df-cgap{ height:58vh; }
+    .df-proceso{ flex-direction:column; align-items:stretch; min-height:0 !important; }
+    .df-proceso .df-measure{ display:none; }
+    .df-proceso .df-text{ display:contents; }
+    .df-proceso .df-text p{ margin:0 var(--df-m) 1.25em; width:auto; }
+    .df-proceso .df-text p:nth-child(1){ order:1; text-align:center; margin-top:10vh; margin-bottom:0; }
+    .df-figurin{ order:2; position:relative; left:auto; transform:none; height:80vh; margin:10vh auto; width:auto !important; }
+    .df-minis{ order:3; position:relative; display:flex; gap:26px; height:34vh; width:100vw; overflow-x:auto; overflow-y:hidden;
+      padding:0 50vw; box-sizing:border-box; pointer-events:auto; touch-action:pan-x; scrollbar-width:none; -webkit-overflow-scrolling:touch; margin:6vh 0 5vh; }
+    .df-minis::-webkit-scrollbar{ display:none; }
+    .df-mini{ position:relative; flex:none; left:auto !important; top:auto !important; height:100% !important; }
+    .df-proceso .df-text p:nth-child(2){ order:4; }
+    .df-proceso .df-text p:nth-child(3){ order:5; margin-bottom:0; }
+    .df-video video{ width:92vw; cursor:pointer; }
+  }
 
   /* =============== UN MUNDO PARA EXPRIMIR (proyecto 03) =============== */
   /* Tema claro: no define colores propios (usa --ink / --stone directo) y no
@@ -1007,6 +1128,30 @@
     /* en mobile no hay hover ni scroll propio para disparar la entrada: se ve directo */
     .expr-rl-line .expr-rl-inner{ opacity:1 !important; transform:none !important; }
   }
+  /* celular: la intro centrada, ocupando toda la pantalla (el concepto recién aparece
+     al scrollear); las frutas, con el mismo recorrido, en su franja propia justo antes
+     del texto (no debajo de él); los bocetos a todo el ancho, saliéndose apenas por la
+     derecha; la flecha vuelve: sale del dibujo del prototipo, pasa por debajo del texto
+     y llega al geometral, con casi una pantalla de separación entre el texto y el
+     geometral; el geometral más chico (entra con su texto en una pantalla) y las fotos
+     finales a todo el ancho, una debajo de la otra */
+  @media (max-width:760px){
+    .expr-inicial{ min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding-top:var(--nav-h); box-sizing:border-box; }
+    .expr-inicial-text{ padding:0 var(--expr-m); text-align:center; }
+    .expr-panel{ width:92vw; margin-top:7vh; }
+    .expr-fruits-part{ flex-direction:column; align-items:stretch; padding:4vh 0 10vh; }
+    .expr-fruits{ position:relative; inset:auto; height:150px; margin-bottom:3vh; order:-1; }
+    .expr-bocetos{ overflow:hidden; }
+    .expr-bocetos > img{ width:112vw; }
+    .expr-bocetos .expr-text{ position:relative; top:auto; right:auto; z-index:4; background:var(--white); padding:6vh 0 4vh; margin-bottom:76vh; }
+    .expr-arrow{ display:block; }
+    .expr-geometral{ min-height:100vh; display:flex; flex-direction:column; justify-content:center; box-sizing:border-box; padding:4vh 0; }
+    .expr-geo-wrap{ display:flex; flex-direction:column; align-items:center; }
+    .expr-geo-wrap > img{ height:44vh; width:auto; }
+    .expr-geo-text{ margin:3.5vh var(--expr-m) 0; }
+    .expr-finals{ flex-direction:column; }
+    .expr-finals img{ flex:none; }
+  }
 
   #aboutLogoLayer{
     position:fixed; top:0; left:0; width:100%; height:100%;
@@ -1048,6 +1193,9 @@
     font-size:clamp(13px,1.3vw,15px); line-height:2; color:#15140f; margin:0 auto;
     max-width:52ch;
   }
+  /* celular: los párrafos más angostos (más renglones, más armonioso); la apertura
+     alrededor del logo sigue funcionando renglón por renglón */
+  @media (max-width:760px){ .about-block p{ max-width:70vw; } }
 
   .aline{ display:block; white-space:nowrap; }
   .aline .ah{ display:inline-block; will-change:transform; }
@@ -1098,6 +1246,26 @@
     font-size:12px; letter-spacing:.04em; color:var(--stone); line-height:1.9;
   }
   .ci-location b{ color:#15140f; font-weight:600; }
+
+  /* celular: otro encuadre del logo (ver applyContactZoom) y los bloques en sus espacios
+     blancos: email y web adentro del arco de arriba, redes en el blanco de arriba a la
+     izquierda, ubicación y disponibilidad en el blanco de abajo a la derecha (en cuatro
+     renglones, para que entre entre los trazos). El idioma, abajo a la izquierda, se
+     invierte sobre el logo (blanco sobre las líneas negras, oscuro sobre el blanco) */
+  @media (max-width:760px){
+    .ci-email{ left:52vw; top:21.7vh; transform:translateY(-50%); }
+    .ci-social{ left:8vw; top:21.7vh; transform:translateY(-50%); }
+    .ci-location{ left:58vw; top:63vh; transform:translateY(-50%); }
+    .ci-location b{ display:block; }
+    html.contact-open header{ mix-blend-mode:difference; }
+    html.contact-open nav.links button{ color:#fff !important; }
+    html.contact-open .lang-toggle span:not(.active){ color:#fff; opacity:.6; }
+    /* (las mismas entradas, pero sin el centrado a lo ancho: acá los bloques arrancan donde se los ubica) */
+    .panel.open .contact-layer .ci-rise{ animation-name:ciRiseM; }
+    .panel.open .contact-layer .ci-slide{ animation-name:ciSlideM; }
+  }
+  @keyframes ciRiseM{ from{ opacity:0; transform:translate(0,-46%); } to{ opacity:1; transform:translate(0,-50%); } }
+  @keyframes ciSlideM{ from{ opacity:0; transform:translate(-10px,-50%); } to{ opacity:1; transform:translate(0,-50%); } }
 
   /* el contenido no aparece hasta que termina el zoom */
   .panel.show-contact:not(.contact-ready) .contact-layer .ci-anim{ animation:none !important; opacity:0; }
@@ -1395,16 +1563,16 @@
                arriba sube un poco y el de abajo baja un poco, y entre los dos aparece "[ Ver video ]".
                Con un click en una foto se ve completa -->
           <section class="nep-part nep-ph" id="nepPh">
-            <img class="nep-ph-img nep-ph-v" data-b="0" data-c="0" src="assets/nada-es-plano-foto-03.jpg" alt="Nada es Plano">
-            <img class="nep-ph-img nep-ph-h" data-b="0" data-c="0" src="assets/nada-es-plano-foto-04.jpg" alt="Nada es Plano">
-            <img class="nep-ph-img nep-ph-h" data-b="0" data-c="0" src="assets/nada-es-plano-foto-10.jpg" alt="Nada es Plano">
-            <img class="nep-ph-img nep-ph-h" data-b="0" data-c="1" src="assets/nada-es-plano-foto-02.jpg" alt="Nada es Plano">
-            <img class="nep-ph-img nep-ph-v" data-b="0" data-c="1" src="assets/nada-es-plano-foto-05.jpg" alt="Nada es Plano">
-            <img class="nep-ph-img nep-ph-v" data-b="0" data-c="2" src="assets/nada-es-plano-foto-07.jpg" alt="Nada es Plano">
-            <img class="nep-ph-img nep-ph-h" data-b="0" data-c="2" src="assets/nada-es-plano-foto-06.jpg" alt="Nada es Plano">
-            <img class="nep-ph-img nep-ph-v" data-b="1" data-c="0" data-cap="@wandita.s.r_" src="assets/nada-es-plano-foto-09.jpg" alt="Nada es Plano">
-            <img class="nep-ph-img nep-ph-h" data-b="1" data-c="1" src="assets/nada-es-plano-foto-08.jpg" alt="Nada es Plano">
-            <img class="nep-ph-img nep-ph-v" data-b="1" data-c="2" data-cap="@iridisenteh" src="assets/nada-es-plano-foto-01.jpg" alt="Nada es Plano">
+            <img class="nep-ph-img nep-ph-v" data-b="0" data-c="0" data-mb="0" data-mc="0" src="assets/nada-es-plano-foto-03.jpg" alt="Nada es Plano">
+            <img class="nep-ph-img nep-ph-h" data-b="0" data-c="0" data-mb="0" data-mc="1" src="assets/nada-es-plano-foto-04.jpg" alt="Nada es Plano">
+            <img class="nep-ph-img nep-ph-h" data-b="0" data-c="0" data-mb="0" data-mc="0" src="assets/nada-es-plano-foto-10.jpg" alt="Nada es Plano">
+            <img class="nep-ph-img nep-ph-h" data-b="0" data-c="1" data-mb="0" data-mc="1" src="assets/nada-es-plano-foto-02.jpg" alt="Nada es Plano">
+            <img class="nep-ph-img nep-ph-v" data-b="0" data-c="1" data-mb="0" data-mc="1" src="assets/nada-es-plano-foto-05.jpg" alt="Nada es Plano">
+            <img class="nep-ph-img nep-ph-v" data-b="0" data-c="2" data-mb="1" data-mc="0" src="assets/nada-es-plano-foto-07.jpg" alt="Nada es Plano">
+            <img class="nep-ph-img nep-ph-h" data-b="0" data-c="2" data-mb="1" data-mc="1" src="assets/nada-es-plano-foto-06.jpg" alt="Nada es Plano">
+            <img class="nep-ph-img nep-ph-v" data-b="1" data-c="0" data-mb="2" data-mc="0" data-cap="@wandita.s.r_" src="assets/nada-es-plano-foto-09.jpg" alt="Nada es Plano">
+            <img class="nep-ph-img nep-ph-h" data-b="1" data-c="1" data-mb="1" data-mc="1" src="assets/nada-es-plano-foto-08.jpg" alt="Nada es Plano">
+            <img class="nep-ph-img nep-ph-v" data-b="1" data-c="2" data-mb="2" data-mc="1" data-cap="@iridisenteh" src="assets/nada-es-plano-foto-01.jpg" alt="Nada es Plano">
             <button class="nep-hand-video" id="nepHandVideo" type="button"><span data-es>Ver video</span><span data-en>Watch video</span></button>
           </section>
 
@@ -1992,7 +2160,7 @@
     const r = sphFrontRot(sphPts[i]);
     const base = r ? sphRot(r.ax, r.ay, r.az, r.ang) : [1,0,0, 0,1,0, 0,0,1];
     const vw = window.innerWidth, vh = window.innerHeight, R = sphRadius(), D = R * 3;
-    const w0 = items[0].offsetWidth || 342, h0 = items[0].offsetHeight || 274;
+    const w0 = items[0].offsetWidth || 308, h0 = items[0].offsetHeight || 247;
     let best = base, bestCost = Infinity;
     for(let k = 0; k < 48; k++){
       const M = sphMul(sphRot(0, 0, 1, k / 48 * Math.PI * 2), base);
@@ -2032,8 +2200,8 @@
   // celular (hasta 760px de ancho): la esfera y los recuadros, a la medida de la pantalla
   function isMob(){ return window.matchMedia('(max-width:760px)').matches; }
   function sphRadius(){
-    if(isMob()) return window.innerWidth * 0.5;
-    return Math.min(Math.max(window.innerWidth * 0.2592, 243), 462);   // otro 10% más chica (antes 28.8vw, entre 270 y 513; al principio 32vw, entre 300 y 570)
+    if(isMob()) return window.innerWidth * 0.42;
+    return Math.min(Math.max(window.innerWidth * 0.2333, 219), 416);   // otro 10% más chica (antes 25.92vw, entre 243 y 462; antes 28.8vw; al principio 32vw)
   }
   const SPH_CX = 0.56;   // centro de la esfera: un poco a la derecha del centro de la pantalla (56% del ancho)
   // en el celular, centrada a lo ancho y apenas más abajo de la mitad (arriba está la firma)
@@ -2205,27 +2373,34 @@
     const sig = document.getElementById('nameVariants');
     root.classList.add('mob-sig-c');
     const label = Array.from(copy.querySelectorAll('.home-role-label')).find(el => el.offsetParent);
+    const lines = Array.from(sig.querySelectorAll('.v-active img'));
+    const parts = lines.concat(label ? [label] : []);
     copy.style.transition = 'none'; copy.style.transform = 'none';
-    if(label){ label.style.transition = 'none'; label.style.transform = 'none'; }
+    parts.forEach(el => { el.style.transition = 'none'; el.style.transform = 'none'; });
+    if(label) label.style.display = 'inline-block';
     const r = copy.getBoundingClientRect();
-    // el ancho real de la firma (la imagen más ancha de las dos líneas)
-    const sw = Math.max(...Array.from(sig.querySelectorAll('.v-active img')).map(im => im.getBoundingClientRect().width));
+    // el ancho real de la firma (la línea más ancha)
+    const sw = Math.max(...lines.map(im => im.getBoundingClientRect().width));
+    const pw = parts.map(el => el.getBoundingClientRect().width);   // (medidos antes de agrandar el bloque)
     const vw = window.innerWidth, vh = window.innerHeight, k = MOB_SIG_SCALE;
-    // la firma centrada a lo ancho; el bloque (firma + subtítulo) centrado en alto
+    // todo centrado: la firma centrada a lo ancho, cada línea y el subtítulo centrados
+    // debajo de la más ancha, y el bloque centrado en alto
     const tx = (vw - sw * k) / 2 - r.left, ty = (vh - r.height * k) / 2 - r.top;
     copy.style.transformOrigin = '0 0';
     copy.style.transform = 'translate(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px) scale(' + k + ')';
-    if(label){ label.style.display = 'inline-block'; label.style.transform = 'translateX(' + ((sw - label.offsetWidth) / 2).toFixed(1) + 'px)'; }
+    parts.forEach((el, i) => { el.style.transform = 'translateX(' + ((sw - pw[i]) / 2).toFixed(1) + 'px)'; });
     setTimeout(() => {
+      // se achica hasta su esquina y, a la vez, las líneas vuelven a alinearse a la izquierda
       const ease = 'cubic-bezier(.65,0,.35,1)';
       copy.style.transition = 'transform ' + MOB_SIG_MOVE + 'ms ' + ease;
       copy.style.transform = 'none';
-      if(label){ label.style.transition = 'transform ' + MOB_SIG_MOVE + 'ms ' + ease; label.style.transform = 'none'; }
+      parts.forEach(el => { el.style.transition = 'transform ' + MOB_SIG_MOVE + 'ms ' + ease; el.style.transform = 'none'; });
       root.classList.add('mob-sig-go');
       setTimeout(() => {
         root.classList.remove('mob-sig-c', 'mob-sig-go');
         copy.style.transition = copy.style.transform = '';
-        if(label) label.style.transition = label.style.transform = label.style.display = '';
+        parts.forEach(el => { el.style.transition = el.style.transform = ''; });
+        if(label) label.style.display = '';
       }, MOB_SIG_MOVE + 50);
     }, MOB_SIG_HOLD);
   }
@@ -2467,6 +2642,7 @@
   let aboutMax = 0;
   let aboutIntroActive = false;
   let aboutLeaving = false;
+  let aboutHomeShown = false;   // "[ Volver al home ]" a la vista al final de "Sobre mí"
   let linePush = []; // suavizado propio de cada línea al abrirse/cerrarse
   let aboutCopyrightTop = 0;
 
@@ -2474,8 +2650,11 @@
   function measureLogo(){
     const lw = logo3d ? logo3d.offsetWidth : 100;
     const lh = logo3d ? logo3d.offsetHeight : 140;
-    logoA = lw / 2 + 60;   // semiejes de la elipse invisible
-    logoB = lh / 2 + 60;
+    // semiejes de la elipse invisible (en el celular, con menos aire: si no, al abrirse
+    // los renglones se salían de la pantalla)
+    const pad = isMob() ? 20 : 60;
+    logoA = lw / 2 + pad;
+    logoB = lh / 2 + (isMob() ? 34 : 60);
   }
   window.addEventListener('resize', measureLogo);
 
@@ -2521,8 +2700,17 @@
           copyEl.classList.toggle('caught', caught);
           caption.classList.toggle('show', caught);
         }
+        // "[ Volver al home ]" al llegar al final del texto, como en los trabajos
+        const homeBtn = document.getElementById('workHome');
+        const stop = Math.max(aboutMax - window.innerHeight * 0.55, 0);
+        const atEnd = stop > 0 && aboutCurrent >= stop - 3;
+        if(homeBtn && atEnd !== aboutHomeShown){ aboutHomeShown = atEnd; homeBtn.classList.toggle('show', atEnd); }
       }
 
+    } else if(aboutHomeShown){
+      aboutHomeShown = false;
+      const homeBtn = document.getElementById('workHome');
+      if(homeBtn && !(panel.classList.contains('open') && panel.classList.contains('show-work'))) homeBtn.classList.remove('show');
     }
     requestAnimationFrame(aboutLoop);
   }
@@ -2603,15 +2791,21 @@
   // ---- Contacto: zoom al logo ----
   // banda vertical del logo que tiene que llenar la pantalla (según las líneas rojas de referencia)
   const ZOOM_F1 = 0.09, ZOOM_F2 = 0.425;
+  // celular (la pantalla es más alta que ancha): se ve mucho más del logo, casi entero
+  // (del borde de arriba hasta el 90% de su alto), corrido apenas a la izquierda; los
+  // tres bloques de texto quedan en los espacios blancos, sin cruzarse con las líneas
+  const ZOOM_M_F1 = 0, ZOOM_M_F2 = 0.9, ZOOM_M_DX = -0.05;   // (DX: fracción del ancho de la pantalla)
 
   function applyContactZoom(){
     if(!logo3d) return;
     const h0 = logo3d.offsetHeight || 140;
-    const vh = window.innerHeight;
-    const bandH = (ZOOM_F2 - ZOOM_F1) * h0;
+    const vh = window.innerHeight, mob = isMob();
+    const f1 = mob ? ZOOM_M_F1 : ZOOM_F1, f2 = mob ? ZOOM_M_F2 : ZOOM_F2;
+    const bandH = (f2 - f1) * h0;
     const s = vh / bandH;
-    const fc = (ZOOM_F1 + ZOOM_F2) / 2;
+    const fc = (f1 + f2) / 2;
     const dy = (0.5 - fc) * h0 * s;   // recentra la banda marcada en la pantalla
+    const dx = mob ? window.innerWidth * ZOOM_M_DX : 0;
 
     // el aplanado termina casi enseguida (el logo todavía se ve chico): para cuando
     // el zoom lo agranda ya está en 2D, así el cambio no se nota
@@ -2622,7 +2816,7 @@
     logo3d.style.transform = 'translate(-50%, -50%) scale(1)';
     void logo3d.offsetWidth;
     requestAnimationFrame(() => {
-      logo3d.style.transform = `translate(-50%, calc(-50% + ${dy}px)) scale(${s})`;
+      logo3d.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(${s})`;
     });
     setTimeout(() => { document.documentElement.classList.add('contact-nav-white'); }, 2100);
     setTimeout(() => { panel.classList.add('contact-ready'); }, 2500);   // el texto aparece antes (antes 3.3s)
@@ -2833,7 +3027,12 @@
       ctx.drawImage(lzBuf, 0, 0);
       if(!loader.classList.contains('see-through')) loader.style.background = '#fff';
       if(el < LZ_MS + LZ_FLAT_MS) requestAnimationFrame(frame);
-      else startLogoHold();                // frena: queda quieto y se entra al home con un click en el logo
+      // frena: en la compu queda quieto y se entra al home con un click en el logo;
+      // en el celular, apenas frena se funde solo y entra el home (todo seguido)
+      else if(!isMob()) startLogoHold();
+      // celular: el fundido arranca cuando el giro casi terminó (el final de la
+      // curva es muy lento y se veía quieto mucho tiempo): queda apenas un instante quieto
+      if(isMob() && el > LZ_MS * MOB_LOGO_FADE_AT && !playLogoZoom.fading){ playLogoZoom.fading = true; setTimeout(lhEnter, MOB_LOGO_HOLD); }
     }
     loaderCanvas.classList.add('on');
     requestAnimationFrame(frame);
@@ -2862,6 +3061,13 @@
   }
   function lhClick(e){
     if(!lh || lh.done || !lhInside(e.clientX, e.clientY)) return;
+    lhEnter();
+  }
+  const MOB_LOGO_HOLD = 120;     // celular: el logo apenas se queda quieto antes de fundirse
+  const MOB_LOGO_FADE_AT = 0.8;  // (desde que el giro va por el 80% de su tiempo)
+  function lhEnter(){
+    if(lh && lh.done) return;
+    if(!lh) lh = { s: 1, target: 1, drawn: 1, done: false };
     lh.done = true;
     loader.style.cursor = '';
     loaderCanvas.style.transition = 'opacity ' + LH_FADE_MS + 'ms ease';
@@ -3090,14 +3296,18 @@
   }, { passive:true });
   window.addEventListener('resize', () => { if(si && !si.done) si.drawn = -1; });
 
-  // la intro arranca sola a los 2s: el texto se funde y el logo empieza a girar
-  setTimeout(() => {
+  // la intro arranca sola a los 2s: el texto se funde y el logo empieza a girar.
+  // En el celular, en cambio, espera un toque en cualquier lugar de la pantalla
+  function introGo(){
+    if(introGo.done) return; introGo.done = true;
     loaderUrl.classList.add('gone');
     loaderVeil.classList.add('gone');
     window.removeEventListener('mousemove', loaderAura);
     const go = () => { if(!logoBlack) makeBlackLogo(); if(!logoMips) buildLogoMips(); playLogoZoom(); };
     if(logoImg.complete && logoImg.naturalWidth) go(); else logoImg.addEventListener('load', go, { once:true });
-  }, 2000);
+  }
+  if(isMob()) loader.addEventListener('click', introGo, { once:true });
+  else setTimeout(introGo, 2000);
 
   // ---- Idioma ----
   const langToggle = document.getElementById('langToggle');
@@ -3349,6 +3559,8 @@
 
   function sizeSlot(ratio){
     if(!smbSlot || !procesoPart || !ratio) return;
+    // celular: a todo el ancho de la pantalla, sin recortar (el alto sale de la proporción)
+    if(isMob()){ const w = window.innerWidth; smbSlot.style.width = w + 'px'; smbSlot.style.height = (w / ratio) + 'px'; measureWork(); return; }
     const textEl = procesoPart.querySelector('.smb-proceso-text');
     if(!textEl) return;
     const h = textEl.offsetHeight;
@@ -3465,6 +3677,17 @@
   }
   const ALB_FINAL_VIDEO_RAW = 'assets/7600-resumen-video.mp4';
   let albFinalVideoReady = false;
+  // celular: el video final se ve recortado a los costados; se encuadra para que la
+  // persona que habla (que en el cuadro está al 36% del ancho) quede en el centro
+  const ALB_SPEAKER_X = 0.36, ALB_FINAL_RATIO = 1280 / 730;
+  function albFrameSpeaker(){
+    if(!albVideo) return;
+    if(!isMob()){ albVideo.style.objectPosition = ''; return; }
+    const vw = window.innerWidth, vh = window.innerHeight, Wv = vh * ALB_FINAL_RATIO;
+    const p = Wv > vw ? (ALB_SPEAKER_X * Wv - vw / 2) / (Wv - vw) : 0.5;
+    albVideo.style.objectPosition = (Math.min(Math.max(p, 0), 1) * 100).toFixed(1) + '% 50%';
+  }
+  window.addEventListener('resize', albFrameSpeaker);
 
   function setupAlbFinal(){
     if(!albVideo) return;
@@ -3474,6 +3697,7 @@
     }
     albVideo.style.display = '';
     albVideo.style.opacity = '1';
+    albFrameSpeaker();
     if(albPlaceholder) albPlaceholder.style.display = 'none';
     albYtBtn.classList.remove('show');
     albFinalStarted = false;
@@ -3614,6 +3838,8 @@
     if(!albSlot) return;
     const textEl = document.querySelector('.alb-proceso-text');
     if(!textEl || !ratio) return;
+    // celular: a todo el ancho de la pantalla, sin recortar
+    if(isMob()){ const w = window.innerWidth; albSlot.style.width = w + 'px'; albSlot.style.height = (w / ratio) + 'px'; measureWork(); return; }
     const h = textEl.offsetHeight;
     albSlot.style.height = h + 'px';
     albSlot.style.width  = (h * ratio) + 'px';
@@ -3723,8 +3949,10 @@
     const dy = y2 - y1;
 
     // curva suave: se abre hacia la izquierda y vuelve a entrar al final
-    const c1x = x1 - Math.max(70, dy * 0.16), c1y = y1 + dy * 0.34;
-    const c2x = x2 - Math.max(90, dy * 0.26), c2y = y2 - dy * 0.24;
+    let c1x = x1 - Math.max(70, dy * 0.16), c1y = y1 + dy * 0.34;
+    let c2x = x2 - Math.max(90, dy * 0.26), c2y = y2 - dy * 0.24;
+    // celular: la misma curva, pero sin salirse de la pantalla por la izquierda
+    if(isMob()){ c1x = Math.max(x1 - 34, 10); c2x = Math.max(x2 - 60, 10); }
 
     svg.setAttribute('width',  tr.width);
     svg.setAttribute('height', Math.max(y2 + 60, 0));
@@ -4005,9 +4233,14 @@
   const NB_FAST_MS = 170;     // cada página al cerrar rápido
   const NB_OPEN_MS = 1700;    // con el click: de asomado a su lugar (y de vuelta)
   const IA_W = 2400, IA_H = 1840, IA_PW = 2000, IA_PH = 1116, IA_X = 200, IA_Y = 362;   // la foto de la IA, extendida con su fondo recreado hasta cubrir la pantalla
+  const NEP_IA_FEET = 1445;   // (celular) donde terminan los pies de las personas, en la foto extendida
   const NEP_HEAD_X = 1628, NEP_HEAD_BOTTOM = 700, NEP_HEAD_GAP = 585;   // título: centrado entre las chicas paradas (a la altura de sus cabezas, donde hay más lugar: 585 entre el pelo de una y el de la otra), arriba de las cabezas de las dos agachadas (en la foto extendida)
   const NB_WEIGHT = 1.25;   // toda la sección es un poco más pesada que el resto: el cuaderno se mueve más sutil
   const NB_SHRINK = 0.85;   // al ir a su lugar, el cuaderno se achica un 15%
+  // celular: el cuaderno apenas asoma (se ve una franja de la tapa y los papeles, sin tapar el texto), al tocarlo va al
+  // centro de la pantalla (sin achicarse) y el texto se va; los párrafos quedan
+  // siempre en su lugar, a la izquierda; los bocetos, de un 26% del ancho
+  const NB_MOB_PEEK = 0.92, NB_MOB_TEXT_X = 0.08, NB_MOB_PROC_W = 0.26, NB_PROC_RATIO = 583 / 1800;
   const nbSec   = document.getElementById('nepBookSec');
   const nbStage = document.getElementById('nepBookStage');
   const nbBook  = document.getElementById('nepBook');
@@ -4049,6 +4282,20 @@
     nbIa.style.width = iaW.toFixed(1) + 'px';
     nbIa.style.height = iaH.toFixed(1) + 'px';
     nbIa.style.transform = 'translate(' + iaL.toFixed(1) + 'px,' + iaT.toFixed(1) + 'px)';
+    const title0 = nepHead.querySelector('.nep-title');
+    if(isMob()){
+      // título y subtítulo centrados en el espacio entre el menú y el borde de arriba de la foto
+      const nav = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 76;
+      const phTop = iaT + IA_Y / IA_H * iaH;
+      nepHead.style.left = (vw / 2).toFixed(1) + 'px';
+      nepHead.style.top = ((nav + phTop) / 2).toFixed(1) + 'px';
+      nepHead.style.transform = 'translate(-50%,-50%)';
+      title0.style.fontSize = '';
+      // crédito de la IA: justo debajo de las personas (los pies llegan a y=1445 de la foto extendida)
+      const cap = document.querySelector('.nep-ia-cap');
+      if(cap) cap.style.top = (iaT + NEP_IA_FEET / IA_H * iaH + 8).toFixed(1) + 'px';
+      return;
+    } else { const cap = document.querySelector('.nep-ia-cap'); if(cap) cap.style.top = ''; }
     nepHead.style.left = (iaL + NEP_HEAD_X / IA_W * iaW).toFixed(1) + 'px';
     nepHead.style.top = (iaT + NEP_HEAD_BOTTOM / IA_H * iaH).toFixed(1) + 'px';
     nepHead.style.transform = 'translate(-50%,-100%)';
@@ -4085,7 +4332,9 @@
     // y suben con el scroll. Los dos primeros párrafos arrancan a la mitad del
     // alto de los bocetos (todo el texto queda por debajo de esa mitad) y suben
     // a la par; los bocetos frenan cuando llegan al centro los otros dos
-    const procH = vh * 1.44 + h1b / 2 + 40;
+    // (celular: los bocetos, mucho más chicos, acompañan a los dos primeros párrafos
+    // desde el borde derecho, pisándolos apenas)
+    const procH = isMob() ? vw * NB_MOB_PROC_W / NB_PROC_RATIO : vh * 1.44 + h1b / 2 + 40;
     const ya0 = vh + procH / 2;                          // dónde arrancan los dos primeros párrafos
     const t1 = ya0 - (vh / 2 - h1a / 2);                 // ... y quedan en el centro
     const yb0 = ya0 + h1a + G;                           // dónde arrancan los otros dos (misma separación que antes)
@@ -4138,11 +4387,12 @@
     }
     const em = nbEaseInOut(nb.m);
     // posiciones del lomo en la pantalla
+    const mob = isMob();
     const xOut   = -800 * k - 30;                         // cuaderno fuera de la pantalla, a la izquierda
-    const xPeek  = -0.45 * NB_FRONT_W * k;                // asomado: se ve un poco más de la mitad de la tapa
-    const xFinal = nb.lc;                                 // en el centro del lado izquierdo
+    const xPeek  = -(mob ? NB_MOB_PEEK : 0.45) * NB_FRONT_W * k;   // asomado: se ve un poco más de la mitad de la tapa (celular: apenas)
+    const xFinal = mob ? vw / 2 : nb.lc;                  // en el centro del lado izquierdo (celular: en el centro)
     const xHome  = xPeek + (xFinal - xPeek) * em;         // donde queda: asomado, o en su lugar si se hizo click
-    const scHome = 1 - (1 - NB_SHRINK) * em;              // y en su lugar, un poco más chico
+    const scHome = mob ? 1 : 1 - (1 - NB_SHRINK) * em;    // y en su lugar, un poco más chico
     let xs, sc;
     if(pin <= P.a0){ xs = xOut; sc = 1; }
     else if(pin < P.A){ const e = nbSoft((pin - P.a0) / (P.A - P.a0)); xs = xOut + (xHome - xOut) * e; sc = 1 + (scHome - 1) * e; }
@@ -4179,7 +4429,11 @@
     const pushed = Math.max(Math.min(cx, edge + gapPeek), edge + gapOpen);
     // (con un poco de peso, así nunca saltan de lugar)
     const sm = (key, v) => { if(nb[key] === undefined || Math.abs(nb[key] - v) < 0.3) nb[key] = v; else nb[key] += (v - nb[key]) * 0.14; return nb[key]; };
-    const x1a = sm('x1aS', Math.max(leftX, pushed)), x1b = sm('x1bS', Math.max(cx, pushed));
+    let x1a = sm('x1aS', Math.max(leftX, pushed)), x1b = sm('x1bS', Math.max(cx, pushed));
+    // celular: el texto no se corre (no hay lugar al costado): queda a la izquierda y,
+    // con el cuaderno abierto, se funde
+    if(mob){ x1a = x1b = vw * NB_MOB_TEXT_X; const op = (1 - em).toFixed(3); nbT1a.style.opacity = op; nbT1b.style.opacity = op; }
+    else { nbT1a.style.opacity = nbT1b.style.opacity = ''; }
     nbT1a.style.transform = 'translate(' + x1a.toFixed(1) + 'px,' + (P.ya0 - pin).toFixed(1) + 'px)';
     const y1b = Math.max(P.yb0 - pin, vh / 2 - P.h1b / 2);
     nbT1b.style.transform = 'translate(' + x1b.toFixed(1) + 'px,' + y1b.toFixed(1) + 'px)';
@@ -4214,6 +4468,13 @@
     const P = nb.phases;
     if(nb.pin < P.t1 - 20 || nb.over > 4) return false;
     if(nb.mT || nb.busy) return true;
+    // celular: con el cuaderno abierto, el scroll (para arriba o para abajo) primero lo
+    // cierra y lo deja asomado otra vez; después, con más scroll, se va
+    if(isMob() && Math.abs(nb.pin - P.t2) < 20 && (nb.m > 0 || nb.cur > 1)){
+      if(nb.cur > 1) nbCloseFast().then(() => nbOpenTo(0));
+      else nbOpenTo(0);
+      return true;
+    }
     // para subir desde los otros dos párrafos con el cuaderno abierto: primero se
     // cierra y vuelve a quedar asomado (así nunca queda en el medio de la pantalla
     // encima de los primeros párrafos)
@@ -4302,7 +4563,28 @@
     const vw0 = nepVideo.videoWidth || 1920, vh0 = nepVideo.videoHeight || 1080;
     const s = Math.max(w / vw0, h / vh0);
     const fx = NEP_FACES[0] / 1920 * vw0, fy = NEP_FACES[1] / 1080 * vh0;
-    nepVideo.style.transformOrigin = ((w - vw0 * s) / 2 + fx * s).toFixed(1) + 'px ' + ((h - vh0 * s) / 2 + fy * s).toFixed(1) + 'px';
+    const px = nepShotP >= 0 ? nepShotP : 0.5;     // (en el celular el cuadro puede estar corrido: ver nepFrameShot)
+    nepVideo.style.transformOrigin = ((w - vw0 * s) * px + fx * s).toFixed(1) + 'px ' + ((h - vh0 * s) / 2 + fy * s).toFixed(1) + 'px';
+  }
+  // celular: el video se ve recortado a los costados. En la toma de las dos chicas
+  // paradas (desde el corte de 1.88s hasta el final) el par está al 47% del ancho:
+  // se corre el encuadre para que queden bien centradas. El cambio se hace justo en
+  // el corte de toma (cuadro por cuadro), así no se ve ningún movimiento
+  const NEP_SHOTS = [{ t: 0, x: 0.5 }, { t: 1.86, x: 0.477 }];   // (1.88s, con un margen de medio cuadro)
+  let nepShotP = -1;
+  function nepShotAt(t){ let x = 0.5; NEP_SHOTS.forEach(sh => { if(t >= sh.t) x = sh.x; }); return x; }
+  function nepFrameShot(t){
+    if(!isMob()){ if(nepShotP !== -1){ nepShotP = -1; nepVideo.style.objectPosition = ''; } return; }
+    const w = nepInicial.clientWidth, h = nepInicial.clientHeight;
+    const Wv = h * (nepVideo.videoWidth || 1920) / (nepVideo.videoHeight || 1080);
+    const x = nepShotAt(t);
+    const p = Wv > w ? Math.min(Math.max((x * Wv - w / 2) / (Wv - w), 0), 1) : 0.5;
+    if(Math.abs(p - nepShotP) > 0.0005){ nepShotP = p; nepVideo.style.objectPosition = (p * 100).toFixed(2) + '% 50%'; }
+  }
+  function nepShotLoop(now, meta){
+    if(!nepVideoOn) return;
+    nepFrameShot(meta ? meta.mediaTime : nepVideo.currentTime);
+    if(nepVideo.requestVideoFrameCallback) nepVideo.requestVideoFrameCallback(nepShotLoop);
   }
   function nepStartZoom(){
     if(nepVideo.classList.contains('zoom')) return;
@@ -4332,6 +4614,7 @@
   function nepWatch(){
     if(!nepVideoOn || nepFading) return;
     const d = nepVideo.duration;
+    if(!nepVideo.requestVideoFrameCallback) nepFrameShot(nepVideo.currentTime);   // (navegadores sin aviso por cuadro)
     if(d && nepVideo.currentTime >= d - NEP_ZOOM_LEAD) nepStartZoom();
     if(d && nepVideo.currentTime >= d - NEP_FADE_LEAD){ nepStartFade(); return; }
     requestAnimationFrame(nepWatch);
@@ -4398,14 +4681,55 @@
     const parts = [pz.querySelector('.nep-pz-fig'), pz.querySelector('.nep-pz-text')];
     parts.forEach(el => {
       el.addEventListener('mouseenter', () => {
+        if(isMob()) return;                 // (en el celular se abre tocándola)
         document.querySelectorAll('.nep-pz.on').forEach(o => { if(o !== pz) o.classList.remove('on'); });
         pz.classList.add('on');
       });
       el.addEventListener('mouseleave', () => {
+        if(isMob()) return;
         setTimeout(() => { if(!parts.some(p => p.matches(':hover'))) pz.classList.remove('on'); }, 40);
       });
     });
+    // celular: un toque en la prenda la abre (o la cierra); una sola a la vez
+    parts[0].addEventListener('click', () => {
+      if(!isMob()) return;
+      const open = !pz.classList.contains('on');
+      document.querySelectorAll('.nep-pz.on').forEach(o => o.classList.remove('on'));
+      if(open) pz.classList.add('on');
+    });
   });
+  // celular: al deslizar de costado, la que se va deja de estar abierta; y cada prenda,
+  // la primera vez que queda en el centro, se levanta apenas y vuelve (invita a tocarla)
+  const nepPzRowEl = document.getElementById('nepPzRow');
+  let nepPzNudged = new Set(), nepPzScrollT = null;
+  function nepPzCentered(){
+    const pzs = Array.from(nepPzRowEl.querySelectorAll('.nep-pz'));
+    const mid = nepPzRowEl.scrollLeft + nepPzRowEl.clientWidth / 2;
+    let best = 0, bd = Infinity;
+    pzs.forEach((p, i) => { const d = Math.abs(p.offsetLeft + p.offsetWidth / 2 - mid); if(d < bd){ bd = d; best = i; } });
+    return pzs[best];
+  }
+  function nepPzNudge(pz){
+    if(!pz || nepPzNudged.has(pz) || pz.classList.contains('on')) return;
+    nepPzNudged.add(pz);
+    const fig = pz.querySelector('.nep-pz-fig');
+    fig.classList.remove('nudge'); void fig.offsetWidth; fig.classList.add('nudge');
+    setTimeout(() => fig.classList.remove('nudge'), 1300);
+  }
+  if(nepPzRowEl) nepPzRowEl.addEventListener('scroll', () => {
+    clearTimeout(nepPzScrollT);
+    nepPzScrollT = setTimeout(() => {
+      const c = nepPzCentered();
+      nepPzRowEl.querySelectorAll('.nep-pz.on').forEach(o => { if(o !== c) o.classList.remove('on'); });
+      nepPzNudge(c);
+    }, 160);
+  }, { passive:true });
+  // (lo llama el cuadro a cuadro: la primera, cuando la fila queda centrada en la pantalla)
+  function nepPzFrame(){
+    if(!isMob() || !nepPzRowEl || nepPzNudged.size) return;
+    const top = nepPzRowEl.offsetTop - workCurrent, vh = window.innerHeight;
+    if(Math.abs(top + nepPzRowEl.offsetHeight / 2 - vh / 2) < vh * 0.06) setTimeout(() => nepPzNudge(nepPzCentered()), 250);
+  }
 
   // "Ficha técnica": descarga el PDF de cada prenda (es un botón, no un link,
   // como el resto de la navegación del sitio)
@@ -4469,8 +4793,10 @@
     const vw = window.innerWidth, G = NEP_PH_GAP;
     const ratio = im => im.classList.contains('nep-ph-v') ? 1.5 : 1 / 1.5;   // alto / ancho
     const blocks = [];
+    // (en el celular: tres bloques de dos columnas, para que las fotos se vean más grandes)
+    const mob = isMob();
     nepPhImgs.forEach(im => {
-      const b = +im.dataset.b, c = +im.dataset.c;
+      const b = +(mob ? im.dataset.mb : im.dataset.b), c = +(mob ? im.dataset.mc : im.dataset.c);
       (blocks[b] = blocks[b] || [])[c] = (blocks[b][c] || []).concat(im);
     });
     let y0 = 0;
@@ -4656,6 +4982,25 @@
   }
   if(nepHandBtn) nepHandBtn.addEventListener('click', nepVidOpenFn);
   if(nepVid) nepVid.addEventListener('click', nepVidClose);
+  // celular: con el video abierto, al girar el celular se ve en pantalla completa
+  // (y al volver a ponerlo derecho, sale). Si el navegador no deja pasar a pantalla
+  // completa sin un toque, igual ocupa toda la pantalla (lo hace el CSS)
+  function nepVidOrient(){
+    if(!nepVidOpen || !window.matchMedia('(pointer:coarse)').matches) return;
+    const land = window.innerWidth > window.innerHeight;
+    const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    try{
+      if(land && !fsEl){
+        if(nepVidEl.requestFullscreen) nepVidEl.requestFullscreen().catch(() => {});
+        else if(nepVidEl.webkitEnterFullscreen) nepVidEl.webkitEnterFullscreen();
+      } else if(!land && fsEl){
+        if(document.exitFullscreen) document.exitFullscreen().catch(() => {});
+        else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+      }
+    }catch(e){}
+  }
+  window.addEventListener('orientationchange', () => setTimeout(nepVidOrient, 250));
+  window.addEventListener('resize', nepVidOrient);
   window.addEventListener('keydown', (e) => {
     if(e.key !== 'Escape') return;
     if(nepLbOpen) nepLbClose();
@@ -4704,6 +5049,7 @@
   }
   function nepRestFrame(){
     nepSoftFrame();
+    nepPzFrame();
     nepGlideFrame();
     nepEndFrame();
     nepCollFrame();
@@ -4717,6 +5063,7 @@
     clearTimeout(nepFadeTimer); clearTimeout(nepNavTimer);
     document.querySelectorAll('.nep-card.flipped').forEach(c => c.classList.remove('flipped'));
     document.querySelectorAll('.nep-pz.on').forEach(c => c.classList.remove('on'));
+    nepPzNudged = new Set(); if(nepPzRowEl) nepPzRowEl.scrollLeft = 0;
     nbReset();
     nb.x1aS = nb.x1bS = nb.procS = nb.exitXs = nb.exitSc = nb.exitEm = undefined;
     nbPreload();
@@ -4727,11 +5074,14 @@
     if(document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if(workTrack === nepTrackEl) nepIaLayout(); });
     nepVideoOn = true;   // (la barra del menú queda siempre a la vista)
     try{ nepVideo.currentTime = 0; } catch(e){}
+    nepShotP = -1; nepFrameShot(0);
     clearTimeout(nepVideoTimer);
     nepVideoTimer = setTimeout(() => {
       const pr = nepVideo.play();
       if(pr && pr.catch) pr.catch(() => nepShowTexts());   // si el navegador no lo deja reproducir, sigue igual
       requestAnimationFrame(nepWatch);
+      // encuadre por tomas (celular): cuadro por cuadro si el navegador lo permite
+      if(nepVideo.requestVideoFrameCallback) nepVideo.requestVideoFrameCallback(nepShotLoop);
     }, NEP_VIDEO_DELAY);
   }
   function nepTeardown(){
@@ -4781,7 +5131,9 @@
   const EXPR_CROSS_MS   = 400;                                  // la siguiente sale cuando a esta le faltan estos ms para desaparecer
   const EXPR_STAGGER_MS = EXPR_ACTIVE_MS - EXPR_CROSS_MS;
   const EXPR_GROUP_GAP  = 8;                                    // separacion entre ellas en la formacion de grupo
-  const EXPR_REST_VW    = 66;                                   // centro del espacio libre a la derecha del texto (igual solas o en grupo)
+  const EXPR_REST_VW_D  = 66;                                   // centro del espacio libre a la derecha del texto (igual solas o en grupo)
+  // en el celular las frutas tienen su franja propia (el texto ocupa todo el ancho): frenan en el centro
+  function exprRestVw(){ return isMob() ? 50 : EXPR_REST_VW_D; }
   const EXPR_SHAKE_MS   = 550;                                  // sacudon amigable, no un tironeo robotico
   const EXPR_T_REST     = EXPR_ENTER_MS / EXPR_ACTIVE_MS;
   const EXPR_GROUP_STAGGER_MS = 180;                            // cuanto se escalonan entre si al formar/deshacer el grupo
@@ -4844,7 +5196,7 @@
     const rot = rawNow - atRest + tiltDeg;
     return { x, rot };
   }
-  function exprSoloTarget(widthPx){ return (EXPR_REST_VW / 100) * window.innerWidth - widthPx / 2; }
+  function exprSoloTarget(widthPx){ return (exprRestVw() / 100) * window.innerWidth - widthPx / 2; }
 
   function exprFruitClick(i){
     const now = performance.now();
@@ -4871,7 +5223,7 @@
     exprRoundT0 = now;
     const widths = exprFruitEls.map(el => el.offsetWidth);
     const blockW = widths.reduce((a, b) => a + b, 0) + EXPR_GROUP_GAP * (EXPR_N - 1);
-    let cursor = (EXPR_REST_VW / 100) * window.innerWidth - blockW / 2;
+    let cursor = (exprRestVw() / 100) * window.innerWidth - blockW / 2;
     const slots = widths.map(w => { const L = cursor; cursor += w + EXPR_GROUP_GAP; return L; });
 
     const enterOrder = exprShuffled(EXPR_N), enterRank = [];
@@ -5049,7 +5401,8 @@
   const dfMinis     = document.getElementById('dfMinis');
   const dfMoodImgs  = Array.from(document.querySelectorAll('#dfMoodSrc img'));
 
-  const DF_MOOD_SIZE   = 108;   // tamaño promedio de cada imagen (lado de un cuadrado de igual superficie, en px)
+  const DF_MOOD_SIZE_D = 108;   // tamaño promedio de cada imagen (lado de un cuadrado de igual superficie, en px)
+  const DF_MOOD_SIZE_M = 64;    // en el celular, más chicas
   const DF_MOOD_K      = 0.8;   // velocidad de las imágenes respecto del texto (1 = igual que el texto)
   const DF_FIRST_RIGHT = 5;     // las primeras en aparecer van del lado derecho (el texto está a la izquierda)
   const DF_FIG_RATIO   = 647 / 1833;   // proporción (ancho/alto) del figurín
@@ -5109,8 +5462,9 @@
     const proc = document.getElementById('dfProceso');
     const ptEl = document.getElementById('dfProcesoText');
     proc.style.minHeight = '';
+    if(isMob()) proc.style.minHeight = '0px';
     const extra = Math.max(proc.querySelector('.df-measure p').offsetHeight - ptEl.querySelector('p').offsetHeight, 0);
-    proc.style.minHeight = (ptEl.offsetHeight + extra) + 'px';
+    if(!isMob()) proc.style.minHeight = (ptEl.offsetHeight + extra) + 'px';
     const p1 = box(document.getElementById('dfP1'));
     const p2 = box(document.getElementById('dfP2'));
     const p3 = box(document.getElementById('dfP3'));
@@ -5118,7 +5472,7 @@
     const vd = box(document.getElementById('dfVideo'));
     const ini = box(document.getElementById('dfInicial'));
     dfHeroBottom = ini.b;
-    dfObjTop = ini.t + ini.h * 0.28;   // la cintura del short está al 28% del alto visible de la foto
+    dfObjTop = ini.t + ini.h * (isMob() ? 0.43 : 0.28);   // la cintura del short está al 28% del alto visible de la foto (en el celular, que la muestra entera, al 43%)
     dfVideoTop = vd.t; dfVideoBottom = vd.b;
 
     // ---- fondo ----
@@ -5143,15 +5497,20 @@
     // la primera "nace" a media pantalla, justo cuando el borde difuminado de la
     // portada pasa por ahí; la última termina de irse por arriba justo antes de
     // que el bloque del proceso llegue a ese lugar (así nunca toca los figurines)
+    const mob = isMob(), DF_MOOD_SIZE = mob ? DF_MOOD_SIZE_M : DF_MOOD_SIZE_D;
     const maxH = Math.max(...dfMoodImgs.map(el => DF_MOOD_SIZE / Math.sqrt(el.dataset.w / el.dataset.h)));
     const sStart = p1.t - vh * 1.3;
     const sEnd   = Math.max(ps.t - (vh + maxH) / K - 40, sStart + vh * 0.5);
-    const rightLo = Math.max(p1.r + vw * 0.03, vw * 0.55);
+    // (en el celular los textos ocupan todo el ancho: las primeras van a la mitad derecha)
+    const rightLo = mob ? vw * 0.5 : Math.max(p1.r + vw * 0.03, vw * 0.55);
     const texts = [p1, p2, p3, pt];
     // "núcleo" de cada texto: el párrafo sin una franja fina en sus bordes. Las
     // imágenes pueden rozar esos bordes, pero no meterse en el texto (las de
     // blanco y negro, que son las que más tapan, todavía menos)
-    const cores = texts.map(b => ({ l: b.l + b.w * 0.06, t: b.t + 8, w: b.w * 0.88, h: b.h - 16 }));
+    // (en el celular el núcleo es más angosto y pisarlo cuesta menos: así se reparten
+    // entre los textos, rozándolos apenas, en vez de amontonarse en los espacios vacíos)
+    const ci = mob ? 0.16 : 0.06;
+    const cores = texts.map(b => ({ l: b.l + b.w * ci, t: b.t + (mob ? 14 : 8), w: b.w * (1 - 2 * ci), h: b.h - (mob ? 28 : 16) }));
     // Todas las imágenes suben a la misma velocidad, así que entre ellas forman
     // una "lámina" rígida: la distancia entre dos imágenes no cambia nunca. Se
     // reparten sobre esa lámina con el método del "mejor candidato": para cada
@@ -5207,7 +5566,7 @@
           cores.forEach(cr => {
             const ct = cr.t - sc;
             const reading = ct < vh * 0.9 && ct + cr.h > vh * 0.08;
-            pen += (reading ? (bw ? 40 : 30) : 8) * dfOverlap(x, y, w, h, cr.l, ct, cr.w, cr.h);
+            pen += (reading ? (bw ? 40 : 30) : 8) * (mob ? 0.3 : 1) * dfOverlap(x, y, w, h, cr.l, ct, cr.w, cr.h);
           });
         }
 
@@ -5256,21 +5615,12 @@
   // Devuelve los rectángulos que ocupan (relativos a la sección).
   function dfLayoutMinis(H, vw){
     const fig = document.getElementById('dfFigurin');
+    if(isMob()) return dfLayoutMinisMob(fig);
     const figW = H * DF_FIG_RATIO;
     fig.style.width = figW + 'px';
     const rects = [{ l: vw / 2 - figW / 2, t: 0, w: figW, h: H }];
     if(!dfMinis) return rects;
-    if(dfMinis.children.length !== DF_DESIGNS.length){
-      dfMinis.innerHTML = '';
-      DF_DESIGNS.forEach(d => {
-        const wrap = document.createElement('div');
-        wrap.className = 'df-mini';
-        wrap.addEventListener('click', (e) => { e.stopPropagation(); dfZoomOpen(wrap, d); });
-        wrap.innerHTML = '<img class="df-mini-f" src="assets/dualidad-figurin-' + d.n + '-frente.png" alt="Figurín ' + d.n + ' (frente)">' +
-                         '<img class="df-mini-b" src="assets/dualidad-figurin-' + d.n + '-espalda.png" alt="Figurín ' + d.n + ' (espalda)">';
-        dfMinis.appendChild(wrap);
-      });
-    }
+    if(dfMinis.children.length !== DF_DESIGNS.length) dfLayoutMinis.build();
     // una sola fila, ocupando todo el ancho libre a la izquierda del figurín
     // central; la separación entre diseños es la que tenían en la fila de
     // arriba de la versión anterior (en px). Apoyados sobre la misma línea de
@@ -5296,6 +5646,48 @@
     rects.push({ l: spaceL, t: y0, w: x - gapX - spaceL, h: h });
     return rects;
   }
+
+  // celular: el figurín grande ocupa su pantalla (lo maneja el CSS) y los otros cinco
+  // van en una fila que se desliza de costado, todos a la misma escala; arranca en el
+  // medio, así hay diseños para ver hacia los dos lados. Las imágenes del moodboard
+  // ya se fueron antes de que llegue el proceso: no hace falta cuidar que no los toquen
+  function dfLayoutMinisMob(fig){
+    fig.style.width = '';
+    if(dfMinis && dfMinis.children.length !== DF_DESIGNS.length) dfLayoutMinis.build();
+    if(!dfMinis) return [];
+    const h = dfMinis.clientHeight || window.innerHeight * 0.34;
+    Array.from(dfMinis.children).forEach((el, k) => {
+      const d = DF_DESIGNS[k];
+      el.style.left = el.style.top = '';
+      el.style.width = (Math.max(d.f, d.b) * h) + 'px';
+      el.style.height = h + 'px';
+    });
+    requestAnimationFrame(() => { dfMinis.scrollLeft = (dfMinis.scrollWidth - dfMinis.clientWidth) / 2; });
+    return [];
+  }
+
+  // celular: con un toque, el video se ve en pantalla completa
+  if(dfVideo) dfVideo.addEventListener('click', () => {
+    if(!isMob()) return;
+    const v = dfVideo;
+    try{
+      if(v.requestFullscreen) v.requestFullscreen().catch(() => {});
+      else if(v.webkitEnterFullscreen) v.webkitEnterFullscreen();      // iPhone
+      else if(v.webkitRequestFullscreen) v.webkitRequestFullscreen();
+    }catch(e){}
+  });
+
+  dfLayoutMinis.build = function(){
+    dfMinis.innerHTML = '';
+    DF_DESIGNS.forEach(d => {
+      const wrap = document.createElement('div');
+      wrap.className = 'df-mini';
+      wrap.addEventListener('click', (e) => { e.stopPropagation(); dfZoomOpen(wrap, d); });
+      wrap.innerHTML = '<img class="df-mini-f" src="assets/dualidad-figurin-' + d.n + '-frente.png" alt="Figurín ' + d.n + ' (frente)">' +
+                       '<img class="df-mini-b" src="assets/dualidad-figurin-' + d.n + '-espalda.png" alt="Figurín ' + d.n + ' (espalda)">';
+      dfMinis.appendChild(wrap);
+    });
+  };
 
   // ---- figurín ampliado ----
   const dfZoom    = document.getElementById('dfZoom');
@@ -5579,12 +5971,18 @@
     const vh = window.innerHeight;
     const trackH = workTrack === dfTrackEl ? workTrack.offsetHeight : workTrack.scrollHeight;
     workMax = Math.max(trackH - vh, 0);
-    if(workTrack === exprTrackEl){
+    if(workTrack === exprTrackEl && !isMob()){     // (en el celular las fotos van una debajo de otra: el tope es el final)
       const fin = workTrack.querySelector('.expr-finals');
       if(fin) workMax = Math.max(fin.offsetTop + fin.offsetHeight / 2 - vh / 2, 0);
     }
   }
   window.addEventListener('resize', () => { if(root.classList.contains('work-open')){ nepLayout(); measureWork(); sizeAlbSlot(ALB_RATIO); drawExprArrow(); dfLayout(); } });
+  // las fotos que todavía no cargaron no ocupan lugar: cuando cada una termina de
+  // cargar, se vuelve a medir el tope (si no, en una conexión lenta, como en el
+  // celular, el final quedaba corto y la última foto no se alcanzaba a ver)
+  document.querySelectorAll('.work-track img').forEach(im => {
+    if(!im.complete) im.addEventListener('load', () => { if(workTrack && workTrack.contains(im)) measureWork(); });
+  });
 
   window.addEventListener('wheel', (e) => {
     if(!panel.classList.contains('open') || !panel.classList.contains('show-work')) return;
@@ -5621,6 +6019,49 @@
     workTarget = nt;
   }, { passive:false });
 
+  // ---- Celular: el dedo hace lo mismo que la ruedita ----
+  // En los trabajos y en "Sobre mí", deslizar el dedo para arriba o para abajo
+  // manda los mismos movimientos que la ruedita del mouse, así se conserva todo
+  // (el peso, lo que se acomoda solo, el cuaderno, "[ Ver video ]"). Al soltar,
+  // sigue un poco por inercia y frena, como en cualquier celular. Solo cuenta el
+  // movimiento vertical: lo que se desliza de costado (prendas, figurines) no se toca
+  (function(){
+    let tx = null, ty = null, axis = 0, rec = [], raf = 0;
+    const active = () => panel.classList.contains('open') && (panel.classList.contains('show-work') || panel.classList.contains('show-about'));
+    const fire = dy => window.dispatchEvent(new WheelEvent('wheel', { deltaY: dy, deltaMode: 0, cancelable: true }));
+    window.addEventListener('touchstart', (e) => {
+      if(!active() || e.touches.length !== 1) return;
+      cancelAnimationFrame(raf);
+      tx = e.touches[0].clientX; ty = e.touches[0].clientY; axis = 0; rec = [];
+    }, { passive:true });
+    window.addEventListener('touchmove', (e) => {
+      if(!active() || ty === null) return;
+      const x = e.touches[0].clientX, y = e.touches[0].clientY;
+      if(!axis){
+        if(Math.abs(x - tx) < 6 && Math.abs(y - ty) < 6) return;
+        axis = Math.abs(y - ty) >= Math.abs(x - tx) ? 1 : 2;     // 1 vertical, 2 de costado
+      }
+      if(axis !== 1) return;
+      e.preventDefault();
+      const dy = ty - y; tx = x; ty = y;
+      if(!dy) return;
+      const now = performance.now();
+      rec.push([now, dy]);
+      while(rec.length && now - rec[0][0] > 110) rec.shift();
+      fire(dy);
+    }, { passive:false });
+    window.addEventListener('touchend', () => {
+      if(ty === null) return;
+      ty = null;
+      if(axis !== 1) return;
+      const now = performance.now(), r = rec.filter(a => now - a[0] < 110);
+      if(!r.length) return;
+      let v = r.reduce((sum, a) => sum + a[1], 0) / Math.max(now - r[0][0], 16) * 16;   // px por cuadro
+      const step = () => { v *= 0.95; if(Math.abs(v) < 0.6) return; fire(v); raf = requestAnimationFrame(step); };
+      raf = requestAnimationFrame(step);
+    }, { passive:true });
+  })();
+
   const smbVeil   = document.getElementById('smbVeil');
   const smbCursor = document.getElementById('smbCursor');
   window.addEventListener('mousemove', (e) => {
@@ -5634,6 +6075,28 @@
       exprGeoHint.style.top  = mouseY + 'px';
     }
   });
+
+  // celular: el aura del texto conceptual sigue al dedo (aparece donde se apoya y lo
+  // sigue); al soltar, se queda un momento y se apaga despacio
+  let smbAuraOff = null;
+  function smbAuraTouch(e){
+    if(!smbVeil || !e.touches.length) return;
+    mouseX = e.touches[0].clientX; mouseY = e.touches[0].clientY;
+    cancelAnimationFrame(smbAuraOff); smbAuraOff = null;
+    smbVeil.style.setProperty('--smb-r', '190px');
+  }
+  window.addEventListener('touchstart', smbAuraTouch, { passive:true });
+  window.addEventListener('touchmove', smbAuraTouch, { passive:true });
+  window.addEventListener('touchend', () => {
+    if(!smbVeil) return;
+    const t0 = performance.now() + 650;          // se queda un momento
+    const fade = (now) => {
+      const u = Math.min(Math.max((now - t0) / 1100, 0), 1);
+      smbVeil.style.setProperty('--smb-r', (190 * (1 - u * u * (3 - 2 * u))).toFixed(1) + 'px');
+      smbAuraOff = u < 1 ? requestAnimationFrame(fade) : null;
+    };
+    smbAuraOff = requestAnimationFrame(fade);
+  }, { passive:true });
 
   // ---- foto final ampliada ----
   const smbLb    = document.getElementById('smbLightbox');
@@ -5666,15 +6129,17 @@
   if(smbLb) smbLb.addEventListener('click', closeLightbox);
   document.querySelectorAll('.smb-final').forEach(sec => {
     sec.addEventListener('click', () => {
-      if(lbOpen) return;
+      if(lbOpen || isMob()) return;     // en el celular las fotos finales no se amplían
       openLightbox(sec.querySelector('img'));
     });
   });
 
   const workHomeBtn = document.getElementById('workHome');
   if(workHomeBtn) workHomeBtn.addEventListener('click', () => {
-    if(workLeaving) return;
-    workLeaving = true;
+    // (también se usa al final de "Sobre mí")
+    const fromAbout = panel.classList.contains('show-about');
+    if(workLeaving && !fromAbout) return;
+    if(!fromAbout) workLeaving = true;
     workHomeBtn.classList.remove('show');
     workHomeBtn.blur();
     sectionTransition(goHome, root.classList.contains('work-dark'));
@@ -5816,7 +6281,13 @@
 
         finalParts.forEach(f => {
           const top = f.offsetTop - workCurrent;
-          const t = Math.min(Math.max((vh * 1.05 - top) / (vh * 0.8), 0), 1);
+          let t = Math.min(Math.max((vh * 1.05 - top) / (vh * 0.8), 0), 1);
+          // celular: salen del negro más de a poco (un recorrido más largo y una curva suave)
+          if(isMob()){
+            // (y al llegar al final del trabajo ya está entera, aunque no quede tanto recorrido)
+            const span = Math.max(Math.min(vh * 0.95, vh * 1.02 - (f.offsetTop - workMax)), 1);
+            t = Math.min(Math.max((vh * 1.02 - top) / span, 0), 1); t = t * t * (3 - 2 * t);
+          }
           f.style.opacity = t;
         });
       }
