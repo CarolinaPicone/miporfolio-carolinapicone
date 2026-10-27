@@ -700,7 +700,7 @@
   .nep-hand.on{ display:block; }
   .nep-hand-img{ position:absolute; left:50%; top:50%; width:min(44vw, 760px); height:auto; display:block;
     opacity:0; transform:translate(-50%,calc(-50% + 8px)); filter:brightness(0) blur(9px);
-    transition:opacity 2.6s cubic-bezier(.45,0,.35,1), transform 3s cubic-bezier(.25,.6,.25,1), filter 2.8s cubic-bezier(.4,0,.3,1); }
+    transition:opacity 1.4s cubic-bezier(.45,0,.35,1), transform 1.8s cubic-bezier(.25,.6,.25,1), filter 1.6s cubic-bezier(.4,0,.3,1); }
   /* aparece muy sutil, sin golpe: de difuminado a nítido, de a poco, subiendo apenas */
   .nep-hand.in .nep-hand-img{ opacity:.92; transform:translate(-50%,-50%); filter:brightness(0) blur(0); }
   /* el video: aparece sutil sobre negro; al terminar (o con un click) se funde en blanco */
@@ -4516,7 +4516,7 @@
     nepEndLayout();
     workTarget = workCurrent = workMax;
     nepEnd.target = 1; nepEnd.open = 1;
-    if(first){ nepHandSec.classList.remove('in'); void nepHandSec.offsetWidth; setTimeout(() => nepHandSec.classList.add('in'), 600); }
+    if(first){ nepHandSec.classList.remove('in'); void nepHandSec.offsetWidth; setTimeout(() => nepHandSec.classList.add('in'), 400); }
   }
   function nepHandHide(){
     nepHand.on = false;
