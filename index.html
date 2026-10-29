@@ -779,7 +779,9 @@
     .nep-coll-text{ position:relative; top:auto; left:8vw; transform:none; width:78vw; max-width:none; margin-top:5svh; }
     .nep-pz-row{ display:block; overflow:hidden; margin-top:10svh; touch-action:none; user-select:none; -webkit-user-select:none;
       --pz-k: min(calc(74vw / (496 * 1.3)), calc(52svh / 795)); }
-    .nep-pz{ position:absolute; left:0; top:0; width:100vw !important; height:100%; will-change:transform; }
+    .nep-pz{ position:absolute; left:0; top:0; width:100vw !important; height:100%; will-change:transform;
+      /* cada prenda, centrada en alto en la pantalla (en la compu, arriba y abajo arrancan a la misma altura) */
+      --pz-top: calc(50svh - var(--pz-k) * var(--gh) / 2); --pz-d: min(30svh, calc(var(--pz-top) - var(--nav-h) - 10px)); }
     .nep-pz img{ -webkit-user-drag:none; user-select:none; }
     .nep-pz-fig{ left:calc(50% - var(--pz-k) * var(--gw) * .65); width:calc(var(--pz-k) * var(--gw) * 1.3); }
     .nep-pz-text, .nep-pz:last-child .nep-pz-text{ left:calc(50% - var(--pz-k) * var(--gw) * .65); width:calc(var(--pz-k) * var(--gw) * 1.3); }
@@ -1152,10 +1154,12 @@
     .expr-fruits{ position:relative; inset:auto; height:120px; margin-bottom:3svh; order:-1; }
     /* más chicas: cuando se juntan las siete entran enteras en la pantalla */
     .expr-fruit{ height:62px; }
-    /* la intro ocupa una pantalla completa: el texto arriba (como estaba) y los chicos
-       abajo, alineados a la derecha; el título en dos renglones ("Un Mundo" / "para Exprimir") */
-    .expr-inicial{ min-height:100svh; display:flex; flex-direction:column; box-sizing:border-box; padding-bottom:4svh; }
-    .expr-inicial .expr-panel{ width:84vw; margin-top:auto; margin-left:auto; margin-right:0; }
+    /* la intro ocupa una pantalla completa: el texto (alineado a la izquierda) y los chicos
+       (alineados a la derecha) juntos y centrados en alto; el título en dos renglones
+       ("Un Mundo" / "para Exprimir") */
+    .expr-inicial{ min-height:100svh; display:flex; flex-direction:column; justify-content:center; box-sizing:border-box; padding:var(--nav-h) 0 0; }
+    .expr-inicial .expr-inicial-text{ padding-top:0; }
+    .expr-inicial .expr-panel{ width:84vw; margin-top:6svh; margin-left:auto; margin-right:0; }
     .br-m{ display:inline; }
     .expr-bocetos{ overflow:hidden; }
     .expr-bocetos > img{ width:112vw; }
@@ -1736,7 +1740,7 @@
 
           <!-- 4. VIDEO a todo el ancho -->
           <section class="df-video" id="dfVideoSec">
-            <video id="dfVideo" src="assets/dualidad-video.mp4" playsinline preload="auto"></video>
+            <video id="dfVideo" src="assets/dualidad-video.mp4" playsinline preload="metadata"></video>
           </section>
 
           <div class="df-gap" style="height:50svh"></div>
@@ -2220,7 +2224,7 @@
   }
 
   // celular (hasta 760px de ancho): la esfera y los recuadros, a la medida de la pantalla
-  function isMob(){ return window.matchMedia('(max-width:760px)').matches; }
+  function isMob(){ return (isMob.mq || (isMob.mq = window.matchMedia('(max-width:760px)'))).matches; }   // (la consulta se arma una sola vez: preguntarla es muy barato)
   function sphRadius(){
     if(isMob()) return window.innerWidth * 0.42;
     return Math.min(Math.max(window.innerWidth * 0.2333, 219), 416);   // otro 10% más chica (antes 25.92vw, entre 243 y 462; antes 28.8vw; al principio 32vw)
@@ -3184,6 +3188,7 @@
   function lhMove(e){
     if(!lh || lh.done) return;
     const on = lhInside(e.clientX, e.clientY);
+    lh.hover = on;
     lh.target = on ? LH_SCALE : 1;
     loader.style.cursor = on ? 'pointer' : '';
   }
@@ -3214,8 +3219,18 @@
       lh = null;
     }, LH_FADE_MS);
   }
-  function lhFrame(){
+  // mientras espera el click (y sin el cursor encima), el logo "late" cada 2.5s: se
+  // levanta como al pasar el cursor, un poco menos, y vuelve (así se nota que hay que tocarlo)
+  const LH_BEAT_EVERY = 2500, LH_BEAT_MS = 1100, LH_BEAT_FIRST = 1200;
+  function lhFrame(now){
     if(!lh || lh.done) return;
+    if(!lh.hover){
+      if(!lh.t0) lh.t0 = now;
+      const el = (now || performance.now()) - lh.t0 - LH_BEAT_FIRST;
+      const q = el > 0 ? (el % LH_BEAT_EVERY) / LH_BEAT_MS : 1;
+      const bump = q < 1 ? Math.pow(Math.sin(Math.PI * q), 2) : 0;
+      lh.target = 1 + (LH_SCALE - 1) * 0.85 * bump;
+    }
     lh.s += (lh.target - lh.s) * LH_LERP;
     if(Math.abs(lh.target - lh.s) < 0.0004) lh.s = lh.target;
     if(lh.s !== lh.drawn){
@@ -4091,12 +4106,16 @@
     const START_SHIFT_LEFT = 16, START_SHIFT_DOWN = START_SHIFT_LEFT * 2;
     const baseX1 = (b.left - tr.left) + b.width * 0.25 - START_SHIFT_LEFT;
     const marginPx = Math.min(Math.max(20, window.innerWidth * 0.04), 56);
-    const x1 = (baseX1 + marginPx) / 2;
-    const y1 = (b.top  - tr.top ) + b.height * 0.75 + START_SHIFT_DOWN;
+    let x1 = (baseX1 + marginPx) / 2;
+    let y1 = (b.top  - tr.top ) + b.height * 0.75 + START_SHIFT_DOWN;
     // llegada: apenas afuera del borde izquierdo del geometral, en su parte alta
     let x2 = (g.left - tr.left) - 18;
     let y2 = (g.top  - tr.top ) + g.height * 0.14;
     const mob = isMob();
+    // celular: sale del costado derecho del prototipo boceteado (el jardinero de la
+    // zanahoria, abajo a la izquierda de la hoja: su espalda termina al 23% del ancho de la
+    // hoja, y su mitad de alto está al 69%)
+    if(mob){ x1 = (b.left - tr.left) + b.width * 0.238; y1 = (b.top - tr.top) + b.height * 0.69; }
     // celular: llega desde arriba al centro (de ancho) de la prenda de la izquierda,
     // apenas por encima de los breteles
     if(mob){ x2 = (g.left - tr.left) + g.width * 0.233; y2 = (g.top - tr.top) + g.height * 0.048 - 12; }
@@ -5827,7 +5846,7 @@
     const Yt = Math.min(vh + (p3.b - vh) * K, Yb - 1);
     const spreadAt = (Y) => {
       const t = Math.min(Math.max((Y - Yt) / (Yb - Yt), 0), 1);
-      return 1 + (isMob() ? 0.35 : 0.15) * t * t * (3 - 2 * t);   // (celular: a mitad de camino con el 55% de antes)
+      return 1 + (mob ? 0.35 : 0.15) * t * t * (3 - 2 * t);   // (celular: a mitad de camino con el 55% de antes)
     };
     const placed = [];
     dfMood = [];
@@ -6118,6 +6137,8 @@
   // el video arranca siempre (aunque el navegador no deje reproducir con sonido sin
   // que antes se haya tocado la página): si ya se tocó, con sonido; si no, sin sonido.
   // Si a los 1.2s todavía no arrancó (algunos navegadores lo frenan), se reintenta sin sonido
+  // (en la compu se precarga entero; en el celular no, para no cargar 12MB de entrada)
+  if(dfVideo && !isMob()) dfVideo.preload = 'auto';
   function dfStartVideo(){
     const v = dfVideo;
     const active = !navigator.userActivation || navigator.userActivation.hasBeenActive;
