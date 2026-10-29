@@ -47,8 +47,8 @@
      apaga el texto y el cursor lo "ilumina". El aura es más chica (100px de
      radio, contra 190px en Sombrerera) porque acá es una sola frase */
   .loader-veil{ position:absolute; inset:0; z-index:3; pointer-events:none; background:#000; opacity:.62;
-    -webkit-mask-image: radial-gradient(circle 100px at var(--lv-mx,-500px) var(--lv-my,-500px), transparent 0%, rgba(0,0,0,.45) 55%, #000 100%);
-    mask-image: radial-gradient(circle 100px at var(--lv-mx,-500px) var(--lv-my,-500px), transparent 0%, rgba(0,0,0,.45) 55%, #000 100%);
+    -webkit-mask-image: radial-gradient(circle var(--lv-r,100px) at var(--lv-mx,-500px) var(--lv-my,-500px), transparent 0%, rgba(0,0,0,.45) 55%, #000 100%);
+    mask-image: radial-gradient(circle var(--lv-r,100px) at var(--lv-mx,-500px) var(--lv-my,-500px), transparent 0%, rgba(0,0,0,.45) 55%, #000 100%);
     transition:opacity .8s ease; }
   .loader-veil.gone{ opacity:0; }
   #loaderCanvas{ position:absolute; inset:0; width:100%; height:100%; display:none; z-index:1; }
@@ -657,6 +657,7 @@
      a la izquierda; al abrir el cuaderno se van (se funden) en vez de correrse */
   @media (max-width:760px){
     .nep-bt1a, .nep-bt1b{ width:78vw; transition:opacity .6s ease; }
+    .nep-bt1b{ width:64vw; }   /* los otros dos párrafos, del lado derecho: a la izquierda asoma el cuaderno */
     .nep-book-hint{ display:none; }
   }
   .nep-bt1-wrap{ position:absolute; inset:0; pointer-events:none; }
@@ -765,7 +766,10 @@
        desliza de costado (la maneja el JS: ver nepPzFrame). Al tocar una, se mueve como
        en la compu y aparece su texto con la ficha técnica */
   @media (max-width:760px){
-    .nep{ --nep-ini-g: 36svh; }   /* celular: el degradé al blanco más corto */
+    /* celular: el color liso de la foto llega justo hasta el final de la primera pantalla y
+       ahí mismo arranca el degradé al blanco, más largo */
+    .nep{ --nep-ini-g: 52svh; }
+    .nep-ini-bg{ background:linear-gradient(to bottom, rgb(180,173,155) 0, rgb(180,173,155) calc(100svh + var(--nep-ini-g) * 0.000), rgb(181,175,157) calc(100svh + var(--nep-ini-g) * 0.083), rgb(186,179,162) calc(100svh + var(--nep-ini-g) * 0.167), rgb(192,186,171) calc(100svh + var(--nep-ini-g) * 0.250), rgb(199,194,181) calc(100svh + var(--nep-ini-g) * 0.333), rgb(208,204,193) calc(100svh + var(--nep-ini-g) * 0.417), rgb(218,214,205) calc(100svh + var(--nep-ini-g) * 0.500), rgb(227,224,217) calc(100svh + var(--nep-ini-g) * 0.583), rgb(236,234,229) calc(100svh + var(--nep-ini-g) * 0.667), rgb(243,242,239) calc(100svh + var(--nep-ini-g) * 0.750), rgb(249,249,248) calc(100svh + var(--nep-ini-g) * 0.833), rgb(254,253,253) calc(100svh + var(--nep-ini-g) * 0.917), rgb(255,255,255) calc(100svh + var(--nep-ini-g) * 1.000)); }
     /* bocetos más grandes: pisan un poco el texto, así que del lado izquierdo se funden */
     .nep-proc-img{ -webkit-mask-image:linear-gradient(to bottom, #000 72%, transparent 100%), linear-gradient(to right, transparent 0, #000 42%);
       mask-image:linear-gradient(to bottom, #000 72%, transparent 100%), linear-gradient(to right, transparent 0, #000 42%);
@@ -773,15 +777,15 @@
     .nep-coll{ height:auto; padding:6svh 0; }
     .nep-coll-img{ position:relative; top:auto; left:8vw; transform:none; width:84vw; --coll-w:84vw; }   /* con márgenes a los costados (los del texto) */
     .nep-coll-text{ position:relative; top:auto; left:8vw; transform:none; width:78vw; max-width:none; margin-top:5svh; }
-    .nep-pz-row{ display:block; overflow:hidden; touch-action:none; user-select:none; -webkit-user-select:none;
+    .nep-pz-row{ display:block; overflow:hidden; margin-top:10svh; touch-action:none; user-select:none; -webkit-user-select:none;
       --pz-k: min(calc(74vw / (496 * 1.3)), calc(52svh / 795)); }
     .nep-pz{ position:absolute; left:0; top:0; width:100vw !important; height:100%; will-change:transform; }
     .nep-pz img{ -webkit-user-drag:none; user-select:none; }
     .nep-pz-fig{ left:calc(50% - var(--pz-k) * var(--gw) * .65); width:calc(var(--pz-k) * var(--gw) * 1.3); }
     .nep-pz-text, .nep-pz:last-child .nep-pz-text{ left:calc(50% - var(--pz-k) * var(--gw) * .65); width:calc(var(--pz-k) * var(--gw) * 1.3); }
-    .nep-pz-fig.nudge{ animation:pzNudge .7s cubic-bezier(.45,0,.25,1); }
+    .nep-pz-fig.nudge{ animation:pzNudge 1.3s cubic-bezier(.45,0,.35,1); }
   }
-  @keyframes pzNudge{ 0%{ transform:translateY(0); } 38%{ transform:translateY(-12px); } 100%{ transform:translateY(0); } }
+  @keyframes pzNudge{ 0%{ transform:translateY(0); } 42%{ transform:translateY(-7px); } 100%{ transform:translateY(0); } }
 
   /* ---- 7. FOTOS ---- */
   /* sobre blanco, de borde a borde, separadas 10px (como las fotos finales de Un Mundo para Exprimir).
@@ -979,24 +983,23 @@
     .df-inicial{ aspect-ratio:auto; height:100svh; }
     .df-hero{ width:100%; height:100%; aspect-ratio:auto; margin-top:0; object-fit:cover; object-position:50% 50%; }
     .df-head{ top:40.5%; }
-    /* servicios en gris oscuro, sobre la parte lisa de la pierna derecha del short (es la
-       zona más pareja de la foto: sobre el muelle, las rayas los hacían perder). Se ubican
-       en coordenadas de la foto (2841×3386, recortada a los costados), así quedan en el
-       mismo lugar de la prenda en cualquier celular */
-    .df-inicial{ --dfs:max(calc(100vw / 2841), calc(100svh / 3386)); }
-    .df-roles{ left:auto; right:calc(50vw - 410 * var(--dfs)); top:calc(50% + 205 * var(--dfs)); bottom:auto; transform:none; text-align:right; color:#4a463f; }
+    /* servicios en gris oscuro, en el margen derecho, un poco más arriba que el borde */
+    .df-roles{ left:auto; right:20px; top:auto; bottom:calc(26px + 7svh); transform:none; text-align:right; color:#4a463f; }
+    /* el espacio después del concepto, a mitad de camino entre el de antes (150) y el de la compu (80) */
+    #dfMoodGap{ height:115svh !important; }
     .df-cgap{ height:58svh; }
     .df-proceso{ flex-direction:column; align-items:stretch; min-height:0 !important; }
     .df-proceso .df-measure{ display:none; }
     .df-proceso .df-text{ display:contents; }
     .df-proceso .df-text p{ margin:0 var(--df-m) 1.25em; width:auto; }
     /* el primer párrafo, más angosto, y el figurín entran juntos en una pantalla */
-    .df-proceso .df-text p:nth-child(1){ order:1; text-align:center; width:66vw; margin:10svh auto 0; }
+    .df-proceso .df-text p:nth-child(1){ order:1; text-align:center; width:75vw; margin:10svh auto 0; }
     .df-figurin{ order:2; position:relative; left:auto; transform:none; height:64svh; margin:4.5svh auto 10svh; width:auto !important; }
     .df-minis{ order:3; position:relative; display:flex; gap:26px; height:34svh; width:100vw; overflow-x:auto; overflow-y:hidden;
-      padding:0 50vw; box-sizing:border-box; pointer-events:auto; touch-action:pan-x; scrollbar-width:none; -webkit-overflow-scrolling:touch; margin:6svh 0 5svh; }
+      padding:0; box-sizing:border-box; pointer-events:auto; touch-action:pan-x; scrollbar-width:none; -webkit-overflow-scrolling:touch; margin:6svh 0 5svh; }
     .df-minis::-webkit-scrollbar{ display:none; }
     .df-mini{ position:relative; flex:none; left:auto !important; top:auto !important; height:100% !important; }
+    .df-mini-rep{ margin-left:16px; }   /* entre tanda y tanda, apenas más espacio */
     .df-proceso .df-text p:nth-child(2){ order:4; }
     .df-proceso .df-text p:nth-child(3){ order:5; margin-bottom:0; }
     .df-video video{ width:92vw; cursor:pointer; }
@@ -1036,6 +1039,7 @@
   /* ---- 1. INICIAL: datos a la izquierda (al doble del margen), panel de figurines abajo a la derecha ---- */
   .expr-inicial{ min-height:100svh; }
   .expr-inicial-text{ position:absolute; left:calc(var(--expr-m) * 3); top:30%; text-align:left; max-width:min(44ch,50vw); }
+  .br-m{ display:none; }   /* salto de renglón solo en el celular */
   .expr-title{ font-size:clamp(34px,4.6vw,64px); font-weight:500; line-height:1.02; letter-spacing:-.015em; color:var(--ink); }
   .expr-sub{ margin-top:14px; font-size:clamp(13px,1.25vw,15px); color:var(--stone); }
   .expr-sub em{ font-style:normal; color:var(--ink); }
@@ -1147,7 +1151,12 @@
     .expr-fruits-part{ flex-direction:column; align-items:stretch; padding:4svh 0 10svh; }
     .expr-fruits{ position:relative; inset:auto; height:120px; margin-bottom:3svh; order:-1; }
     /* más chicas: cuando se juntan las siete entran enteras en la pantalla */
-    .expr-fruit{ height:56px; }
+    .expr-fruit{ height:62px; }
+    /* la intro ocupa una pantalla completa: el texto arriba (como estaba) y los chicos
+       abajo, alineados a la derecha; el título en dos renglones ("Un Mundo" / "para Exprimir") */
+    .expr-inicial{ min-height:100svh; display:flex; flex-direction:column; box-sizing:border-box; padding-bottom:4svh; }
+    .expr-inicial .expr-panel{ width:84vw; margin-top:auto; margin-left:auto; margin-right:0; }
+    .br-m{ display:inline; }
     .expr-bocetos{ overflow:hidden; }
     .expr-bocetos > img{ width:112vw; }
     .expr-bocetos .expr-text{ position:relative; top:auto; right:auto; z-index:4; padding:6svh 0 4svh; margin-bottom:42svh; }
@@ -1288,6 +1297,10 @@
   .panel.open .ci-slide{ animation: ciSlide .85s cubic-bezier(.22,1,.36,1) forwards; }
 
   /* zoom del logo en contacto */
+  /* Contacto: el zoom del logo se dibuja en este lienzo, con el trazo vectorial en cada
+     cuadro (nítido durante todo el recorrido, no solo al final) */
+  #contactCanvas{ position:absolute; inset:0; width:100%; height:100%; display:none; pointer-events:none; }
+  #contactCanvas.on{ display:block; }
   .logo3d.zoom{ transition: transform 3400ms cubic-bezier(.165,.84,.44,1); }   /* un poco más rápido que antes (4200ms) */
 
 
@@ -1723,7 +1736,7 @@
 
           <!-- 4. VIDEO a todo el ancho -->
           <section class="df-video" id="dfVideoSec">
-            <video id="dfVideo" src="assets/dualidad-video.mp4" playsinline preload="metadata"></video>
+            <video id="dfVideo" src="assets/dualidad-video.mp4" playsinline preload="auto"></video>
           </section>
 
           <div class="df-gap" style="height:50svh"></div>
@@ -1749,7 +1762,7 @@
           <!-- 1. INICIAL -->
           <section class="expr-part expr-inicial">
             <div class="expr-inicial-text">
-              <h1 class="expr-title">Un Mundo para Exprimir</h1>
+              <h1 class="expr-title">Un Mundo <br class="br-m">para Exprimir</h1>
               <div class="expr-sub"><span data-es><em>Colecci&oacute;n de Indumentaria</em> &nbsp;2025</span><span data-en><em>Apparel Collection</em> &nbsp;2025</span></div>
               <div class="expr-roles">
                 <span data-es>Desarrollo Conceptual<br>Desarrollo de Colecci&oacute;n</span>
@@ -2024,6 +2037,7 @@
       <img src="assets/logo.svg" alt="Carolina Picone" class="l3d-base">
     </div>
   </div>
+  <canvas id="contactCanvas"></canvas>
   <div class="about-copyright-caption" id="aboutCopyrightCaption">© 2026 Carolina Picone</div>
 </div>
 
@@ -2730,6 +2744,7 @@
 
   function startAboutSpin(){
     aboutSpinStart = performance.now();
+    resetLogoTransform();   // (si viene de Contacto: el logo vuelve a su tamaño, sin el zoom)
     if(logo3d){
       resetLogoDepth(); // vuelve el grosor a su estado original, sin transición
       logo3d.classList.remove('spin');
@@ -2822,22 +2837,20 @@
     logo3d.classList.remove('spin');
     flattenLogoDepth(350);
     logo3d.classList.add('zoom');
-    logo3d.style.transform = 'translate(-50%, -50%) scale(1)';
-    void logo3d.offsetWidth;
-    requestAnimationFrame(() => {
-      logo3d.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(${s})`;
-    });
-    // al terminar el zoom, el logo pasa a medir de verdad lo que se ve (en vez de
-    // estar "estirado" con scale): así el navegador lo vuelve a dibujar nítido
-    const w0 = logo3d.offsetWidth;
-    logo3d._crisp = setTimeout(() => {
-      if(!logo3d.classList.contains('zoom')) return;
-      logo3d.style.transition = 'none';
-      logo3d.style.width = (w0 * s) + 'px';
-      logo3d.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(1)`;
+    if(logoPath){
+      // el logo se dibuja en el lienzo con su trazo vectorial, cuadro a cuadro, con la
+      // misma curva y el mismo recorrido que tenía el zoom con scale
+      cz = { s, dx, dy, w0: logo3d.offsetWidth, h0, t0: performance.now(), b: null };
+      contactCanvas.classList.add('on');
+      czFrame(performance.now());
+      logo3d.style.visibility = 'hidden';
+    } else {
+      logo3d.style.transform = 'translate(-50%, -50%) scale(1)';
       void logo3d.offsetWidth;
-      logo3d.style.transition = '';
-    }, 3450);
+      requestAnimationFrame(() => {
+        logo3d.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(${s})`;
+      });
+    }
     setTimeout(() => { document.documentElement.classList.add('contact-nav-white'); }, 2100);
     setTimeout(() => { panel.classList.add('contact-ready'); }, 2500);   // el texto aparece antes (antes 3.3s)
   }
@@ -2848,7 +2861,61 @@
     clearTimeout(logo3d._crisp);
     logo3d.style.width = '';
     logo3d.style.transform = '';
+    logo3d.style.visibility = '';
+    cz = null; cancelAnimationFrame(czRAF);
+    contactCanvas.classList.remove('on');
   }
+
+  // ---- Contacto: el zoom dibujado en el lienzo ----
+  const contactCanvas = document.getElementById('contactCanvas');
+  const CZ_MS = 3400, CZ_COLOR = '#312b2a';
+  let cz = null, czRAF = 0;
+  // curvas como las de CSS (cubic-bezier)
+  function cssBez(x1, y1, x2, y2){
+    const bx = t => 3 * x1 * t * (1 - t) * (1 - t) + 3 * x2 * t * t * (1 - t) + t * t * t;
+    const by = t => 3 * y1 * t * (1 - t) * (1 - t) + 3 * y2 * t * t * (1 - t) + t * t * t;
+    return x => { if(x <= 0) return 0; if(x >= 1) return 1; let lo = 0, hi = 1; for(let k = 0; k < 26; k++){ const m = (lo + hi) / 2; if(bx(m) < x) lo = m; else hi = m; } return by((lo + hi) / 2); };
+  }
+  const czEase = cssBez(.165, .84, .44, 1);
+  const czBounceEase = cssBez(.34, 1.56, .64, 1);
+  function czFrame(now){
+    if(!cz) return;
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const dpr = Math.min(window.devicePixelRatio || 1, 3);
+    const W = Math.round(vw * dpr), H = Math.round(vh * dpr);
+    if(contactCanvas.width !== W || contactCanvas.height !== H){ contactCanvas.width = W; contactCanvas.height = H; }
+    const t = Math.min((now - cz.t0) / CZ_MS, 1), e = czEase(t);
+    let sc = 1 + (cz.s - 1) * e;
+    // el rebote (al volver a tocar "Contacto" estando ahí)
+    if(cz.b){
+      const u = (now - cz.b) / 140;
+      if(u < 1) sc *= 1 - 0.015 * czBounceEase(u);
+      else if(u < 3) sc *= 1 - 0.015 * (1 - czBounceEase((u - 1) / 2));
+      else cz.b = null;
+    }
+    const w = cz.w0 * sc, h = cz.h0 * sc;
+    const cx = vw / 2 + cz.dx * e, cy = vh / 2 + cz.dy * e;
+    const x = contactCanvas.getContext('2d');
+    x.setTransform(1, 0, 0, 1, 0, 0);
+    x.clearRect(0, 0, W, H);
+    const k = w / 1325;
+    x.setTransform(dpr * k, 0, 0, dpr * k, dpr * (cx - w / 2), dpr * (cy - h / 2));
+    x.fillStyle = CZ_COLOR;
+    x.fill(logoPath, 'evenodd');
+    if(t < 1 || cz.b) czRAF = requestAnimationFrame(czFrame);
+  }
+  // si cambia el tamaño de la pantalla con Contacto abierto, se recalcula el encuadre final
+  window.addEventListener('resize', () => {
+    if(!cz) return;
+    const t0 = cz.t0;
+    contactCanvas.classList.remove('on');
+    logo3d.style.visibility = '';
+    const keepNav = document.documentElement.classList.contains('contact-nav-white');
+    applyContactZoom();
+    cz.t0 = t0;
+    if(keepNav) document.documentElement.classList.add('contact-nav-white');
+    czFrame(performance.now());
+  });
 
   // salida de "sobre mí": el texto termina de caer y desaparece hacia abajo
   function dropAboutTextAway(cb){
@@ -2982,7 +3049,8 @@
   const lzBuf = document.createElement('canvas');   // donde se arma el logo con grosor, cuadro a cuadro
   const bctx = lzBuf.getContext('2d');
   function playLogoZoom(){
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dprFull = Math.min(window.devicePixelRatio || 1, 2);
+    let dpr = dprFull;
     const ctx = loaderCanvas.getContext('2d');
     const W = logoImg.naturalWidth, H = logoImg.naturalHeight;
     if(!logoBlack) makeBlackLogo();
@@ -2990,7 +3058,6 @@
     const t0 = performance.now();
     function frame(now){
       const vw = window.innerWidth, vh = window.innerHeight;
-      if(loaderCanvas.width !== Math.round(vw * dpr)){ loaderCanvas.width = Math.round(vw * dpr); loaderCanvas.height = Math.round(vh * dpr); }
       const el = now - t0;
       const tz = Math.min(el / LZ_MS, 1);
       // escala inicial: la pantalla entera cae adentro del trazo; final: el
@@ -3005,6 +3072,11 @@
       const ox = vw / 2 + (LZ_P0.x - W / 2) * k * g;
       const oy = vh / 2 + (LZ_P0.y - H / 2) * k * g;
       const left = ox - LZ_P0.x * k, top = oy - LZ_P0.y * k;
+      // mientras el logo es mucho más grande que la pantalla (solo se ven trazos negros
+      // enormes) alcanza con la resolución común: es mucho menos trabajo por cuadro y no se
+      // traba; cuando ya se achica y se ven los detalles, pasa a la resolución completa
+      dpr = W * k > vw * 1.3 ? 1 : dprFull;
+      if(loaderCanvas.width !== Math.round(vw * dpr)){ loaderCanvas.width = Math.round(vw * dpr); loaderCanvas.height = Math.round(vh * dpr); }
 
       // mientras se retrae, gira una vuelta sobre su eje vertical, con grosor
       // (como al entrar a "Sobre mí"): arranca plano, toma volumen al girar y,
@@ -3019,7 +3091,8 @@
       // iguales, solo corridas de costado. En vez de dibujar capa por capa, se
       // dibuja el logo una vez y se lo "estira" de costado duplicándolo sobre
       // sí mismo (1, 2, 4, 8… px): el canto queda macizo con muy pocos dibujos
-      const edge = Math.abs(depth * sn);
+      // (con el logo enorme, el canto no necesita ser más ancho que la pantalla)
+      const edge = Math.min(Math.abs(depth * sn), vw * 0.5);
       // justo de canto el logo queda más fino que un pixel: se le deja un mínimo
       let c = cs;
       if(edge >= 0.5){ const minC = 5 / (W * k); if(Math.abs(c) < minC) c = (c < 0 ? -1 : 1) * minC; }
@@ -3056,16 +3129,24 @@
         }
         bctx.setTransform(1, 0, 0, 1, 0, 0);
         const E = edge * dpr;
-        for(let done = 1; done < E; ){
-          const step = Math.min(done, E - done);
-          bctx.drawImage(lzBuf, step, 0);
-          done += step;
+        // solo se copia la zona donde está el logo (no la pantalla entera)
+        const xa = c * (left + sx * k) + shift, xb = c * (left + ex * k) + shift;
+        let rx = Math.max(Math.floor(Math.min(xa, xb) * dpr) - 2, 0), rw = Math.min(Math.ceil(Math.max(xa, xb) * dpr) + 2, bw) - rx;
+        const ry = Math.max(Math.floor((top + sy * k) * dpr) - 2, 0), rh = Math.min(Math.ceil((top + ey * k) * dpr) + 2, bh) - ry;
+        if(rw > 0 && rh > 0){
+          for(let done = 1; done < E; ){
+            const step = Math.min(done, E - done);
+            const cw = Math.min(rw, bw - rx - step);
+            if(cw > 0) bctx.drawImage(lzBuf, rx, ry, cw, rh, rx + step, ry, cw, rh);
+            rw = Math.min(rw + step, bw - rx);
+            done += step;
+          }
+          // casi de canto, el logo aplastado queda gris (el navegador promedia los
+          // trazos en tan poco ancho): se lo superpone consigo mismo para que el
+          // canto vuelva a verse negro y macizo
+          const fix = Math.abs(cs) < 0.04 ? 4 : Math.abs(cs) < 0.1 ? 2 : Math.abs(cs) < 0.18 ? 1 : 0;
+          for(let f = 0; f < fix; f++) bctx.drawImage(lzBuf, rx, ry, rw, rh, rx, ry, rw, rh);
         }
-        // casi de canto, el logo aplastado queda gris (el navegador promedia los
-        // trazos en tan poco ancho): se lo superpone consigo mismo para que el
-        // canto vuelva a verse negro y macizo
-        const fix = Math.abs(cs) < 0.04 ? 4 : Math.abs(cs) < 0.1 ? 2 : Math.abs(cs) < 0.18 ? 1 : 0;
-        for(let f = 0; f < fix; f++) bctx.drawImage(lzBuf, 0, 0);
       }
       // el logo se dibuja sobre transparente y el blanco lo pone el fondo de la
       // intro (así, cuando sigue con el scroll, se ve el home por debajo)
@@ -3353,8 +3434,27 @@
     const go = () => { if(!logoBlack) makeBlackLogo(); if(!logoMips) buildLogoMips(); playLogoZoom(); };
     if(logoImg.complete && logoImg.naturalWidth) go(); else logoImg.addEventListener('load', go, { once:true });
   }
-  if(isMob()) loader.addEventListener('click', introGo, { once:true });
+  if(isMob()){ loader.addEventListener('click', introGo, { once:true }); requestAnimationFrame(loaderLightLoop); }
   else setTimeout(introGo, 2000);
+
+  // celular (no hay cursor): la luz viene sola, recorre "carolinapicone.com" de izquierda
+  // a derecha y en el medio se agranda apenas, muy sutil: así se nota que hay que tocar.
+  // Se repite hasta el toque
+  const LL_MS = 3400, LL_TRAVEL = 0.78;
+  let llT0 = 0;
+  function loaderLightLoop(now){
+    if(introGo.done) return;
+    if(!llT0) llT0 = now;
+    const r = loaderUrl.getBoundingClientRect();
+    const p = ((now - llT0) % LL_MS) / LL_MS;
+    const q = Math.min(p / LL_TRAVEL, 1);
+    const e = q < .5 ? 2 * q * q : 1 - Math.pow(-2 * q + 2, 2) / 2;
+    const a = r.left - 150, b = r.right + 150;
+    loaderVeil.style.setProperty('--lv-mx', (p < LL_TRAVEL ? a + (b - a) * e : b).toFixed(1) + 'px');
+    loaderVeil.style.setProperty('--lv-my', (r.top + r.height / 2).toFixed(1) + 'px');
+    loaderVeil.style.setProperty('--lv-r', (100 + 9 * Math.sin(Math.PI * q)).toFixed(1) + 'px');
+    requestAnimationFrame(loaderLightLoop);
+  }
 
   // ---- Idioma ----
   const langToggle = document.getElementById('langToggle');
@@ -3508,6 +3608,7 @@
 
   function bounceContactLogo(){
     if(!logo3d) return;
+    if(cz){ cz.b = performance.now(); cancelAnimationFrame(czRAF); czRAF = requestAnimationFrame(czFrame); return; }
     const finalTransform = logo3d.style.transform;
     const m = finalTransform.match(/scale\(([^)]+)\)/);
     const s = m ? parseFloat(m[1]) : 1;
@@ -4006,7 +4107,15 @@
     let c2x = x2 - Math.max(90, dy * 0.26), c2y = y2 - dy * 0.24;
     // celular: una curva amplia y amable (baja, se abre apenas hacia la izquierda y
     // termina cayendo derecho sobre la prenda), sin salirse de la pantalla
-    if(mob){ c1x = Math.max(x1 - 30, 14); c1y = y1 + dy * 0.45; c2x = x2; c2y = y2 - dy * 0.45; }
+    // (sale hacia la derecha, se abre hasta cerca del borde y cruza todo el ancho hasta
+    // la prenda de la izquierda, adonde llega cayendo derecho desde arriba)
+    if(mob){
+      const vwA = tr.width, lim = vwA - 16;
+      c1y = y1 + dy * 0.35; c2x = x2; c2y = y2 - dy * 0.45;
+      const maxX = cx => { let m = -Infinity; for(let i = 0; i <= 40; i++){ const t = i / 40, u = 1 - t; m = Math.max(m, u*u*u*x1 + 3*u*u*t*cx + 3*u*t*t*c2x + t*t*t*x2); } return m; };
+      c1x = vwA + 160;
+      while(c1x > x1 && maxX(c1x) > lim) c1x -= 8;
+    }
 
     svg.setAttribute('width',  tr.width);
     svg.setAttribute('height', Math.max(y2 + 60, 0));
@@ -4294,7 +4403,7 @@
   // celular: el cuaderno apenas asoma (se ve una franja de la tapa y los papeles, sin tapar el texto), al tocarlo va al
   // centro de la pantalla (sin achicarse) y el texto se va; los párrafos quedan
   // siempre en su lugar, a la izquierda; los bocetos, de un 26% del ancho
-  const NB_MOB_PEEK = 0.85, NB_MOB_TEXT_X = 0.08, NB_MOB_PROC_W = 0.36, NB_PROC_RATIO = 583 / 1800;
+  const NB_MOB_PEEK = 0.6, NB_MOB_TEXT_X = 0.08, NB_MOB_PROC_W = 0.36, NB_PROC_RATIO = 583 / 1800;
   const nbSec   = document.getElementById('nepBookSec');
   const nbStage = document.getElementById('nepBookStage');
   const nbBook  = document.getElementById('nepBook');
@@ -4400,12 +4509,20 @@
     // el cuaderno empieza a salir cuando los dos primeros párrafos ya están casi
     // en el centro, y llega asomado cuando los otros dos quedan en el centro;
     // mientras entra, empuja a los primeros (que arrancan más a la izquierda)
-    const A = t2, a0 = t1 - vh * 0.5;
+    const mobL = isMob();
+    // (celular: el cuaderno entra recién cuando los primeros párrafos ya se están yendo)
+    const A = t2, a0 = mobL ? t1 + (t2 - t1) * 0.45 : t1 - vh * 0.5;
     const E = A - a0;                                    // al irse, el mismo recorrido
-    const D = t2;                                        // la sección se suelta con los otros dos en el centro
+    // celular: con la sección todavía fija, el scroll lleva el cuaderno (cerrado) al centro
+    // mientras el texto se corre a la derecha; ahí se queda un rato (se puede tocar para
+    // abrirlo) y, con más scroll, se va por la izquierda antes de que llegue la colección
+    const c0 = t2, c1 = c0 + vh * 0.6, c2 = c1 + vh * 0.5, c3 = c2 + vh * 0.6;
+    const D = mobL ? c3 : t2;                            // la sección se suelta con los otros dos en el centro
     nbProc.style.height = procH.toFixed(1) + 'px';
-    nb.phases = { a0, A, E, G, w1a, h1a, h1b, stop, t1, t2, ya0, yb0, D };
-    nbSec.style.height = (vh + D * NB_WEIGHT) + 'px';
+    nb.phases = { a0, A, E, G, w1a, h1a, h1b, stop, t1, t2, ya0, yb0, D, c0, c1, c2, c3 };
+    // (celular: cuando el cuaderno ya se fue no queda nada en la sección fija, así que la
+    // colección llega enseguida, sin pantallas en blanco de por medio)
+    nbSec.style.height = ((mobL ? vh * 0.2 : vh) + D * NB_WEIGHT) + 'px';
     // se acomoda solo: los dos primeros párrafos en el centro (con el cuaderno
     // asomado) y, con el próximo scroll, los otros dos (a la inversa al subir).
     // Después el scroll sigue normal y el cuaderno se va por donde entró
@@ -4454,6 +4571,17 @@
     if(pin <= P.a0){ xs = xOut; sc = 1; }
     else if(pin < P.A){ const e = nbSoft((pin - P.a0) / (P.A - P.a0)); xs = xOut + (xHome - xOut) * e; sc = 1 + (scHome - 1) * e; }
     else { xs = xHome + (xOut - xHome) * ex; sc = scHome + (1 - scHome) * ex; }
+    // celular: después de los otros dos párrafos, el scroll lleva el cuaderno al centro y
+    // después lo saca por la izquierda (si se lo tocó, se abre desde donde está)
+    let u1 = 0;
+    if(mob && pin >= P.c0){
+      u1 = nbSoft((pin - P.c0) / (P.c1 - P.c0));
+      const u2 = nbSoft((pin - P.c2) / (P.c3 - P.c2));
+      const xC = vw / 2 - NB_FRONT_W * k / 2;            // la tapa cerrada, centrada
+      const base = xPeek + (xC - xPeek) * u1;
+      const closed = base + (xOut - base) * u2;
+      xs = closed + (xFinal - closed) * em; sc = 1;
+    }
     // al irse, se queda a la misma altura en la pantalla (sale en línea recta,
     // igual que entró), aunque el resto ya sube con el scroll normal
     const lift = ex < 1 ? over : 0;
@@ -4467,7 +4595,7 @@
     }
     // fuera de la sección de los últimos dos párrafos nunca queda abierto: si se
     // subió, se cierra y vuelve a quedar asomado (con los bocetos en su lugar)
-    if(over < 1 && pin < P.t2 - 25 && (nb.m > 0 || nb.cur > 1) && !nb.mT){
+    if(over < 1 && (pin < P.t2 - 25 || (mob && pin > P.c2 + 25)) && (nb.m > 0 || nb.cur > 1) && !nb.mT){
       if(nb.cur > 1){ if(!nb.busy) nbCloseFast(); }
       else nbOpenTo(0);
     }
@@ -4489,7 +4617,13 @@
     let x1a = sm('x1aS', Math.max(leftX, pushed)), x1b = sm('x1bS', Math.max(cx, pushed));
     // celular: el texto no se corre (no hay lugar al costado): queda a la izquierda y,
     // con el cuaderno abierto, se funde
-    if(mob){ x1a = x1b = vw * NB_MOB_TEXT_X; const op = (1 - em).toFixed(3); nbT1a.style.opacity = op; nbT1b.style.opacity = op; }
+    if(mob){
+      x1a = vw * NB_MOB_TEXT_X;
+      // los otros dos, del lado derecho; cuando el cuaderno va al centro, se corren a la par hasta salir
+      const xr = vw - nbT1b.offsetWidth - vw * NB_MOB_TEXT_X;
+      x1b = xr + (vw + 20 - xr) * u1;
+      const op = (1 - em).toFixed(3); nbT1a.style.opacity = op; nbT1b.style.opacity = op;
+    }
     else { nbT1a.style.opacity = nbT1b.style.opacity = ''; }
     nbT1a.style.transform = 'translate(' + x1a.toFixed(1) + 'px,' + (P.ya0 - pin).toFixed(1) + 'px)';
     const y1b = Math.max(P.yb0 - pin, vh / 2 - P.h1b / 2);
@@ -4503,7 +4637,7 @@
     // se puede hacer click con el cuaderno quieto en su lugar (asomado: va a su
     // lugar; ahí: pasa una página, salvo en la contratapa)
     // (solo con los otros dos párrafos en el centro: ahí se puede abrir)
-    const still = Math.abs(pin - P.t2) < 20 && over < 4 && !nepGlide;
+    const still = (Math.abs(pin - P.t2) < 20 || (mob && pin >= P.c1 - 10 && pin <= P.c2 + 10)) && over < 4 && !nepGlide;
     nb.clickable = still && !nb.busy && !nb.mT && (nb.m === 0 || (nb.m === 1 && nb.cur < NB_N));
     nbBook.classList.toggle('ready', nb.clickable);
     nbHint.classList.toggle('show', (nb.clickable && nb.hover) || (nepPhHover && !nepLbOpen));
@@ -4527,7 +4661,7 @@
     if(nb.mT || nb.busy) return true;
     // celular: con el cuaderno abierto, el scroll (para arriba o para abajo) primero lo
     // cierra y lo deja asomado otra vez; después, con más scroll, se va
-    if(isMob() && Math.abs(nb.pin - P.t2) < 20 && (nb.m > 0 || nb.cur > 1)){
+    if(isMob() && (Math.abs(nb.pin - P.t2) < 20 || (nb.pin >= P.c1 - 10 && nb.pin <= P.c2 + 10)) && (nb.m > 0 || nb.cur > 1)){
       if(nb.cur > 1) nbCloseFast().then(() => nbOpenTo(0));
       else nbOpenTo(0);
       return true;
@@ -4593,6 +4727,16 @@
       // asomado: va a su lugar. Ahí, cada click pasa una página (en la
       // contratapa ya no se puede volver a hacer click: sigue el scroll)
       if(!nb.clickable) return;
+      // celular, con el cuaderno ya en el centro (llevado por el scroll): el toque lo abre
+      // directamente (se corre al centro abierto mientras gira la tapa)
+      if(nb.m < 1 && isMob() && nb.phases && nb.pin >= nb.phases.c1 - 10){
+        nbOpenTo(1);
+        nb.busy = true;
+        await nbFlip(nb.cur, true, NB_FLIP_MS);
+        nb.cur++;
+        nb.busy = false;
+        return;
+      }
       if(nb.m < 1){ nbOpenTo(1); return; }
       if(nb.cur >= NB_N) return;
       nb.busy = true;
@@ -4764,8 +4908,8 @@
   const nepPzRowEl = document.getElementById('nepPzRow');
   const nepPzItems = nepPzRowEl ? Array.from(nepPzRowEl.querySelectorAll('.nep-pz')) : [];
   const PZ_N = nepPzItems.length;
-  const PZ_INTRO_MS = 3600;   // el recorrido automático completo
-  const PZ_HOP_EVERY = 1700;  // un saltito (0.7s) y un segundo de pausa
+  const PZ_INTRO_MS = 2600;   // el recorrido automático completo
+  const PZ_HOP_EVERY = 3600;  // un saltito lento y sutil (1.3s) y más de 2s de pausa
   let pzPos = 0, pzAnim = null, pzDrag = null, pzIntro = false, pzTapped = false, pzNextHop = 0, pzDragged = false;
   function pzBez(x1, y1, x2, y2){
     const bx = t => 3 * x1 * t * (1 - t) * (1 - t) + 3 * x2 * t * t * (1 - t) + t * t * t;
@@ -4790,7 +4934,7 @@
     if(!pz || pz.classList.contains('on')) return;
     const fig = pz.querySelector('.nep-pz-fig');
     fig.classList.remove('nudge'); void fig.offsetWidth; fig.classList.add('nudge');
-    setTimeout(() => fig.classList.remove('nudge'), 800);
+    setTimeout(() => fig.classList.remove('nudge'), 1400);
   }
   function nepPzReset(){
     pzPos = 0; pzAnim = null; pzDrag = null; pzIntro = false; pzTapped = false; pzNextHop = 0;
@@ -4881,6 +5025,8 @@
     const tops = Array.from(row.querySelectorAll('.nep-pz-top .nep-pz-fig'));
     const c = tops.reduce((acc, f) => acc + f.offsetTop + f.offsetHeight / 2, 0) / (tops.length || 1);
     nepPzSnap = { at: row.offsetTop + c - vh / 2, range: vh * 0.16 };
+    // celular: la fila (de una pantalla) se acomoda entera en la pantalla, desde más lejos
+    if(isMob()) nepPzSnap = { at: row.offsetTop + row.offsetHeight / 2 - vh / 2, range: vh * 0.3 };
   }
 
   // centrado muy leve (la colección y las prendas): no corta el scroll. Solo
@@ -5268,7 +5414,8 @@
   const EXPR_CROSS_MS   = 400;                                  // la siguiente sale cuando a esta le faltan estos ms para desaparecer
   const EXPR_STAGGER_MS = EXPR_ACTIVE_MS - EXPR_CROSS_MS;
   const EXPR_GROUP_GAP_D = 8;                                   // separacion entre ellas en la formacion de grupo
-  let EXPR_GROUP_GAP = EXPR_GROUP_GAP_D;                        // (en el celular, más juntas: ver exprEnterGroup)
+  let EXPR_GROUP_GAP = EXPR_GROUP_GAP_D;
+  let exprGroupTiltK = 1;                                       // (celular: cuánto se inclinan en el grupo)                        // (en el celular, más juntas: ver exprEnterGroup)
   const EXPR_REST_VW_D  = 66;                                   // centro del espacio libre a la derecha del texto (igual solas o en grupo)
   // en el celular las frutas tienen su franja propia (el texto ocupa todo el ancho): frenan en el centro
   function exprRestVw(){ return isMob() ? 50 : EXPR_REST_VW_D; }
@@ -5359,8 +5506,17 @@
   function exprEnterGroup(now){
     exprMode = 'group';
     exprRoundT0 = now;
-    EXPR_GROUP_GAP = isMob() ? 10 : EXPR_GROUP_GAP_D;
-    const widths = exprFruitEls.map(el => el.offsetWidth);
+    EXPR_GROUP_GAP = isMob() ? 5 : EXPR_GROUP_GAP_D;
+    let widths = exprFruitEls.map(el => el.offsetWidth);
+    // celular: cada fruta ocupa lo que mide ya inclinada (así no se tocan aunque estén
+    // muy juntas); si así no entran las siete, se inclinan un poco menos
+    exprGroupTiltK = 1;
+    if(isMob()){
+      const ext = k => exprFruitEls.map((el, i) => { const a = Math.abs(exprFruitTilt[i] * k) * Math.PI / 180; return el.offsetWidth * Math.cos(a) + el.offsetHeight * Math.sin(a); });
+      const avail = window.innerWidth - 20;
+      while(exprGroupTiltK > 0.25 && ext(exprGroupTiltK).reduce((a, b) => a + b, 0) + EXPR_GROUP_GAP * (EXPR_N - 1) > avail) exprGroupTiltK -= 0.05;
+      widths = ext(exprGroupTiltK);   // (el hueco se cuenta entre las frutas ya inclinadas)
+    }
     const blockW = widths.reduce((a, b) => a + b, 0) + EXPR_GROUP_GAP * (EXPR_N - 1);
     let cursor = (exprRestVw() / 100) * window.innerWidth - blockW / 2;
     const slots = widths.map(w => { const L = cursor; cursor += w + EXPR_GROUP_GAP; return L; });
@@ -5368,7 +5524,7 @@
     const enterOrder = exprShuffled(EXPR_N), enterRank = [];
     enterOrder.forEach((fruitIdx, rank) => { enterRank[fruitIdx] = rank; });
     exprGroupPlan = exprFruitEls.map((el, i) => ({
-      target: slots[i],
+      target: slots[i] + (widths[i] - el.offsetWidth) / 2,   // (centrada en su lugar)
       enterStart: enterRank[i] * EXPR_GROUP_STAGGER_MS + (Math.random() - 0.5) * 70,
     }));
     const lastArrival = Math.max(...exprGroupPlan.map(g => g.enterStart)) + EXPR_ENTER_MS;
@@ -5399,7 +5555,7 @@
       const tB = (EXPR_ENTER_MS + EXPR_PAUSE_MS) / EXPR_ACTIVE_MS;
       localT = tB + Math.min((elapsed - g.exitStart) / EXPR_EXIT_MS, 1) * (1 - tB);
     }
-    return exprLapTo(localT, exprDir, w, g.target, exprFruitTilt[i]);
+    return exprLapTo(localT, exprDir, w, g.target, exprFruitTilt[i] * exprGroupTiltK);
   }
 
   function exprStartExplosion(now){
@@ -5671,7 +5827,7 @@
     const Yt = Math.min(vh + (p3.b - vh) * K, Yb - 1);
     const spreadAt = (Y) => {
       const t = Math.min(Math.max((Y - Yt) / (Yb - Yt), 0), 1);
-      return 1 + 0.15 * t * t * (3 - 2 * t);
+      return 1 + (isMob() ? 0.35 : 0.15) * t * t * (3 - 2 * t);   // (celular: a mitad de camino con el 55% de antes)
     };
     const placed = [];
     dfMood = [];
@@ -5790,19 +5946,45 @@
   // van en una fila que se desliza de costado, todos a la misma escala; arranca en el
   // medio, así hay diseños para ver hacia los dos lados. Las imágenes del moodboard
   // ya se fueron antes de que llegue el proceso: no hace falta cuidar que no los toquen
+  // la fila no termina nunca, para ningún lado: los cinco se repiten varias veces y,
+  // cuando se termina de deslizar lejos del medio, la fila salta (sin que se vea) a la
+  // copia equivalente del medio. Entre una tanda y la siguiente el espacio es apenas
+  // más grande, así se nota que lo que se ve se repite
+  const DF_MINI_COPIES = 5;
+  let dfMiniSetW = 0;
   function dfLayoutMinisMob(fig){
     fig.style.width = '';
-    if(dfMinis && dfMinis.children.length !== DF_DESIGNS.length) dfLayoutMinis.build();
+    if(dfMinis && dfMinis.children.length !== DF_DESIGNS.length * DF_MINI_COPIES) dfLayoutMinis.build(DF_MINI_COPIES);
     if(!dfMinis) return [];
     const h = dfMinis.clientHeight || window.innerHeight * 0.34;
     Array.from(dfMinis.children).forEach((el, k) => {
-      const d = DF_DESIGNS[k];
+      const d = DF_DESIGNS[k % DF_DESIGNS.length];
       el.style.left = el.style.top = '';
       el.style.width = (Math.max(d.f, d.b) * h) + 'px';
       el.style.height = h + 'px';
     });
-    requestAnimationFrame(() => { dfMinis.scrollLeft = (dfMinis.scrollWidth - dfMinis.clientWidth) / 2; });
+    requestAnimationFrame(() => {
+      const kids = dfMinis.children, n = DF_DESIGNS.length;
+      dfMiniSetW = kids[2 * n].offsetLeft - kids[n].offsetLeft;
+      // arranca con el medio de la tanda del medio en el centro de la pantalla
+      const a = kids[2 * n], b = kids[3 * n - 1];
+      dfMinis.scrollLeft = (a.offsetLeft + b.offsetLeft + b.offsetWidth) / 2 - dfMinis.clientWidth / 2;
+    });
     return [];
+  }
+  function dfMinisWrap(){
+    if(!isMob() || !dfMiniSetW) return;
+    const n = DF_DESIGNS.length, kids = dfMinis.children;
+    if(kids.length < 3 * n) return;
+    const ref = kids[2 * n].offsetLeft - dfMinis.clientWidth / 2;   // la tanda del medio, en el centro
+    let sl = dfMinis.scrollLeft;
+    while(sl < ref - dfMiniSetW * 0.5) sl += dfMiniSetW;
+    while(sl > ref + dfMiniSetW * 0.5) sl -= dfMiniSetW;
+    if(Math.abs(sl - dfMinis.scrollLeft) > 1) dfMinis.scrollLeft = sl;
+  }
+  if(dfMinis){
+    let wrapT = null;
+    dfMinis.addEventListener('scroll', () => { clearTimeout(wrapT); wrapT = setTimeout(dfMinisWrap, 160); }, { passive:true });
   }
 
   // celular: con un toque, el video se ve en pantalla completa
@@ -5816,11 +5998,11 @@
     }catch(e){}
   });
 
-  dfLayoutMinis.build = function(){
+  dfLayoutMinis.build = function(copies){
     dfMinis.innerHTML = '';
-    DF_DESIGNS.forEach(d => {
+    for(let c = 0; c < (copies || 1); c++) DF_DESIGNS.forEach((d, j) => {
       const wrap = document.createElement('div');
-      wrap.className = 'df-mini';
+      wrap.className = 'df-mini' + (c > 0 && j === 0 ? ' df-mini-rep' : '');
       wrap.addEventListener('click', (e) => { e.stopPropagation(); dfZoomOpen(wrap, d); });
       wrap.innerHTML = '<img class="df-mini-f" src="assets/dualidad-figurin-' + d.n + '-frente.png" alt="Figurín ' + d.n + ' (frente)">' +
                        '<img class="df-mini-b" src="assets/dualidad-figurin-' + d.n + '-espalda.png" alt="Figurín ' + d.n + ' (espalda)">';
@@ -5933,6 +6115,22 @@
     dfMood.forEach(m => { m.el.style.visibility = 'hidden'; });
   }
 
+  // el video arranca siempre (aunque el navegador no deje reproducir con sonido sin
+  // que antes se haya tocado la página): si ya se tocó, con sonido; si no, sin sonido.
+  // Si a los 1.2s todavía no arrancó (algunos navegadores lo frenan), se reintenta sin sonido
+  function dfStartVideo(){
+    const v = dfVideo;
+    const active = !navigator.userActivation || navigator.userActivation.hasBeenActive;
+    v.muted = !active;
+    v.volume = 0;
+    const p = v.play();
+    if(p && p.catch) p.catch(() => { v.muted = true; const q = v.play(); if(q && q.catch) q.catch(() => {}); });
+    clearTimeout(dfStartVideo.t);
+    dfStartVideo.t = setTimeout(() => {
+      if(dfVideoOn && v.paused){ v.muted = true; const q = v.play(); if(q && q.catch) q.catch(() => {}); }
+    }, 1200);
+  }
+
   function dfFrame(vh){
     const now = performance.now();
     if(dfGlide){
@@ -5999,10 +6197,7 @@
         dfVideoOn = true;
         dfVideoPushed = false;
         try{ dfVideo.currentTime = 0; } catch(e){}
-        dfVideo.muted = false;
-        dfVideo.volume = 0;
-        const p = dfVideo.play();
-        if(p && p.catch) p.catch(() => { dfVideo.muted = true; const q = dfVideo.play(); if(q && q.catch) q.catch(() => {}); });
+        dfStartVideo();
       } else if(frac <= 0 && dfVideoOn && !(dfVideoPushed && left > 0 && !dfVideo.ended)){
         dfVideoOn = false;
         dfVideo.pause();
