@@ -1159,11 +1159,11 @@
        ("Un Mundo" / "para Exprimir") */
     .expr-inicial{ min-height:100svh; display:flex; flex-direction:column; justify-content:center; box-sizing:border-box; padding:var(--nav-h) 0 0; }
     .expr-inicial .expr-inicial-text{ padding-top:0; }
-    .expr-inicial .expr-panel{ width:84vw; margin-top:6svh; margin-left:auto; margin-right:0; }
+    .expr-inicial .expr-panel{ width:calc(100vw - var(--expr-m) * 2); margin:6svh auto 0; }   /* los chicos, a todo el ancho con los márgenes de la web */
     .br-m{ display:inline; }
     .expr-bocetos{ overflow:hidden; }
     .expr-bocetos > img{ width:112vw; }
-    .expr-bocetos .expr-text{ position:relative; top:auto; right:auto; z-index:4; padding:6svh 0 4svh; margin-bottom:42svh; }
+    .expr-bocetos .expr-text{ position:relative; top:auto; right:auto; z-index:4; padding:6svh 0 4svh; margin-bottom:16svh; }
     .expr-arrow{ display:block; }
     .expr-arrow path{ stroke-width:1.2; }
     .expr-geometral{ min-height:100svh; display:flex; flex-direction:column; justify-content:center; box-sizing:border-box; padding:4svh 0; }
@@ -5011,7 +5011,9 @@
       nepPzApply();
     }
     const top = nepPzRowEl.offsetTop - workCurrent;
-    const centered = Math.abs(top + nepPzRowEl.offsetHeight / 2 - vh / 2) < vh * 0.08;
+    // (centrada del todo y quieta: primero la fila se acomoda en el centro y recién
+    // cuando terminó de acomodarse arranca el recorrido)
+    const centered = Math.abs(top + nepPzRowEl.offsetHeight / 2 - vh / 2) < 4 && Math.abs(workTarget - workCurrent) < 1 && !nepGlide;
     const onScreen = top < vh * 0.6 && top + nepPzRowEl.offsetHeight > vh * 0.4;
     // la primera vez que la sección queda en la pantalla: el recorrido automático
     if(centered && !pzIntro && !pzAnim && !pzDrag && pzNextHop === 0){
@@ -5182,7 +5184,8 @@
     const vh = window.innerHeight, now = performance.now();
     // al entrar a las fotos, la barra del menú se va, sutil (y vuelve al subir);
     // mientras se ve el video, la maneja el video
-    if(!nepVidOpen) root.classList.toggle('work-nav-hidden', workCurrent >= nepPh.offsetTop - vh * 0.3);
+    // (en el celular la barra queda siempre: sin ella no hay forma de moverse por la web)
+    if(!nepVidOpen) root.classList.toggle('work-nav-hidden', !isMob() && workCurrent >= nepPh.offsetTop - vh * 0.3);
     // se cierra al salir de la última pantalla de las fotos (para arriba); y
     // estando en la pantalla del texto, queda abierto (al volver, ya está)
     if(workCurrent < nepEnd.tope - vh * 0.6) nepEnd.target = 0;
@@ -6647,7 +6650,7 @@
 
       if(finalParts.length){
         const enFinales = finalParts.some(f => enPantalla(f, vh * 0.25));
-        root.classList.toggle('work-nav-hidden', enFinales);
+        root.classList.toggle('work-nav-hidden', enFinales && !isMob());   // (en el celular la barra queda siempre)
         root.classList.toggle('smb-click-on', enFinales && !lbOpen);
 
         finalParts.forEach(f => {
