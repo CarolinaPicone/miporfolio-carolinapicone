@@ -341,7 +341,7 @@ Todo vive en un **único `index.html`**, sin páginas separadas ni rutas — la 
 ## 6. Otras reglas o preferencias importantes
 
 - **Sin teléfono ni WhatsApp visibles** en Contacto — decisión de privacidad explícita de Carolina.
-- **Dominio pensado:** `carolinapicone.com`. *(sin definir)* — todavía no se compró ni se conectó; quedó pendiente para cuando el diseño esté cerrado.
+- **Dominio:** `carolinapicone.com`, **comprado por Carolina en Namecheap**. La web se publica con **GitHub Pages** desde `main` (carpeta raíz). El archivo `CNAME` de la raíz del repositorio (con `carolinapicone.com` adentro) le dice a GitHub cuál es el dominio: **no borrarlo**. En Namecheap (Advanced DNS) van 4 registros A `@` → 185.199.108.153 / 109.153 / 110.153 / 111.153 y un CNAME `www` → `carolinapicone.github.io`. Después, en GitHub → Settings → Pages, tildar **Enforce HTTPS**.
 - **Redes confirmadas:** Instagram `@caropicone` → `instagram.com/caropicone`; LinkedIn → `linkedin.com/in/carolina-picone-680a20331`.
 - **Mail de contacto:** `carolinapicone.t@gmail.com`.
 - Los 5 bloques de "Trabajos" en el home son placeholders (patrón diagonal gris/negro) — *(sin definir)* faltan las imágenes reales de cada proyecto.
