@@ -3161,10 +3161,9 @@
       if(el < LZ_MS + LZ_FLAT_MS) requestAnimationFrame(frame);
       // frena: en la compu queda quieto y se entra al home con un click en el logo;
       // en el celular, apenas frena se funde solo y entra el home (todo seguido)
-      else if(!isMob()) startLogoHold();
+      else startLogoHold();   // (compu y celular igual: queda quieto, late y espera el click)
       // celular: el fundido arranca cuando el giro casi terminó (el final de la
       // curva es muy lento y se veía quieto mucho tiempo): queda apenas un instante quieto
-      if(isMob() && el > LZ_MS * MOB_LOGO_FADE_AT && !playLogoZoom.fading){ playLogoZoom.fading = true; setTimeout(lhEnter, MOB_LOGO_HOLD); }
     }
     loaderCanvas.classList.add('on');
     requestAnimationFrame(frame);
@@ -3182,7 +3181,7 @@
   function lhInside(x, y){
     const vw = window.innerWidth, vh = window.innerHeight;
     const lw = introLogoW(vw), lhh = lw * logoImg.naturalHeight / logoImg.naturalWidth;
-    const pad = 12;
+    const pad = isMob() ? 44 : 12;   // (con el dedo, un área más grande)
     return Math.abs(x - vw / 2) <= lw / 2 + pad && Math.abs(y - vh / 2) <= lhh / 2 + pad;
   }
   function lhMove(e){
@@ -3449,8 +3448,7 @@
     const go = () => { if(!logoBlack) makeBlackLogo(); if(!logoMips) buildLogoMips(); playLogoZoom(); };
     if(logoImg.complete && logoImg.naturalWidth) go(); else logoImg.addEventListener('load', go, { once:true });
   }
-  if(isMob()){ loader.addEventListener('click', introGo, { once:true }); requestAnimationFrame(loaderLightLoop); }
-  else setTimeout(introGo, 2000);
+  setTimeout(introGo, 2000);   // compu y celular igual: arranca sola a los 2s
 
   // celular (no hay cursor): la luz viene sola, recorre "carolinapicone.com" de izquierda
   // a derecha y en el medio se agranda apenas, muy sutil: así se nota que hay que tocar.
