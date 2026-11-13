@@ -2423,6 +2423,10 @@
       parts.forEach(el => { el.style.transition = 'transform ' + MOB_SIG_MOVE + 'ms ' + ease; el.style.transform = 'none'; });
       root.classList.add('mob-sig-go');
       setTimeout(() => {
+        // la firma ya está en su lugar: se deja fija tal cual (sin animación de entrada).
+        // Si no, al sacar la clase de la entrada centrada, volvía a correr la entrada
+        // normal del home (desaparecía y reaparecía: el "pestañeo")
+        sig.style.animation = 'none'; sig.style.opacity = '1'; sig.style.transform = 'none';
         root.classList.remove('mob-sig-c', 'mob-sig-go');
         copy.style.transition = copy.style.transform = '';
         parts.forEach(el => { el.style.transition = el.style.transform = ''; });
